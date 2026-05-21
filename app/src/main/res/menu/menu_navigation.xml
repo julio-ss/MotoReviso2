@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_veiculos"
+        android:icon="@drawable/ic_launcher_background"
+        android:title="@string/menu_veiculos" />
+
+    <item
+        android:id="@+id/nav_manutencoes"
+        android:icon="@drawable/ic_launcher_background"
+        android:title="@string/menu_manutencoes" />
+
+    <item
+        android:id="@+id/nav_trajetos"
+        android:icon="@drawable/ic_launcher_background"
+        android:title="@string/menu_trajetos" />
+
+    <item
+        android:id="@+id/nav_config"
+        android:icon="@drawable/ic_launcher_background"
+        android:title="@string/menu_config" />
+
+</menu>

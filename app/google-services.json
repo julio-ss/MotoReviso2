@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "32167121954",
+    "project_id": "motoreviso",
+    "storage_bucket": "motoreviso.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:32167121954:android:8713e4876fb6c3a51b667b",
+        "android_client_info": {
+          "package_name": "br.jss.motoreviso"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOImGcxJWmdX313OdhjsJasmnYbuTEBGk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

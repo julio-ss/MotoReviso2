@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Colors -->
+    <color name="primary">#1F1F2E</color>
+    <color name="primary_dark">#0F0F1E</color>
+    <color name="primary_light">#2A2A3E</color>
+
+    <!-- Secondary Colors -->
+    <color name="secondary">#00D4FF</color>
+    <color name="secondary_dark">#00A8CC</color>
+    <color name="secondary_light">#4DE6FF</color>
+
+    <!-- Accent Colors -->
+    <color name="accent">#FF6B6B</color>
+    <color name="accent_dark">#E63946</color>
+    <color name="accent_light">#FF8A8A</color>
+
+    <!-- Background Colors -->
+    <color name="background">#0F0F1E</color>
+    <color name="surface">#1A1A2E</color>
+    <color name="surface_variant">#2A2A3E</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#A0A0B0</color>
+    <color name="text_tertiary">#707080</color>
+
+    <!-- Status Colors -->
+    <color name="success">#00E676</color>
+    <color name="warning">#FFB300</color>
+    <color name="error">#FF5252</color>
+    <color name="info">#00D4FF</color>
+
+    <!-- Utility Colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+    <color name="semi_transparent">#80000000</color>
+
+    <!-- Divider -->
+    <color name="divider">#2A2A3E</color>
+    <color name="ripple">#4DE6FF</color>
+
+    <!-- CORES FALTANTES (adicionar) -->
+    <color name="gray">#A0A0B0</color>
+    <color name="light_gray">#2A2A3E</color>
+    <color name="green">#00E676</color>
+    <color name="red">#FF5252</color>
+    <color name="orange">#FFB300</color>
+    <color name="blue">#00D4FF</color>
+</resources>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Moto Reviso</string>
+
+    <!-- Navigation Menu -->
+    <string name="menu_veiculos">Veículos</string>
+    <string name="menu_manutencoes">Manutenções</string>
+    <string name="menu_trajetos">Trajetos</string>
+    <string name="menu_config">Config</string>
+    <string name="painel_manutencoes">Painel de Manutenções</string>
+    <string name="menu">Menu</string>
+
+    <!-- Titles -->
+    <string name="meus_veiculos">Meus Veículos</string>
+    <string name="cadastro_veiculo">Cadastrar Veículo</string>
+    <string name="detalhe_veiculo">Detalhes do Veículo</string>
+    <string name="editar_veiculo">Editar Veículo</string>
+    <string name="rastreamento">Rastreamento</string>
+    <string name="cadastro_manutencao">Cadastrar Manutenção</string>
+    <string name="galeria">Galeria</string>
+    <string name="manutencoes">Manutenções</string>
+    <string name="trajetos_executados">Trajetos Executados</string>
+    <string name="configuracoes">Configurações</string>
+
+    <!-- Buttons -->
+    <string name="novo_veiculo">+ Novo</string>
+    <string name="nova_manutencao">+ Nova</string>
+    <string name="salvar_veiculo">Salvar Veículo</string>
+    <string name="salvar_manutencao">Salvar Manutenção</string>
+    <string name="editar">Editar</string>
+    <string name="deletar">Deletar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="rastrear">Rastrear</string>
+    <string name="iniciar_rastreamento">INICIAR RASTREAMENTO</string>
+    <string name="parar">PARAR</string>
+    <string name="selecionar_imagem">Selecionar Imagem da Galeria</string>
+
+    <!-- Fields -->
+    <string name="tipo">Tipo</string>
+    <string name="moto">Moto</string>
+    <string name="carro">Carro</string>
+    <string name="marca">Marca *</string>
+    <string name="modelo">Modelo *</string>
+    <string name="ano">Ano</string>
+    <string name="placa">Placa *</string>
+    <string name="chassis">Chassis</string>
+    <string name="motor">Motor</string>
+    <string name="combustivel">Combustível (gasolina/etanol/diesel/elétrico)</string>
+    <string name="cambio">Câmbio (manual/automático/cvt)</string>
+    <string name="potencia">Potência (CV)</string>
+    <string name="torque">Torque</string>
+    <string name="cilindrada">Cilindrada (cc)</string>
+    <string name="peso">Peso (kg)</string>
+    <string name="dimensoes">Dimensões (H x L x C)</string>
+    <string name="tanque">Capacidade Tanque (litros)</string>
+    <string name="km_atual">KM Atual</string>
+    <string name="intervalo_revisao">Intervalo de Revisão (km) - Padrão: 5000</string>
+    <string name="descricao">Descrição / Observações</string>
+    <string name="km_revisao">KM Revisão</string>
+    <string name="custo">Custo</string>
+    <string name="data_revisao">Data da Revisão</string>
+    <string name="mecanico">Mecânico</string>
+    <string name="pecas_trocadas">Peças Trocadas</string>
+
+    <!-- Messages -->
+    <string name="nenhum_veiculo">Nenhum veículo cadastrado</string>
+    <string name="nenhuma_manutencao">Nenhuma manutenção registrada</string>
+    <string name="nenhum_trajeto">Nenhum trajeto registrado</string>
+    <string name="nenhuma_imagem">Nenhuma imagem cadastrada</string>
+    <string name="erro_carregar">Erro ao carregar dados</string>
+    <string name="veiculo_salvo">Veículo cadastrado com sucesso!</string>
+    <string name="manutencao_salva">Manutenção registrada com sucesso!</string>
+    <string name="trajeto_salvo">Trajeto salvo com sucesso!</string>
+    <string name="preencha_obrigatorios">Preencha os campos obrigatórios</string>
+    <string name="erro_upload">Erro ao fazer upload</string>
+
+    <!-- Tracking -->
+    <string name="tempo_decorrido">Tempo Decorrido:</string>
+    <string name="km_rodados">KM Rodados:</string>
+    <string name="velocidade_atual">Velocidade Atual:</string>
+    <string name="velocidade_maxima">Velocidade Máxima:</string>
+    <string name="km_h">km/h</string>
+    <string name="km_distance">km</string>
+
+    <!-- Alerts -->
+    <string name="revisao_urgente">⚠️ REVISÃO URGENTE!</string>
+    <string name="proxima_revisao">Próxima revisão em</string>
+
+    <!-- Details -->
+    <string name="placa_label">Placa:</string>
+    <string name="tipo_label">Tipo:</string>
+    <string name="km_atual_label">KM Atual:</string>
+
+    <!-- Tabs -->
+    <string name="especificacoes">Especificações</string>
+    <string name="manutenacoes_tab">Manutenções</string>
+    <string name="imagens_tab">Imagens</string>
+
+    <!-- About -->
+    <string name="sobre_o_app">Sobre o App</string>
+    <string name="versao">Moto Reviso v1.0</string>
+    <string name="descricao_app">Aplicativo para controle de manutenção de veículos com rastreamento de trajetos via GPS.</string>
+
+    <!-- Permissions -->
+    <string name="permissao_localizacao">Permissão de localização necessária</string>
+    <string name="permissao_concedida">Permissão concedida</string>
+</resources>
