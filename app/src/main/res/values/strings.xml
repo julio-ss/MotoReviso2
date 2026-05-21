@@ -104,4 +104,22 @@
     <!-- Permissions -->
     <string name="permissao_localizacao">Permissão de localização necessária</string>
     <string name="permissao_concedida">Permissão concedida</string>
+
+    <!-- Arrays for Spinners -->
+    <string-array name="filtro_manutencao">
+        <item>Todas</item>
+        <item>Revisão</item>
+        <item>Troca de Óleo</item>
+        <item>Pneus</item>
+        <item>Freios</item>
+        <item>Filtro</item>
+        <item>Bateria</item>
+        <item>Corrente</item>
+    </string-array>
+
+    <string-array name="ordenacao_manutencao">
+        <item>Mais recente</item>
+        <item>Maior custo</item>
+        <item>Maior KM</item>
+    </string-array>
 </resources>
