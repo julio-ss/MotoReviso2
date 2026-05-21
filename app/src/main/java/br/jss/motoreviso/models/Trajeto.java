@@ -160,6 +160,16 @@ public class Trajeto {
         this.dataCadastro = dataCadastro;
     }
 
+    @Exclude
+    public void setDistanciaKm(double km) {
+        this.kmRodados = km;
+    }
+
+    @Exclude
+    public void setDuracaoMs(long ms) {
+        this.duracao = ms / 60000;
+    }
+
     // Classe interna para pontos GPS
     public static class Ponto {
         private Double latitude;

@@ -138,8 +138,18 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/iniciar_rastreamento"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="4dp"
             android:backgroundTint="@color/green" />
+
+        <Button
+            android:id="@+id/btn_pausar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Pausar"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:backgroundTint="@color/warning" />
 
         <Button
             android:id="@+id/btn_parar"
@@ -147,7 +157,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/parar"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="4dp"
             android:backgroundTint="@color/red" />
 
     </LinearLayout>
