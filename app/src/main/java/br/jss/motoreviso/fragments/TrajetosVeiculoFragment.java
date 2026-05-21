@@ -13,7 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.QuerySnapshot;
 
+import android.content.Intent;
+
 import br.jss.motoreviso.R;
+import br.jss.motoreviso.activities.MapTrajetoActivity;
 import br.jss.motoreviso.adapters.TrajetoAdapter;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.Trajeto;
@@ -63,7 +66,13 @@ public class TrajetosVeiculoFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        adapter = new TrajetoAdapter(trajetos);
+        adapter = new TrajetoAdapter(trajetos, trajeto -> {
+            if (trajeto.getId() != null && getActivity() != null) {
+                Intent intent = new Intent(getActivity(), MapTrajetoActivity.class);
+                intent.putExtra("TRAJETO_ID", trajeto.getId());
+                startActivity(intent);
+            }
+        });
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
     }

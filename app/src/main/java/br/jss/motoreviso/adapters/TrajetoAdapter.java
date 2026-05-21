@@ -17,10 +17,16 @@ import br.jss.motoreviso.models.Trajeto;
 
 public class TrajetoAdapter extends RecyclerView.Adapter<TrajetoAdapter.TrajetoViewHolder> {
     private List<Trajeto> trajetos;
+    private OnTrajetoClickListener clickListener;
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", new Locale("pt", "BR"));
 
-    public TrajetoAdapter(List<Trajeto> trajetos) {
+    public interface OnTrajetoClickListener {
+        void onTrajetoClick(Trajeto trajeto);
+    }
+
+    public TrajetoAdapter(List<Trajeto> trajetos, OnTrajetoClickListener listener) {
         this.trajetos = trajetos;
+        this.clickListener = listener;
     }
 
     @NonNull
@@ -58,6 +64,13 @@ public class TrajetoAdapter extends RecyclerView.Adapter<TrajetoAdapter.TrajetoV
             textKmRodados = itemView.findViewById(R.id.text_km_rodados);
             textVelocidadeMax = itemView.findViewById(R.id.text_velocidade_max);
             textDuracao = itemView.findViewById(R.id.text_duracao);
+
+            itemView.setOnClickListener(v -> {
+                int pos = getAdapterPosition();
+                if (pos != RecyclerView.NO_ID && clickListener != null) {
+                    clickListener.onTrajetoClick(trajetos.get(pos));
+                }
+            });
         }
 
         public void bind(Trajeto trajeto) {

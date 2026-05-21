@@ -122,4 +122,14 @@
         <item>Maior custo</item>
         <item>Maior KM</item>
     </string-array>
+
+    <!-- Login / Auth -->
+    <string name="login">Entrar</string>
+    <string name="registrar">Criar conta</string>
+    <string name="sair">Sair</string>
+    <string name="pin_configurar">Configurar PIN</string>
+    <string name="biometria">Biometria</string>
+
+    <!-- Google Maps key (replace with real key in google_maps_api.xml) -->
+    <string name="google_maps_key" translatable="false">SUA_CHAVE_GOOGLE_MAPS_AQUI</string>
 </resources>
