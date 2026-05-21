@@ -1,6 +1,7 @@
 package br.jss.motoreviso.activities;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,9 +16,6 @@ import br.jss.motoreviso.R;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.Manutencao;
 import br.jss.motoreviso.utils.ManutencaoFormatter;
-
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 
 public class DetalheManutencaoActivity extends AppCompatActivity {
     private static final String TAG = "DetalheManutencaoActivity";
@@ -40,7 +38,6 @@ public class DetalheManutencaoActivity extends AppCompatActivity {
     private Manutencao manutencaoAtual;
     private String manutencaoId;
     private String veiculoId;
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("pt", "BR"));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -186,8 +183,18 @@ public class DetalheManutencaoActivity extends AppCompatActivity {
     private void editarManutencao() {
         if (manutencaoAtual == null) return;
 
-        Toast.makeText(this, "Funcionalidade de edição em desenvolvimento", Toast.LENGTH_SHORT).show();
-        // Implementação futura
+        Intent intent = new Intent(this, CadastroManutencaoActivity.class);
+        intent.putExtra("MANUTENCAO_ID", manutencaoId);
+        intent.putExtra("VEICULO_ID", veiculoId);
+        startActivityForResult(intent, 100);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100 && resultCode == RESULT_OK) {
+            carregarManutencao();
+        }
     }
 
     private void confirmarDeletacao() {

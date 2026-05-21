@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import br.jss.motoreviso.BuildConfig;
 import br.jss.motoreviso.R;
 
 public class ConfiguracoesFragment extends Fragment {
@@ -17,7 +18,11 @@ public class ConfiguracoesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_configuracoes, container, false);
 
         TextView textConfiguracao = view.findViewById(R.id.text_configuracao);
-        textConfiguracao.setText("Configurações do Aplicativo\n\nVersão 1.0\n\nAqui você poderá gerenciar preferências e configurações globais do app.");
+        String versao = BuildConfig.VERSION_NAME;
+        String texto = getString(R.string.configuracoes) + "\n\n"
+                + "Versão " + versao + "\n\n"
+                + getString(R.string.descricao_app);
+        textConfiguracao.setText(texto);
 
         return view;
     }

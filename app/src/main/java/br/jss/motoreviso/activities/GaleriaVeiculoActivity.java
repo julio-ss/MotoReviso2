@@ -1,13 +1,20 @@
 package br.jss.motoreviso.activities;
 
 import android.os.Bundle;
-import android.widget.GridView;
+import android.util.Log;
+import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import br.jss.motoreviso.R;
+import br.jss.motoreviso.adapters.ImagemVeiculoAdapter;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.ImagemVeiculo;
 
@@ -15,11 +22,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GaleriaVeiculoActivity extends AppCompatActivity {
+    private static final String TAG = "GaleriaVeiculoActivity";
+
     private String veiculoId;
-    private GridView gridView;
+    private RecyclerView recyclerImagens;
     private ProgressBar progressBar;
+    private TextView textVazio;
     private FirebaseManager firebaseManager;
     private List<ImagemVeiculo> imagens;
+    private ImagemVeiculoAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +38,8 @@ public class GaleriaVeiculoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_galeria_veiculo);
 
         veiculoId = getIntent().getStringExtra("VEICULO_ID");
-        if (veiculoId == null) {
+        if (veiculoId == null || veiculoId.isEmpty()) {
+            Log.e(TAG, "VEICULO_ID não fornecido");
             finish();
             return;
         }
@@ -35,37 +47,44 @@ public class GaleriaVeiculoActivity extends AppCompatActivity {
         firebaseManager = FirebaseManager.getInstance();
         imagens = new ArrayList<>();
 
-        gridView = findViewById(R.id.grid_imagens);
+        recyclerImagens = findViewById(R.id.recycler_imagens);
         progressBar = findViewById(R.id.progress_bar);
+        textVazio = findViewById(R.id.text_vazio);
 
+        setupRecyclerView();
         carregarImagens();
     }
 
+    private void setupRecyclerView() {
+        adapter = new ImagemVeiculoAdapter(imagens, (imagem, position) ->
+                Toast.makeText(this, "Imagem " + (position + 1), Toast.LENGTH_SHORT).show());
+        recyclerImagens.setLayoutManager(new GridLayoutManager(this, 3));
+        recyclerImagens.setAdapter(adapter);
+    }
+
     private void carregarImagens() {
-        progressBar.setVisibility(android.view.View.VISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+        textVazio.setVisibility(View.GONE);
 
         firebaseManager.obterImagensVeiculo(veiculoId)
                 .addOnCompleteListener(task -> {
-                    progressBar.setVisibility(android.view.View.GONE);
+                    progressBar.setVisibility(View.GONE);
 
                     if (task.isSuccessful() && task.getResult() != null) {
                         imagens.clear();
-                        for (com.google.firebase.firestore.DocumentSnapshot doc : task.getResult().getDocuments()) {
+                        for (DocumentSnapshot doc : task.getResult().getDocuments()) {
                             ImagemVeiculo imagem = doc.toObject(ImagemVeiculo.class);
                             if (imagem != null) {
                                 imagem.setId(doc.getId());
                                 imagens.add(imagem);
                             }
                         }
-
-                        if (imagens.isEmpty()) {
-                            Toast.makeText(this, "Nenhuma imagem cadastrada", Toast.LENGTH_SHORT).show();
-                        } else {
-                            // Aqui você pode adicionar um adapter de galeria se desejar
-                            Toast.makeText(this, imagens.size() + " imagens encontradas", Toast.LENGTH_SHORT).show();
-                        }
+                        adapter.notifyDataSetChanged();
+                        textVazio.setVisibility(imagens.isEmpty() ? View.VISIBLE : View.GONE);
                     } else {
+                        Log.e(TAG, "Erro ao carregar imagens", task.getException());
                         Toast.makeText(this, "Erro ao carregar imagens", Toast.LENGTH_SHORT).show();
+                        textVazio.setVisibility(View.VISIBLE);
                     }
                 });
     }

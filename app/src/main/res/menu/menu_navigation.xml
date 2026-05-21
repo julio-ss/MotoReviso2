@@ -2,22 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_veiculos"
-        android:icon="@drawable/ic_launcher_background"
+        android:icon="@drawable/ic_car_modern"
         android:title="@string/menu_veiculos" />
 
     <item
         android:id="@+id/nav_manutencoes"
-        android:icon="@drawable/ic_launcher_background"
+        android:icon="@drawable/ic_wrench_modern"
         android:title="@string/menu_manutencoes" />
 
     <item
         android:id="@+id/nav_trajetos"
-        android:icon="@drawable/ic_launcher_background"
+        android:icon="@drawable/ic_map_modern"
         android:title="@string/menu_trajetos" />
 
     <item
         android:id="@+id/nav_config"
-        android:icon="@drawable/ic_launcher_background"
+        android:icon="@drawable/ic_settings_modern"
         android:title="@string/menu_config" />
 
 </menu>

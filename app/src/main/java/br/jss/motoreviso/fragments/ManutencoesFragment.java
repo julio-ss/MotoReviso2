@@ -2,6 +2,7 @@ package br.jss.motoreviso.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import br.jss.motoreviso.R;
 import br.jss.motoreviso.activities.CadastroManutencaoActivity;
@@ -25,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ManutencoesFragment extends Fragment {
+    private static final String TAG = "ManutencoesFragment";
+
     private RecyclerView recyclerView;
     private ManutencaoAdapter adapter;
     private List<Manutencao> manutencoes;
@@ -53,19 +56,48 @@ public class ManutencoesFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        carregarManutencoes();
+    }
+
     private void setupRecyclerView() {
         adapter = new ManutencaoAdapter(manutencoes);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
     }
 
+    private void carregarManutencoes() {
+        progressBar.setVisibility(View.VISIBLE);
+        textVazioMensagem.setVisibility(View.GONE);
+
+        firebaseManager.obterTodasManutencoes()
+                .addOnCompleteListener(task -> {
+                    if (!isAdded()) return;
+                    progressBar.setVisibility(View.GONE);
+
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        manutencoes.clear();
+                        for (DocumentSnapshot doc : task.getResult().getDocuments()) {
+                            Manutencao m = doc.toObject(Manutencao.class);
+                            if (m != null) {
+                                m.setId(doc.getId());
+                                manutencoes.add(m);
+                            }
+                        }
+                        adapter.notifyDataSetChanged();
+                        textVazioMensagem.setVisibility(manutencoes.isEmpty() ? View.VISIBLE : View.GONE);
+                    } else {
+                        Log.e(TAG, "Erro ao carregar manutenções", task.getException());
+                        textVazioMensagem.setVisibility(View.VISIBLE);
+                        textVazioMensagem.setText(R.string.nenhuma_manutencao);
+                    }
+                });
+    }
+
     private void abrirCadastroManutencao() {
         Intent intent = new Intent(getActivity(), CadastroManutencaoActivity.class);
         startActivity(intent);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 }

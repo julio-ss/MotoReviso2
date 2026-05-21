@@ -5,7 +5,8 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardElevation="4dp"
-    app:cardCornerRadius="12dp">
+    app:cardCornerRadius="12dp"
+    app:cardBackgroundColor="@color/surface">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,7 +21,7 @@
             android:text="Data"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:textColor="@color/black" />
+            android:textColor="@color/text_primary" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -34,7 +35,7 @@
                 android:layout_weight="1"
                 android:text="De:"
                 android:textSize="12sp"
-                android:textColor="@color/gray" />
+                android:textColor="@color/text_secondary" />
 
             <TextView
                 android:id="@+id/text_origem"
@@ -43,7 +44,7 @@
                 android:layout_weight="1"
                 android:text="Local"
                 android:textSize="12sp"
-                android:textColor="@color/black"
+                android:textColor="@color/text_primary"
                 android:gravity="end" />
 
         </LinearLayout>
@@ -60,7 +61,7 @@
                 android:layout_weight="1"
                 android:text="Para:"
                 android:textSize="12sp"
-                android:textColor="@color/gray" />
+                android:textColor="@color/text_secondary" />
 
             <TextView
                 android:id="@+id/text_destino"
@@ -69,7 +70,7 @@
                 android:layout_weight="1"
                 android:text="Local"
                 android:textSize="12sp"
-                android:textColor="@color/black"
+                android:textColor="@color/text_primary"
                 android:gravity="end" />
 
         </LinearLayout>
@@ -87,7 +88,7 @@
                 android:layout_weight="1"
                 android:text="0 km"
                 android:textSize="12sp"
-                android:textColor="@color/blue" />
+                android:textColor="@color/secondary" />
 
             <TextView
                 android:id="@+id/text_velocidade_max"
@@ -96,7 +97,7 @@
                 android:layout_weight="1"
                 android:text="0 km/h"
                 android:textSize="12sp"
-                android:textColor="@color/red"
+                android:textColor="@color/error"
                 android:gravity="end" />
 
         </LinearLayout>
@@ -107,7 +108,7 @@
             android:layout_height="wrap_content"
             android:text="Duração"
             android:textSize="11sp"
-            android:textColor="@color/gray"
+            android:textColor="@color/text_secondary"
             android:layout_marginTop="4dp" />
 
     </LinearLayout>

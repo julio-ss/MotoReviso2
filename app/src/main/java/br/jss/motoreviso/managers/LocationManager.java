@@ -2,7 +2,6 @@ package br.jss.motoreviso.managers;
 
 import android.content.Context;
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.Looper;
 import android.util.Log;
 
@@ -15,6 +14,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
+
 import br.jss.motoreviso.models.Trajeto;
 
 import java.util.ArrayList;
@@ -24,16 +24,18 @@ import java.util.List;
 public class LocationManager {
     private static final String TAG = "LocationManager";
     private static LocationManager instance;
-    private FusedLocationProviderClient fusedLocationProviderClient;
+
+    private final Context appContext;
+    private final FusedLocationProviderClient fusedLocationProviderClient;
     private LocationCallback locationCallback;
-    private LocationListener locationListener;
     private Double velocidadeMaxima = 0.0;
     private Trajeto trajetoAtivo;
     private List<Trajeto.Ponto> pontosRota = new ArrayList<>();
 
     private LocationManager(Context context) {
+        this.appContext = context.getApplicationContext();
         this.fusedLocationProviderClient = LocationServices
-                .getFusedLocationProviderClient(context);
+                .getFusedLocationProviderClient(this.appContext);
     }
 
     public static synchronized LocationManager getInstance(Context context) {
@@ -43,7 +45,21 @@ public class LocationManager {
         return instance;
     }
 
+    private boolean temPermissaoLocalizacao() {
+        return ActivityCompat.checkSelfPermission(appContext,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == android.content.pm.PackageManager.PERMISSION_GRANTED;
+    }
+
     public void iniciarRastreamento(Long kmInicial, OnLocationUpdateListener listener) {
+        if (!temPermissaoLocalizacao()) {
+            Log.e(TAG, "Permissão de localização não concedida");
+            if (listener != null) {
+                listener.onPermissaoNegada();
+            }
+            return;
+        }
+
         velocidadeMaxima = 0.0;
         pontosRota.clear();
 
@@ -61,44 +77,53 @@ public class LocationManager {
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 super.onLocationResult(locationResult);
                 for (Location location : locationResult.getLocations()) {
-                    processarLocacao(location, listener);
+                    processarLocalizacao(location, listener);
                 }
             }
         };
 
-        if (ActivityCompat.checkSelfPermission(null,
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-            Log.e(TAG, "Permissão de localização não concedida");
-            return;
+        try {
+            fusedLocationProviderClient.requestLocationUpdates(
+                    locationRequest,
+                    locationCallback,
+                    Looper.getMainLooper()
+            );
+        } catch (SecurityException e) {
+            Log.e(TAG, "Erro de permissão ao iniciar rastreamento", e);
+            if (listener != null) {
+                listener.onPermissaoNegada();
+            }
         }
-
-        fusedLocationProviderClient.requestLocationUpdates(
-                locationRequest,
-                locationCallback,
-                Looper.getMainLooper()
-        );
     }
 
     public Trajeto pararRastreamento(Long kmFinal) {
         if (locationCallback != null) {
             fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+            locationCallback = null;
         }
 
         if (trajetoAtivo != null) {
             trajetoAtivo.setDataFim(System.currentTimeMillis());
             trajetoAtivo.setKmFinal(kmFinal);
             trajetoAtivo.finalizarTrajeto(new Date(), kmFinal, velocidadeMaxima);
-            trajetoAtivo.setPontos(pontosRota);
+            trajetoAtivo.setPontos(new ArrayList<>(pontosRota));
         }
 
         return trajetoAtivo;
     }
 
-    private void processarLocacao(Location location, OnLocationUpdateListener listener) {
+    public void pararAtualizacoes() {
+        if (locationCallback != null) {
+            fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+            locationCallback = null;
+        }
+    }
+
+    private void processarLocalizacao(Location location, OnLocationUpdateListener listener) {
         if (location == null) return;
 
-        Double velocidadeKmh = location.getSpeed() * 3.6;
+        double speedMs = location.getSpeed();
+        double velocidadeKmh = (speedMs >= 0) ? speedMs * 3.6 : 0.0;
 
         if (velocidadeKmh > velocidadeMaxima) {
             velocidadeMaxima = velocidadeKmh;
@@ -129,37 +154,32 @@ public class LocationManager {
     }
 
     public void obterUltimaLocacao(OnLocationUpdateListener listener) {
-        if (ActivityCompat.checkSelfPermission(null,
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+        if (!temPermissaoLocalizacao()) {
             return;
         }
 
-        fusedLocationProviderClient.getLastLocation()
-                .addOnSuccessListener(location -> {
-                    if (location != null && listener != null) {
-                        listener.onLocationUpdate(
-                                location.getLatitude(),
-                                location.getLongitude(),
-                                0.0,
-                                0.0
-                        );
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Erro ao obter última localização", e);
-                });
+        try {
+            fusedLocationProviderClient.getLastLocation()
+                    .addOnSuccessListener(location -> {
+                        if (location != null && listener != null) {
+                            listener.onLocationUpdate(
+                                    location.getLatitude(),
+                                    location.getLongitude(),
+                                    0.0,
+                                    0.0
+                            );
+                        }
+                    })
+                    .addOnFailureListener(e -> Log.e(TAG, "Erro ao obter última localização", e));
+        } catch (SecurityException e) {
+            Log.e(TAG, "Erro de permissão ao obter localização", e);
+        }
     }
 
     public static double calcularDistancia(double lat1, double lon1, double lat2, double lon2) {
         float[] results = new float[1];
         Location.distanceBetween(lat1, lon1, lat2, lon2, results);
-        return results[0] / 1000;
-    }
-
-    public interface OnLocationUpdateListener {
-        void onLocationUpdate(Double latitude, Double longitude,
-                              Double velocidadeAtual, Double velocidadeMaxima);
+        return results[0] / 1000.0;
     }
 
     public Trajeto getTrajetoAtivo() {
@@ -175,6 +195,15 @@ public class LocationManager {
     }
 
     public List<Trajeto.Ponto> getPontosRota() {
-        return pontosRota;
+        return new ArrayList<>(pontosRota);
+    }
+
+    public interface OnLocationUpdateListener {
+        void onLocationUpdate(Double latitude, Double longitude,
+                              Double velocidadeAtual, Double velocidadeMaxima);
+
+        default void onPermissaoNegada() {
+            Log.w("LocationManager", "Permissão de localização negada");
+        }
     }
 }

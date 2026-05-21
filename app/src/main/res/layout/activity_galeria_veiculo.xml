@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@color/white">
+    android:background="@color/background">
 
     <TextView
         android:layout_width="match_parent"
@@ -12,17 +12,14 @@
         android:text="@string/galeria"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:textColor="@color/black"
+        android:textColor="@color/text_primary"
         android:layout_marginBottom="16dp" />
 
-    <GridView
-        android:id="@+id/grid_imagens"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_imagens"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:numColumns="3"
-        android:horizontalSpacing="8dp"
-        android:verticalSpacing="8dp" />
+        android:layout_weight="1" />
 
     <ProgressBar
         android:id="@+id/progress_bar"
@@ -30,5 +27,16 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/text_vazio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/nenhuma_imagem"
+        android:textSize="16sp"
+        android:textColor="@color/text_secondary"
+        android:visibility="gone"
+        android:layout_marginTop="32dp" />
 
 </LinearLayout>
