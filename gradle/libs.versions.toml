@@ -12,7 +12,7 @@ constraintlayout = "2.1.4"
 firebase = "32.7.4"
 google-services = "4.4.0"
 gms = "21.1.0"
-biometric = "1.2.0"
+biometric = "1.1.0"
 security-crypto = "1.1.0-alpha06"
 play-services-maps = "18.2.0"
 
