@@ -15,6 +15,39 @@
         android:textColor="@color/text_primary"
         android:layout_marginBottom="16dp" />
 
+    <!-- Shown only when no vehicle is pre-selected -->
+    <LinearLayout
+        android:id="@+id/layout_selecionar_veiculo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="12dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Selecionar Veículo *"
+            android:textSize="14sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginBottom="4dp" />
+
+        <Spinner
+            android:id="@+id/spinner_veiculo"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@color/surface"
+            android:padding="8dp" />
+
+        <ProgressBar
+            android:id="@+id/progress_carregando_veiculos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
