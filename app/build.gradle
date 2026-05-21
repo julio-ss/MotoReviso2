@@ -87,6 +87,15 @@ dependencies {
     implementation libs.androidx.camera.lifecycle
     implementation libs.androidx.camera.view
 
+    // Biometric
+    implementation libs.androidx.biometric
+
+    // Security Crypto
+    implementation libs.androidx.security.crypto
+
+    // Google Maps
+    implementation libs.play.services.maps
+
     // Testing
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
