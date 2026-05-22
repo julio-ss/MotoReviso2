@@ -2,6 +2,8 @@ package br.jss.motoreviso.activities;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -194,22 +196,36 @@ public class MapTrajetoActivity extends AppCompatActivity implements OnMapReadyC
                 .title("Fim")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 
+        Log.d(TAG, "Rota plotada com " + latLngList.size() + " pontos");
+
+        // setOnMapLoadedCallback só dispara uma vez: se o mapa já estava pronto antes dos
+        // dados chegarem, o callback nunca mais dispara e a câmera nunca move.
+        // postDelayed garante que a view já está medida e a câmera se moverá corretamente.
+        final LatLngBounds bounds;
         try {
-            LatLngBounds bounds = boundsBuilder.build();
-            // Usa animateCamera após layout estar completo
-            googleMap.setOnMapLoadedCallback(() -> {
-                try {
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 120));
-                } catch (Exception e) {
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngList.get(0), 14));
-                }
-            });
+            bounds = boundsBuilder.build();
         } catch (Exception e) {
-            Log.e(TAG, "Erro ao ajustar câmera", e);
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngList.get(0), 14));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngList.get(0), 15));
+            return;
         }
 
-        Log.d(TAG, "Rota plotada com " + latLngList.size() + " pontos");
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (isFinishing() || isDestroyed() || googleMap == null) return;
+            try {
+                if (latLngList.size() == 1) {
+                    // trajeto de ponto único — centraliza com zoom fixo
+                    googleMap.animateCamera(
+                            CameraUpdateFactory.newLatLngZoom(latLngList.get(0), 16));
+                } else {
+                    googleMap.animateCamera(
+                            CameraUpdateFactory.newLatLngBounds(bounds, 150));
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Erro ao ajustar câmera", e);
+                googleMap.moveCamera(
+                        CameraUpdateFactory.newLatLngZoom(latLngList.get(0), 15));
+            }
+        }, 400);
     }
 
     private void mostrarErro(String mensagem) {
