@@ -92,9 +92,9 @@ public class FirebaseManager {
         if (veiculoId == null || veiculoId.isEmpty()) {
             return Tasks.forException(new IllegalArgumentException("ID do veículo inválido"));
         }
+        // Sem orderBy para evitar necessidade de índice composto — ordena no cliente
         return db.collection(COLLECTION_MANUTENCOES)
                 .whereEqualTo("veiculoId", veiculoId)
-                .orderBy("dataRevisao", Query.Direction.DESCENDING)
                 .get();
     }
 
@@ -140,19 +140,30 @@ public class FirebaseManager {
         return db.collection(COLLECTION_TRAJETOS).add(trajeto);
     }
 
-    public Task<QuerySnapshot> obterTodosTrajetos() {
+    /**
+     * Busca todos os trajetos do usuário, sem orderBy para não exigir índice.
+     * Ordenação feita no cliente.
+     */
+    public Task<QuerySnapshot> obterTrajetosUsuario(String userId) {
+        if (userId == null || userId.isEmpty()) {
+            return Tasks.forException(new IllegalArgumentException("userId inválido"));
+        }
         return db.collection(COLLECTION_TRAJETOS)
-                .orderBy("dataInicio", Query.Direction.DESCENDING)
+                .whereEqualTo("userId", userId)
                 .get();
     }
 
+    /**
+     * Busca trajetos de um veículo específico.
+     * Sem orderBy — evita necessidade de índice composto no Firestore.
+     * Ordenação feita no cliente.
+     */
     public Task<QuerySnapshot> obterTrajetosVeiculo(String veiculoId) {
         if (veiculoId == null || veiculoId.isEmpty()) {
             return Tasks.forException(new IllegalArgumentException("ID do veículo inválido"));
         }
         return db.collection(COLLECTION_TRAJETOS)
                 .whereEqualTo("veiculoId", veiculoId)
-                .orderBy("dataInicio", Query.Direction.DESCENDING)
                 .get();
     }
 

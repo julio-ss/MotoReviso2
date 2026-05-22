@@ -1,5 +1,6 @@
 package br.jss.motoreviso.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,18 +13,19 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 
-import android.content.Intent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import br.jss.motoreviso.R;
 import br.jss.motoreviso.activities.MapTrajetoActivity;
 import br.jss.motoreviso.adapters.TrajetoAdapter;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.Trajeto;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TrajetosFragment extends Fragment {
     private static final String TAG = "TrajetosFragment";
@@ -70,10 +72,17 @@ public class TrajetosFragment extends Fragment {
     }
 
     private void carregarTrajetos() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            textVazioMensagem.setText("Faça login para ver seus trajetos");
+            textVazioMensagem.setVisibility(View.VISIBLE);
+            return;
+        }
+
         progressBar.setVisibility(View.VISIBLE);
         textVazioMensagem.setVisibility(View.GONE);
 
-        firebaseManager.obterTodosTrajetos()
+        firebaseManager.obterTrajetosUsuario(user.getUid())
                 .addOnCompleteListener(task -> {
                     if (!isAdded()) return;
                     progressBar.setVisibility(View.GONE);
@@ -87,10 +96,24 @@ public class TrajetosFragment extends Fragment {
                                 trajetos.add(t);
                             }
                         }
+
+                        // Ordena por dataInicio decrescente no cliente
+                        Collections.sort(trajetos, (a, b) -> {
+                            Long dA = a.getDataInicio() != null ? a.getDataInicio() : 0L;
+                            Long dB = b.getDataInicio() != null ? b.getDataInicio() : 0L;
+                            return dB.compareTo(dA);
+                        });
+
                         adapter.notifyDataSetChanged();
-                        textVazioMensagem.setVisibility(trajetos.isEmpty() ? View.VISIBLE : View.GONE);
+                        if (trajetos.isEmpty()) {
+                            textVazioMensagem.setText("Nenhum trajeto registrado.\nInicie um rastreamento para começar.");
+                            textVazioMensagem.setVisibility(View.VISIBLE);
+                        } else {
+                            textVazioMensagem.setVisibility(View.GONE);
+                        }
                     } else {
                         Log.e(TAG, "Erro ao carregar trajetos", task.getException());
+                        textVazioMensagem.setText("Erro ao carregar trajetos.\nVerifique sua conexão.");
                         textVazioMensagem.setVisibility(View.VISIBLE);
                     }
                 });

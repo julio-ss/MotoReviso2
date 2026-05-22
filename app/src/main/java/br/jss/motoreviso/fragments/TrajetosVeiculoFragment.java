@@ -1,6 +1,8 @@
 package br.jss.motoreviso.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +13,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import android.content.Intent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import br.jss.motoreviso.R;
 import br.jss.motoreviso.activities.MapTrajetoActivity;
@@ -21,10 +26,9 @@ import br.jss.motoreviso.adapters.TrajetoAdapter;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.Trajeto;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TrajetosVeiculoFragment extends Fragment {
+    private static final String TAG = "TrajetosVeiculoFrag";
+
     private String veiculoId;
     private RecyclerView recyclerView;
     private TrajetoAdapter adapter;
@@ -37,8 +41,7 @@ public class TrajetosVeiculoFragment extends Fragment {
         this.veiculoId = veiculoId;
     }
 
-    public TrajetosVeiculoFragment() {
-    }
+    public TrajetosVeiculoFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -49,13 +52,12 @@ public class TrajetosVeiculoFragment extends Fragment {
         progressBar = view.findViewById(R.id.progress_bar);
         textVazio = view.findViewById(R.id.text_vazio);
 
-        if (veiculoId == null) {
-            veiculoId = getArguments() != null ? getArguments().getString("VEICULO_ID") : null;
+        if (veiculoId == null && getArguments() != null) {
+            veiculoId = getArguments().getString("VEICULO_ID");
         }
 
         firebaseManager = FirebaseManager.getInstance();
         trajetos = new ArrayList<>();
-
         setupRecyclerView();
 
         return view;
@@ -66,6 +68,9 @@ public class TrajetosVeiculoFragment extends Fragment {
         super.onResume();
         if (veiculoId != null) {
             carregarTrajetosVeiculo();
+        } else {
+            textVazio.setText("Veículo não identificado");
+            textVazio.setVisibility(View.VISIBLE);
         }
     }
 
@@ -85,6 +90,7 @@ public class TrajetosVeiculoFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         textVazio.setVisibility(View.GONE);
 
+        // Sem orderBy — evita índice composto no Firestore. Ordena no cliente.
         firebaseManager.obterTrajetosVeiculo(veiculoId)
                 .addOnCompleteListener(task -> {
                     if (!isAdded()) return;
@@ -93,9 +99,8 @@ public class TrajetosVeiculoFragment extends Fragment {
                     if (task.isSuccessful()) {
                         trajetos.clear();
                         QuerySnapshot snapshot = task.getResult();
-
                         if (snapshot != null) {
-                            for (com.google.firebase.firestore.DocumentSnapshot doc : snapshot.getDocuments()) {
+                            for (DocumentSnapshot doc : snapshot.getDocuments()) {
                                 Trajeto trajeto = doc.toObject(Trajeto.class);
                                 if (trajeto != null) {
                                     trajeto.setId(doc.getId());
@@ -104,11 +109,23 @@ public class TrajetosVeiculoFragment extends Fragment {
                             }
                         }
 
+                        // Ordena por dataInicio decrescente no cliente
+                        Collections.sort(trajetos, (a, b) -> {
+                            Long dA = a.getDataInicio() != null ? a.getDataInicio() : 0L;
+                            Long dB = b.getDataInicio() != null ? b.getDataInicio() : 0L;
+                            return dB.compareTo(dA);
+                        });
+
                         adapter.notifyDataSetChanged();
-                        textVazio.setVisibility(trajetos.isEmpty() ? View.VISIBLE : View.GONE);
+
+                        if (trajetos.isEmpty()) {
+                            textVazio.setText("Nenhum trajeto registrado para este veículo.");
+                            textVazio.setVisibility(View.VISIBLE);
+                        } else {
+                            textVazio.setVisibility(View.GONE);
+                        }
                     } else {
-                        android.util.Log.e("TrajetosVeiculoFrag",
-                                "Erro ao carregar trajetos", task.getException());
+                        Log.e(TAG, "Erro ao carregar trajetos", task.getException());
                         textVazio.setText("Erro ao carregar trajetos.\nVerifique sua conexão.");
                         textVazio.setVisibility(View.VISIBLE);
                     }

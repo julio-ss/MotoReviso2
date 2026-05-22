@@ -96,6 +96,9 @@ dependencies {
     // Google Maps
     implementation libs.play.services.maps
 
+    // LocalBroadcastManager (comunicação intra-app no rastreamento)
+    implementation libs.androidx.localbroadcastmanager
+
     // Testing
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit

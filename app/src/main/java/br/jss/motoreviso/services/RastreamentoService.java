@@ -11,13 +11,13 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
+import android.content.pm.PackageManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 import androidx.core.app.ActivityCompat;
-
-import android.content.pm.PackageManager;
+import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -46,8 +46,6 @@ public class RastreamentoService extends Service {
     public static final String ACTION_STOP = "br.jss.motoreviso.STOP";
 
     public static final String BROADCAST_UPDATE = "br.jss.motoreviso.TRACKING_UPDATE";
-    public static final String EXTRA_LATITUDE = "latitude";
-    public static final String EXTRA_LONGITUDE = "longitude";
     public static final String EXTRA_VELOCIDADE = "velocidade";
     public static final String EXTRA_VELOCIDADE_MAX = "velocidade_max";
     public static final String EXTRA_DISTANCIA = "distancia";
@@ -57,6 +55,7 @@ public class RastreamentoService extends Service {
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationCallback locationCallback;
     private NotificationManager notificationManager;
+    private LocalBroadcastManager localBroadcastManager;
 
     private boolean pausado = false;
     private boolean rastreando = false;
@@ -65,6 +64,7 @@ public class RastreamentoService extends Service {
     private long tempoPausa = 0;
     private double distanciaTotal = 0;
     private double velocidadeMaxima = 0;
+    private double velocidadeAtual = 0;
     private Location ultimaLocalizacao = null;
 
     private List<Trajeto.Ponto> pontosRota = new ArrayList<>();
@@ -84,6 +84,7 @@ public class RastreamentoService extends Service {
         super.onCreate();
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
         criarCanalNotificacao();
     }
 
@@ -123,15 +124,18 @@ public class RastreamentoService extends Service {
         pausado = false;
         tempoInicio = System.currentTimeMillis();
         tempoDecorrido = 0;
+        tempoPausa = 0;
         distanciaTotal = 0;
         velocidadeMaxima = 0;
+        velocidadeAtual = 0;
         pontosRota.clear();
         ultimaLocalizacao = null;
 
-        Log.d(TAG, "Iniciando rastreamento foreground service");
+        Log.d(TAG, "Iniciando rastreamento para veículo: " + veiculoId);
 
-        LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3000)
-                .setMinUpdateDistanceMeters(5)
+        // Sem setMinUpdateDistanceMeters — captura posição mesmo parado
+        LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000)
+                .setMinUpdateIntervalMillis(1000)
                 .build();
 
         locationCallback = new LocationCallback() {
@@ -144,72 +148,76 @@ public class RastreamentoService extends Service {
         };
 
         try {
-            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+            fusedLocationProviderClient.requestLocationUpdates(
+                    locationRequest, locationCallback, Looper.getMainLooper());
         } catch (SecurityException e) {
             Log.e(TAG, "Erro de segurança ao iniciar GPS", e);
             stopSelf();
             return;
         }
 
-        startForeground(NOTIFICATION_ID, construirNotificacao("0:00", "0.00 km", "0 km/h", false));
+        startForeground(NOTIFICATION_ID, construirNotificacao("0:00", "0.000 km", "0 km/h", false));
     }
 
     private void processarLocalizacao(Location location) {
         if (pausado || !rastreando) return;
 
-        double velocidadeKmh = location.getSpeed() >= 0 ? location.getSpeed() * 3.6 : 0.0;
-        if (velocidadeKmh > velocidadeMaxima) velocidadeMaxima = velocidadeKmh;
+        velocidadeAtual = location.hasSpeed() ? location.getSpeed() * 3.6 : 0.0;
+        if (velocidadeAtual > velocidadeMaxima) velocidadeMaxima = velocidadeAtual;
 
         if (ultimaLocalizacao != null) {
             float[] result = new float[1];
-            Location.distanceBetween(ultimaLocalizacao.getLatitude(), ultimaLocalizacao.getLongitude(),
+            Location.distanceBetween(
+                    ultimaLocalizacao.getLatitude(), ultimaLocalizacao.getLongitude(),
                     location.getLatitude(), location.getLongitude(), result);
-            distanciaTotal += result[0] / 1000.0;
+            // filtra ruído GPS — só acumula se moveu mais de 1 metro
+            if (result[0] > 1.0f) {
+                distanciaTotal += result[0] / 1000.0;
+            }
         }
         ultimaLocalizacao = location;
 
-        pontosRota.add(new Trajeto.Ponto(location.getLatitude(), location.getLongitude(), velocidadeKmh));
+        pontosRota.add(new Trajeto.Ponto(
+                location.getLatitude(), location.getLongitude(), velocidadeAtual));
 
         tempoDecorrido = System.currentTimeMillis() - tempoInicio - tempoPausa;
-        long segundos = TimeUnit.MILLISECONDS.toSeconds(tempoDecorrido);
-        long min = segundos / 60;
-        long seg = segundos % 60;
-        String tempoStr = String.format(Locale.getDefault(), "%d:%02d", min, seg);
-        String distStr = String.format(Locale.getDefault(), "%.2f km", distanciaTotal);
-        String velStr = String.format(Locale.getDefault(), "%.0f km/h", velocidadeKmh);
+
+        String tempoStr = formatarTempo(tempoDecorrido);
+        String distStr = String.format(Locale.getDefault(), "%.3f km", distanciaTotal);
+        String velStr = String.format(Locale.getDefault(), "%.0f km/h", velocidadeAtual);
 
         atualizarNotificacao(tempoStr, distStr, velStr, false);
-        enviarBroadcastUpdate(location.getLatitude(), location.getLongitude(),
-                velocidadeKmh, velocidadeMaxima, distanciaTotal, tempoDecorrido, false);
+        enviarBroadcast(velocidadeAtual, velocidadeMaxima, distanciaTotal, tempoDecorrido, false);
     }
 
     private void pausarRastreamento() {
         if (!rastreando || pausado) return;
         pausado = true;
-        tempoPausa = System.currentTimeMillis() - tempoInicio - tempoDecorrido;
+        tempoDecorrido = System.currentTimeMillis() - tempoInicio - tempoPausa;
 
         Log.d(TAG, "Rastreamento pausado");
         atualizarNotificacao(formatarTempo(tempoDecorrido),
-                String.format(Locale.getDefault(), "%.2f km", distanciaTotal),
+                String.format(Locale.getDefault(), "%.3f km", distanciaTotal),
                 "0 km/h", true);
-        enviarBroadcastUpdate(0, 0, 0, velocidadeMaxima, distanciaTotal, tempoDecorrido, true);
+        enviarBroadcast(0, velocidadeMaxima, distanciaTotal, tempoDecorrido, true);
     }
 
     private void retomarRastreamento() {
         if (!rastreando || !pausado) return;
         pausado = false;
-        long agora = System.currentTimeMillis();
-        tempoPausa = agora - tempoInicio - tempoDecorrido;
+        // desconta o tempo que ficou pausado
+        tempoPausa = System.currentTimeMillis() - tempoInicio - tempoDecorrido;
 
         Log.d(TAG, "Rastreamento retomado");
         atualizarNotificacao(formatarTempo(tempoDecorrido),
-                String.format(Locale.getDefault(), "%.2f km", distanciaTotal),
+                String.format(Locale.getDefault(), "%.3f km", distanciaTotal),
                 "0 km/h", false);
-        enviarBroadcastUpdate(0, 0, 0, velocidadeMaxima, distanciaTotal, tempoDecorrido, false);
+        enviarBroadcast(0, velocidadeMaxima, distanciaTotal, tempoDecorrido, false);
     }
 
     public void pararRastreamento() {
-        Log.d(TAG, "Parando rastreamento");
+        Log.d(TAG, "Parando rastreamento — " + pontosRota.size() + " pontos, " +
+                String.format(Locale.getDefault(), "%.3f km", distanciaTotal));
         rastreando = false;
         pausado = false;
 
@@ -223,6 +231,9 @@ public class RastreamentoService extends Service {
     }
 
     public Trajeto finalizarETrajeto() {
+        long duracaoFinal = tempoDecorrido > 0 ? tempoDecorrido :
+                (System.currentTimeMillis() - tempoInicio - tempoPausa);
+
         Trajeto trajeto = new Trajeto();
         trajeto.setVeiculoId(veiculoId);
         trajeto.setDataInicio(tempoInicio);
@@ -230,26 +241,24 @@ public class RastreamentoService extends Service {
         trajeto.setKmInicial(kmInicial);
         trajeto.setKmFinal(kmInicial != null ? kmInicial + (long) distanciaTotal : 0L);
         trajeto.setDistanciaKm(distanciaTotal);
-        trajeto.setDuracaoMs(tempoDecorrido);
+        trajeto.setDuracaoMs(duracaoFinal);
         trajeto.setVelocidadeMaxima(velocidadeMaxima);
         trajeto.setPontos(new ArrayList<>(pontosRota));
         return trajeto;
     }
 
-    private void enviarBroadcastUpdate(double lat, double lon, double vel, double velMax,
-                                        double dist, long tempo, boolean isPausado) {
+    private void enviarBroadcast(double vel, double velMax, double dist, long tempo, boolean isPausado) {
         Intent intent = new Intent(BROADCAST_UPDATE);
-        intent.putExtra(EXTRA_LATITUDE, lat);
-        intent.putExtra(EXTRA_LONGITUDE, lon);
         intent.putExtra(EXTRA_VELOCIDADE, vel);
         intent.putExtra(EXTRA_VELOCIDADE_MAX, velMax);
         intent.putExtra(EXTRA_DISTANCIA, dist);
         intent.putExtra(EXTRA_TEMPO, tempo);
         intent.putExtra(EXTRA_PAUSADO, isPausado);
-        sendBroadcast(intent);
+        localBroadcastManager.sendBroadcast(intent);
     }
 
-    private Notification construirNotificacao(String tempo, String distancia, String velocidade, boolean isPausado) {
+    private Notification construirNotificacao(String tempo, String distancia,
+                                               String velocidade, boolean isPausado) {
         Intent openIntent = new Intent(this, RastreamentoActivity.class);
         openIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent openPending = PendingIntent.getActivity(this, 0, openIntent,
@@ -267,26 +276,28 @@ public class RastreamentoService extends Service {
 
         return new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_location_modern)
-                .setContentTitle("Rastreamento ativo")
-                .setContentText(distancia + " • " + tempo + " • " + velocidade)
+                .setContentTitle("Rastreando — " + distancia)
+                .setContentText(tempo + "  •  " + velocidade)
                 .setContentIntent(openPending)
                 .addAction(isPausado ? R.drawable.ic_play_modern : R.drawable.ic_stop_modern,
                         isPausado ? "Continuar" : "Pausar", pausePending)
                 .addAction(R.drawable.ic_close_modern, "Encerrar", stopPending)
                 .setOngoing(true)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
                 .build();
     }
 
-    private void atualizarNotificacao(String tempo, String distancia, String velocidade, boolean isPausado) {
-        notificationManager.notify(NOTIFICATION_ID, construirNotificacao(tempo, distancia, velocidade, isPausado));
+    private void atualizarNotificacao(String tempo, String distancia,
+                                       String velocidade, boolean isPausado) {
+        notificationManager.notify(NOTIFICATION_ID,
+                construirNotificacao(tempo, distancia, velocidade, isPausado));
     }
 
     private void criarCanalNotificacao() {
         NotificationChannel channel = new NotificationChannel(
                 CHANNEL_ID, "Rastreamento de percurso",
-                NotificationManager.IMPORTANCE_HIGH);
+                NotificationManager.IMPORTANCE_LOW);
         channel.setDescription("Notificação de rastreamento em andamento");
         channel.setSound(null, null);
         notificationManager.createNotificationChannel(channel);
@@ -294,12 +305,23 @@ public class RastreamentoService extends Service {
 
     private String formatarTempo(long ms) {
         long seg = TimeUnit.MILLISECONDS.toSeconds(ms);
-        return String.format(Locale.getDefault(), "%d:%02d", seg / 60, seg % 60);
+        long horas = seg / 3600;
+        long min = (seg % 3600) / 60;
+        long s = seg % 60;
+        if (horas > 0) {
+            return String.format(Locale.getDefault(), "%d:%02d:%02d", horas, min, s);
+        }
+        return String.format(Locale.getDefault(), "%02d:%02d", min, s);
     }
 
+    // Getters para o binding
     public boolean isPausado() { return pausado; }
     public boolean isRastreando() { return rastreando; }
     public double getDistanciaTotal() { return distanciaTotal; }
+    public double getVelocidadeAtual() { return velocidadeAtual; }
+    public double getVelocidadeMaxima() { return velocidadeMaxima; }
+    public long getTempoInicio() { return tempoInicio; }
+    public long getTempoPausa() { return tempoPausa; }
     public long getTempoDecorrido() { return tempoDecorrido; }
     public List<Trajeto.Ponto> getPontosRota() { return new ArrayList<>(pontosRota); }
 
@@ -315,6 +337,6 @@ public class RastreamentoService extends Service {
         if (locationCallback != null) {
             fusedLocationProviderClient.removeLocationUpdates(locationCallback);
         }
-        Log.d(TAG, "Serviço de rastreamento destruído");
+        Log.d(TAG, "Serviço destruído");
     }
 }

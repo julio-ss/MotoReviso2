@@ -15,6 +15,7 @@ gms = "21.1.0"
 biometric = "1.1.0"
 security-crypto = "1.1.0-alpha06"
 play-services-maps = "18.2.0"
+localbroadcastmanager = "1.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -38,6 +39,7 @@ play-services-location = { group = "com.google.android.gms", name = "play-servic
 androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
 androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "security-crypto" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "play-services-maps" }
+androidx-localbroadcastmanager = { group = "androidx.localbroadcastmanager", name = "localbroadcastmanager", version.ref = "localbroadcastmanager" }
 
 # Image Loading
 glide = "com.github.bumptech.glide:glide:4.16.0"

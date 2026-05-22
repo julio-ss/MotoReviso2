@@ -10,7 +10,9 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -19,6 +21,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -41,12 +46,33 @@ public class RastreamentoActivity extends AppCompatActivity {
     private RastreamentoService rastreamentoService;
     private boolean servicoBound = false;
 
+    // Timer independente para atualizar o cronômetro a cada segundo
+    private final Handler timerHandler = new Handler(Looper.getMainLooper());
+    private final Runnable timerRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (servicoBound && rastreamentoService != null
+                    && rastreamentoService.isRastreando()
+                    && !rastreamentoService.isPausado()) {
+                long ms = System.currentTimeMillis()
+                        - rastreamentoService.getTempoInicio()
+                        - rastreamentoService.getTempoPausa();
+                textTempo.setText(formatarTempo(ms));
+            }
+            timerHandler.postDelayed(this, 1000);
+        }
+    };
+
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
             RastreamentoService.LocalBinder lb = (RastreamentoService.LocalBinder) binder;
             rastreamentoService = lb.getService();
             servicoBound = true;
+
+            // Sincroniza UI com estado atual do serviço
+            sincronizarUiComServico();
+            timerHandler.post(timerRunnable);
             atualizarBotoes(true, rastreamentoService.isPausado());
         }
 
@@ -54,28 +80,28 @@ public class RastreamentoActivity extends AppCompatActivity {
         public void onServiceDisconnected(ComponentName name) {
             servicoBound = false;
             rastreamentoService = null;
+            timerHandler.removeCallbacks(timerRunnable);
         }
     };
 
     private final BroadcastReceiver trackingReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (RastreamentoService.BROADCAST_UPDATE.equals(intent.getAction())) {
-                double vel = intent.getDoubleExtra(RastreamentoService.EXTRA_VELOCIDADE, 0);
-                double velMax = intent.getDoubleExtra(RastreamentoService.EXTRA_VELOCIDADE_MAX, 0);
-                double dist = intent.getDoubleExtra(RastreamentoService.EXTRA_DISTANCIA, 0);
-                long tempo = intent.getLongExtra(RastreamentoService.EXTRA_TEMPO, 0);
-                boolean pausado = intent.getBooleanExtra(RastreamentoService.EXTRA_PAUSADO, false);
+            double vel = intent.getDoubleExtra(RastreamentoService.EXTRA_VELOCIDADE, 0);
+            double velMax = intent.getDoubleExtra(RastreamentoService.EXTRA_VELOCIDADE_MAX, 0);
+            double dist = intent.getDoubleExtra(RastreamentoService.EXTRA_DISTANCIA, 0);
+            long tempo = intent.getLongExtra(RastreamentoService.EXTRA_TEMPO, 0);
+            boolean pausado = intent.getBooleanExtra(RastreamentoService.EXTRA_PAUSADO, false);
 
-                textVelocidadeAtual.setText(String.format(Locale.getDefault(), "%.1f km/h", vel));
-                textVelocidadeMaxima.setText(String.format(Locale.getDefault(), "%.1f km/h", velMax));
-                textKmRodados.setText(String.format(Locale.getDefault(), "%.2f km", dist));
+            textVelocidadeAtual.setText(String.format(Locale.getDefault(), "%.1f km/h", vel));
+            textVelocidadeMaxima.setText(String.format(Locale.getDefault(), "%.1f km/h", velMax));
+            textKmRodados.setText(String.format(Locale.getDefault(), "%.3f km", dist));
 
-                long seg = TimeUnit.MILLISECONDS.toSeconds(tempo);
-                textTempo.setText(String.format(Locale.getDefault(), "%02d:%02d", seg / 60, seg % 60));
-
-                atualizarBotoes(true, pausado);
+            if (!pausado) {
+                textTempo.setText(formatarTempo(tempo));
             }
+
+            atualizarBotoes(true, pausado);
         }
     };
 
@@ -90,6 +116,10 @@ public class RastreamentoActivity extends AppCompatActivity {
         firebaseManager = FirebaseManager.getInstance();
         inicializarViews();
         verificarPermissoes();
+
+        // tenta reconectar ao serviço se já estiver rodando
+        bindService(new Intent(this, RastreamentoService.class),
+                serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     private void inicializarViews() {
@@ -103,9 +133,22 @@ public class RastreamentoActivity extends AppCompatActivity {
 
         btnIniciar.setOnClickListener(v -> iniciarRastreamento());
         btnPausar.setOnClickListener(v -> pausarOuRetomarRastreamento());
-        btnParar.setOnClickListener(v -> pararRastreamento());
+        btnParar.setOnClickListener(v -> confirmarParar());
 
         atualizarBotoes(false, false);
+    }
+
+    private void sincronizarUiComServico() {
+        if (rastreamentoService == null) return;
+        double dist = rastreamentoService.getDistanciaTotal();
+        double vel = rastreamentoService.getVelocidadeAtual();
+        double velMax = rastreamentoService.getVelocidadeMaxima();
+        long tempo = rastreamentoService.getTempoDecorrido();
+
+        textKmRodados.setText(String.format(Locale.getDefault(), "%.3f km", dist));
+        textVelocidadeAtual.setText(String.format(Locale.getDefault(), "%.1f km/h", vel));
+        textVelocidadeMaxima.setText(String.format(Locale.getDefault(), "%.1f km/h", velMax));
+        textTempo.setText(formatarTempo(tempo));
     }
 
     private void verificarPermissoes() {
@@ -114,7 +157,6 @@ public class RastreamentoActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_CODE);
         }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -129,7 +171,8 @@ public class RastreamentoActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permissão de localização necessária para rastreamento.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Permissão de localização necessária para rastreamento.",
+                        Toast.LENGTH_LONG).show();
                 btnIniciar.setEnabled(false);
             }
         }
@@ -144,13 +187,14 @@ public class RastreamentoActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, RastreamentoService.class);
         intent.putExtra("VEICULO_ID", veiculoId);
-        intent.putExtra("KM_INICIAL", kmAtual);
+        intent.putExtra("KM_INICIAL", kmAtual != null ? kmAtual : 0L);
         ContextCompat.startForegroundService(this, intent);
 
-        bindService(new Intent(this, RastreamentoService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+        bindService(new Intent(this, RastreamentoService.class),
+                serviceConnection, Context.BIND_AUTO_CREATE);
 
         Toast.makeText(this, "Rastreamento iniciado", Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "Rastreamento iniciado para veículo: " + veiculoId);
+        Log.d(TAG, "Rastreamento iniciado — veículo: " + veiculoId + ", km: " + kmAtual);
     }
 
     private void pausarOuRetomarRastreamento() {
@@ -159,17 +203,32 @@ public class RastreamentoActivity extends AppCompatActivity {
         Intent intent = new Intent(this, RastreamentoService.class);
         if (rastreamentoService.isPausado()) {
             intent.setAction(RastreamentoService.ACTION_RESUME);
+            timerHandler.post(timerRunnable);
         } else {
             intent.setAction(RastreamentoService.ACTION_PAUSE);
+            timerHandler.removeCallbacks(timerRunnable);
         }
         startService(intent);
+    }
+
+    private void confirmarParar() {
+        if (!servicoBound || rastreamentoService == null) return;
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Encerrar trajeto")
+                .setMessage("Deseja encerrar e salvar o trajeto atual?")
+                .setPositiveButton("Encerrar", (d, w) -> pararRastreamento())
+                .setNegativeButton("Continuar", null)
+                .show();
     }
 
     private void pararRastreamento() {
         if (!servicoBound || rastreamentoService == null) return;
 
+        timerHandler.removeCallbacks(timerRunnable);
+
         Trajeto trajeto = rastreamentoService.finalizarETrajeto();
-        Log.d(TAG, String.format("Parando: %.2f km, %d pontos",
+        Log.d(TAG, String.format("Encerrando: %.3f km, %d pontos",
                 trajeto.getKmRodados() != null ? trajeto.getKmRodados() : 0.0,
                 trajeto.getPontos() != null ? trajeto.getPontos().size() : 0));
 
@@ -181,9 +240,14 @@ public class RastreamentoActivity extends AppCompatActivity {
             unbindService(serviceConnection);
             servicoBound = false;
         }
+        rastreamentoService = null;
 
-        if (veiculoId != null && trajeto.getKmRodados() != null && trajeto.getKmRodados() > 0) {
+        // Salva se tiver pelo menos 1 ponto GPS registrado
+        boolean temPontos = trajeto.getPontos() != null && !trajeto.getPontos().isEmpty();
+        if (veiculoId != null && temPontos) {
             salvarTrajeto(trajeto);
+        } else if (!temPontos) {
+            Toast.makeText(this, "Nenhum ponto GPS registrado. Trajeto não salvo.", Toast.LENGTH_LONG).show();
         }
 
         resetarTela();
@@ -191,6 +255,12 @@ public class RastreamentoActivity extends AppCompatActivity {
     }
 
     private void salvarTrajeto(Trajeto trajeto) {
+        // Associa o userId ao trajeto para filtrar por usuário
+        com.google.firebase.auth.FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            trajeto.setUserId(user.getUid());
+        }
+
         firebaseManager.adicionarTrajeto(trajeto)
                 .addOnSuccessListener(ref -> {
                     Log.d(TAG, "Trajeto salvo: " + ref.getId());
@@ -198,13 +268,14 @@ public class RastreamentoActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Erro ao salvar trajeto", e);
-                    Toast.makeText(this, "Erro ao salvar trajeto.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Erro ao salvar trajeto: " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
                 });
     }
 
     private void resetarTela() {
         textTempo.setText("00:00");
-        textKmRodados.setText("0 km");
+        textKmRodados.setText("0.000 km");
         textVelocidadeAtual.setText("0 km/h");
         textVelocidadeMaxima.setText("0 km/h");
     }
@@ -216,30 +287,34 @@ public class RastreamentoActivity extends AppCompatActivity {
         btnPausar.setText(pausado ? "Continuar" : "Pausar");
     }
 
+    private String formatarTempo(long ms) {
+        long seg = TimeUnit.MILLISECONDS.toSeconds(ms);
+        long horas = seg / 3600;
+        long min = (seg % 3600) / 60;
+        long s = seg % 60;
+        if (horas > 0) {
+            return String.format(Locale.getDefault(), "%d:%02d:%02d", horas, min, s);
+        }
+        return String.format(Locale.getDefault(), "%02d:%02d", min, s);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        IntentFilter filter = new IntentFilter(RastreamentoService.BROADCAST_UPDATE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(trackingReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
-        } else {
-            registerReceiver(trackingReceiver, filter);
-        }
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                trackingReceiver, new IntentFilter(RastreamentoService.BROADCAST_UPDATE));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        try {
-            unregisterReceiver(trackingReceiver);
-        } catch (IllegalArgumentException e) {
-            Log.w(TAG, "Receiver não registrado", e);
-        }
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(trackingReceiver);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        timerHandler.removeCallbacks(timerRunnable);
         if (servicoBound) {
             unbindService(serviceConnection);
             servicoBound = false;
