@@ -3,10 +3,13 @@ package br.jss.motoreviso.activities;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,7 +24,6 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import br.jss.motoreviso.R;
 import br.jss.motoreviso.managers.FirebaseManager;
@@ -31,10 +33,15 @@ public class MapTrajetoActivity extends AppCompatActivity implements OnMapReadyC
     private static final String TAG = "MapTrajetoActivity";
 
     private GoogleMap googleMap;
-    private TextView textDistancia, textDuracao, textVelMax;
+    private TextView textDistancia, textDuracao, textVelMax, textSemDados;
+    private LinearLayout layoutCarregando, layoutSemDados;
     private FirebaseManager firebaseManager;
     private String trajetoId;
     private Trajeto trajeto;
+
+    // flags para controlar a race condition entre mapa e dados
+    private boolean mapaPronto = false;
+    private boolean dadosProntos = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +51,20 @@ public class MapTrajetoActivity extends AppCompatActivity implements OnMapReadyC
         trajetoId = getIntent().getStringExtra("TRAJETO_ID");
         firebaseManager = FirebaseManager.getInstance();
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+        toolbar.setNavigationOnClickListener(v -> finish());
+
         textDistancia = findViewById(R.id.text_distancia);
         textDuracao = findViewById(R.id.text_duracao);
         textVelMax = findViewById(R.id.text_vel_max);
+        textSemDados = findViewById(R.id.text_sem_dados);
+        layoutCarregando = findViewById(R.id.layout_carregando);
+        layoutSemDados = findViewById(R.id.layout_sem_dados);
 
         SupportMapFragment mapFragment = (SupportMapFragment)
                 getSupportFragmentManager().findFragmentById(R.id.map_fragment);
@@ -56,24 +74,37 @@ public class MapTrajetoActivity extends AppCompatActivity implements OnMapReadyC
 
         if (trajetoId != null) {
             carregarTrajeto();
+        } else {
+            mostrarErro("ID do trajeto inválido");
         }
     }
 
     private void carregarTrajeto() {
         Log.d(TAG, "Carregando trajeto: " + trajetoId);
+        layoutCarregando.setVisibility(View.VISIBLE);
+        layoutSemDados.setVisibility(View.GONE);
+
         firebaseManager.obterTrajeto(trajetoId).addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult() != null) {
-                trajeto = task.getResult().toObject(Trajeto.class);
-                if (trajeto != null) {
-                    trajeto.setId(task.getResult().getId());
-                    exibirEstatisticas();
-                    if (googleMap != null) {
-                        plotarRota();
+            if (!isFinishing() && !isDestroyed()) {
+                if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
+                    trajeto = task.getResult().toObject(Trajeto.class);
+                    if (trajeto != null) {
+                        trajeto.setId(task.getResult().getId());
+                        Log.d(TAG, "Trajeto carregado — pontos: " +
+                                (trajeto.getPontos() != null ? trajeto.getPontos().size() : 0));
+                        exibirEstatisticas();
+                        dadosProntos = true;
+                        if (mapaPronto) {
+                            plotarRotaOuMostrarVazio();
+                        }
+                    } else {
+                        Log.e(TAG, "Falha ao desserializar trajeto");
+                        mostrarErro("Erro ao ler dados do trajeto");
                     }
+                } else {
+                    Log.e(TAG, "Trajeto não encontrado ou erro", task.getException());
+                    mostrarErro("Trajeto não encontrado");
                 }
-            } else {
-                Log.e(TAG, "Erro ao carregar trajeto", task.getException());
-                Toast.makeText(this, "Erro ao carregar trajeto", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -82,12 +113,19 @@ public class MapTrajetoActivity extends AppCompatActivity implements OnMapReadyC
         if (trajeto == null) return;
 
         Double dist = trajeto.getKmRodados();
-        textDistancia.setText(String.format(Locale.getDefault(), "%.1f km", dist != null ? dist : 0.0));
+        textDistancia.setText(String.format(Locale.getDefault(), "%.2f km", dist != null ? dist : 0.0));
 
         Long duracao = trajeto.getDuracao();
-        if (duracao != null) {
-            long min = duracao;
-            textDuracao.setText(String.format(Locale.getDefault(), "%dh %02dm", min / 60, min % 60));
+        if (duracao != null && duracao > 0) {
+            long horas = duracao / 60;
+            long min = duracao % 60;
+            if (horas > 0) {
+                textDuracao.setText(String.format(Locale.getDefault(), "%dh %02dm", horas, min));
+            } else {
+                textDuracao.setText(String.format(Locale.getDefault(), "%d min", min));
+            }
+        } else {
+            textDuracao.setText("< 1 min");
         }
 
         Double velMax = trajeto.getVelocidadeMaxima();
@@ -99,18 +137,26 @@ public class MapTrajetoActivity extends AppCompatActivity implements OnMapReadyC
         this.googleMap = map;
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+        googleMap.getUiSettings().setMapToolbarEnabled(false);
 
-        if (trajeto != null) {
-            plotarRota();
+        mapaPronto = true;
+        Log.d(TAG, "Mapa pronto — dadosProntos=" + dadosProntos);
+
+        if (dadosProntos) {
+            plotarRotaOuMostrarVazio();
         }
     }
 
-    private void plotarRota() {
+    private void plotarRotaOuMostrarVazio() {
+        layoutCarregando.setVisibility(View.GONE);
+
         if (trajeto == null || googleMap == null) return;
 
         List<Trajeto.Ponto> pontos = trajeto.getPontos();
         if (pontos == null || pontos.isEmpty()) {
-            Toast.makeText(this, "Trajeto sem dados de GPS", Toast.LENGTH_SHORT).show();
+            Log.w(TAG, "Trajeto sem pontos GPS");
+            layoutSemDados.setVisibility(View.VISIBLE);
+            textSemDados.setText("Este trajeto não possui dados de GPS registrados");
             return;
         }
 
@@ -125,37 +171,51 @@ public class MapTrajetoActivity extends AppCompatActivity implements OnMapReadyC
             }
         }
 
-        if (latLngList.isEmpty()) return;
+        if (latLngList.isEmpty()) {
+            layoutSemDados.setVisibility(View.VISIBLE);
+            textSemDados.setText("Dados de GPS inválidos neste trajeto");
+            return;
+        }
 
-        // Draw polyline
         googleMap.addPolyline(new PolylineOptions()
                 .addAll(latLngList)
-                .width(8f)
+                .width(10f)
                 .color(Color.parseColor("#00D4FF"))
                 .geodesic(true));
 
-        // Start marker
         googleMap.addMarker(new MarkerOptions()
                 .position(latLngList.get(0))
                 .title("Início")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 
-        // End marker
         LatLng fim = latLngList.get(latLngList.size() - 1);
         googleMap.addMarker(new MarkerOptions()
                 .position(fim)
                 .title("Fim")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 
-        // Fit camera to route
         try {
             LatLngBounds bounds = boundsBuilder.build();
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+            // Usa animateCamera após layout estar completo
+            googleMap.setOnMapLoadedCallback(() -> {
+                try {
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 120));
+                } catch (Exception e) {
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngList.get(0), 14));
+                }
+            });
         } catch (Exception e) {
             Log.e(TAG, "Erro ao ajustar câmera", e);
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngList.get(0), 14));
         }
 
         Log.d(TAG, "Rota plotada com " + latLngList.size() + " pontos");
+    }
+
+    private void mostrarErro(String mensagem) {
+        layoutCarregando.setVisibility(View.GONE);
+        layoutSemDados.setVisibility(View.VISIBLE);
+        textSemDados.setText(mensagem);
+        Toast.makeText(this, mensagem, Toast.LENGTH_SHORT).show();
     }
 }

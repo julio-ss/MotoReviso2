@@ -58,11 +58,15 @@ public class TrajetosVeiculoFragment extends Fragment {
 
         setupRecyclerView();
 
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         if (veiculoId != null) {
             carregarTrajetosVeiculo();
         }
-
-        return view;
     }
 
     private void setupRecyclerView() {
@@ -79,9 +83,11 @@ public class TrajetosVeiculoFragment extends Fragment {
 
     private void carregarTrajetosVeiculo() {
         progressBar.setVisibility(View.VISIBLE);
+        textVazio.setVisibility(View.GONE);
 
         firebaseManager.obterTrajetosVeiculo(veiculoId)
                 .addOnCompleteListener(task -> {
+                    if (!isAdded()) return;
                     progressBar.setVisibility(View.GONE);
 
                     if (task.isSuccessful()) {
@@ -99,12 +105,12 @@ public class TrajetosVeiculoFragment extends Fragment {
                         }
 
                         adapter.notifyDataSetChanged();
-
-                        if (trajetos.isEmpty()) {
-                            textVazio.setVisibility(View.VISIBLE);
-                        } else {
-                            textVazio.setVisibility(View.GONE);
-                        }
+                        textVazio.setVisibility(trajetos.isEmpty() ? View.VISIBLE : View.GONE);
+                    } else {
+                        android.util.Log.e("TrajetosVeiculoFrag",
+                                "Erro ao carregar trajetos", task.getException());
+                        textVazio.setText("Erro ao carregar trajetos.\nVerifique sua conexão.");
+                        textVazio.setVisibility(View.VISIBLE);
                     }
                 });
     }
