@@ -130,6 +130,5 @@
     <string name="pin_configurar">Configurar PIN</string>
     <string name="biometria">Biometria</string>
 
-    <!-- Google Maps key (replace with real key in google_maps_api.xml) -->
-    <string name="google_maps_key" translatable="false">SUA_CHAVE_GOOGLE_MAPS_AQUI</string>
+    <string name="google_maps_key" translatable="false">AIzaSyB9BS4uVJyBOqAjB19B-znmkTfOsmBniiA</string>
 </resources>
