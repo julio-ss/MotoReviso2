@@ -82,29 +82,37 @@ public class MapTrajetoActivity extends AppCompatActivity implements OnMapReadyC
     }
 
     private void carregarTrajeto() {
-        Log.d(TAG, "Carregando trajeto: " + trajetoId);
+        Log.d(TAG, "→ Carregando trajeto: " + trajetoId);
         layoutCarregando.setVisibility(View.VISIBLE);
         layoutSemDados.setVisibility(View.GONE);
 
         firebaseManager.obterTrajeto(trajetoId).addOnCompleteListener(task -> {
             if (!isFinishing() && !isDestroyed()) {
                 if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
-                    trajeto = task.getResult().toObject(Trajeto.class);
-                    if (trajeto != null) {
-                        trajeto.setId(task.getResult().getId());
-                        Log.d(TAG, "Trajeto carregado — pontos: " +
-                                (trajeto.getPontos() != null ? trajeto.getPontos().size() : 0));
-                        exibirEstatisticas();
-                        dadosProntos = true;
-                        if (mapaPronto) {
-                            plotarRotaOuMostrarVazio();
+                    try {
+                        trajeto = task.getResult().toObject(Trajeto.class);
+                        if (trajeto != null) {
+                            trajeto.setId(task.getResult().getId());
+                            int numPontos = trajeto.getPontos() != null ? trajeto.getPontos().size() : 0;
+                            Log.d(TAG, "✓ Trajeto carregado — " + numPontos + " pontos GPS");
+                            Log.d(TAG, "  Distância: " + (trajeto.getKmRodados() != null ?
+                                    String.format("%.3f km", trajeto.getKmRodados()) : "null"));
+                            Log.d(TAG, "  Duração: " + trajeto.getDuracao() + " min");
+                            exibirEstatisticas();
+                            dadosProntos = true;
+                            if (mapaPronto) {
+                                plotarRotaOuMostrarVazio();
+                            }
+                        } else {
+                            Log.e(TAG, "✗ Trajeto deserializado como null");
+                            mostrarErro("Erro ao ler dados do trajeto");
                         }
-                    } else {
-                        Log.e(TAG, "Falha ao desserializar trajeto");
-                        mostrarErro("Erro ao ler dados do trajeto");
+                    } catch (Exception e) {
+                        Log.e(TAG, "✗ Erro ao desserializar trajeto", e);
+                        mostrarErro("Erro ao processar trajeto: " + e.getMessage());
                     }
                 } else {
-                    Log.e(TAG, "Trajeto não encontrado ou erro", task.getException());
+                    Log.e(TAG, "✗ Trajeto não encontrado — " + trajetoId, task.getException());
                     mostrarErro("Trajeto não encontrado");
                 }
             }
@@ -136,67 +144,92 @@ public class MapTrajetoActivity extends AppCompatActivity implements OnMapReadyC
 
     @Override
     public void onMapReady(GoogleMap map) {
-        this.googleMap = map;
-        googleMap.getUiSettings().setZoomControlsEnabled(true);
-        googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-        googleMap.getUiSettings().setMapToolbarEnabled(false);
+        try {
+            this.googleMap = map;
+            googleMap.getUiSettings().setZoomControlsEnabled(true);
+            googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+            googleMap.getUiSettings().setMapToolbarEnabled(false);
 
-        mapaPronto = true;
-        Log.d(TAG, "Mapa pronto — dadosProntos=" + dadosProntos);
+            // Define um tipo de mapa para garantir visibilidade
+            googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        if (dadosProntos) {
-            plotarRotaOuMostrarVazio();
+            mapaPronto = true;
+            Log.d(TAG, "✓ Mapa pronto — dadosProntos=" + dadosProntos);
+
+            if (dadosProntos) {
+                plotarRotaOuMostrarVazio();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "✗ Erro no onMapReady", e);
+            mostrarErro("Erro ao carregar o mapa: " + e.getMessage());
         }
     }
 
     private void plotarRotaOuMostrarVazio() {
         layoutCarregando.setVisibility(View.GONE);
+        Log.d(TAG, "→ Plotando rota — trajeto=" + (trajeto != null) + ", mapa=" + (googleMap != null));
 
-        if (trajeto == null || googleMap == null) return;
+        if (trajeto == null || googleMap == null) {
+            Log.e(TAG, "✗ Trajeto ou mapa nulo");
+            return;
+        }
 
         List<Trajeto.Ponto> pontos = trajeto.getPontos();
         if (pontos == null || pontos.isEmpty()) {
-            Log.w(TAG, "Trajeto sem pontos GPS");
+            Log.w(TAG, "✗ Trajeto sem pontos GPS");
             layoutSemDados.setVisibility(View.VISIBLE);
             textSemDados.setText("Este trajeto não possui dados de GPS registrados");
             return;
         }
 
+        Log.d(TAG, "  Total de pontos: " + pontos.size());
+
         List<LatLng> latLngList = new ArrayList<>();
         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
 
         for (Trajeto.Ponto ponto : pontos) {
-            if (ponto.getLatitude() != null && ponto.getLongitude() != null) {
+            if (ponto != null && ponto.getLatitude() != null && ponto.getLongitude() != null) {
                 LatLng latlng = new LatLng(ponto.getLatitude(), ponto.getLongitude());
                 latLngList.add(latlng);
                 boundsBuilder.include(latlng);
+                if (latLngList.size() == 1) {
+                    Log.d(TAG, "  Primeiro ponto: " + ponto.getLatitude() + ", " + ponto.getLongitude());
+                }
             }
         }
 
         if (latLngList.isEmpty()) {
+            Log.e(TAG, "✗ Nenhum ponto com lat/lon válido");
             layoutSemDados.setVisibility(View.VISIBLE);
             textSemDados.setText("Dados de GPS inválidos neste trajeto");
             return;
         }
 
-        googleMap.addPolyline(new PolylineOptions()
-                .addAll(latLngList)
-                .width(10f)
-                .color(Color.parseColor("#00D4FF"))
-                .geodesic(true));
+        Log.d(TAG, "✓ " + latLngList.size() + " pontos válidos prontos para plotar");
 
-        googleMap.addMarker(new MarkerOptions()
-                .position(latLngList.get(0))
-                .title("Início")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+        try {
+            googleMap.addPolyline(new PolylineOptions()
+                    .addAll(latLngList)
+                    .width(10f)
+                    .color(Color.parseColor("#00D4FF"))
+                    .geodesic(true));
+            Log.d(TAG, "✓ Polyline adicionada");
 
-        LatLng fim = latLngList.get(latLngList.size() - 1);
-        googleMap.addMarker(new MarkerOptions()
-                .position(fim)
-                .title("Fim")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            googleMap.addMarker(new MarkerOptions()
+                    .position(latLngList.get(0))
+                    .title("Início")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+            Log.d(TAG, "✓ Marcador de início adicionado");
 
-        Log.d(TAG, "Rota plotada com " + latLngList.size() + " pontos");
+            LatLng fim = latLngList.get(latLngList.size() - 1);
+            googleMap.addMarker(new MarkerOptions()
+                    .position(fim)
+                    .title("Fim")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            Log.d(TAG, "✓ Marcador de fim adicionado");
+        } catch (Exception e) {
+            Log.e(TAG, "✗ Erro ao plotar polyline/marcadores", e);
+        }
 
         // setOnMapLoadedCallback só dispara uma vez: se o mapa já estava pronto antes dos
         // dados chegarem, o callback nunca mais dispara e a câmera nunca move.
