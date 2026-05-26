@@ -1,5 +1,6 @@
 package br.jss.motoreviso.adapters;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,7 +9,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.osmdroid.config.Configuration;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Polyline;
+
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,6 +40,7 @@ public class TrajetoAdapter extends RecyclerView.Adapter<TrajetoAdapter.TrajetoV
     @NonNull
     @Override
     public TrajetoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Configuration.getInstance().setUserAgentValue(parent.getContext().getPackageName());
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_trajeto, parent, false);
         return new TrajetoViewHolder(view);
@@ -48,6 +57,12 @@ public class TrajetoAdapter extends RecyclerView.Adapter<TrajetoAdapter.TrajetoV
         return trajetos.size();
     }
 
+    @Override
+    public void onViewRecycled(@NonNull TrajetoViewHolder holder) {
+        holder.cleanup();
+        super.onViewRecycled(holder);
+    }
+
     public class TrajetoViewHolder extends RecyclerView.ViewHolder {
         private TextView textData;
         private TextView textOrigem;
@@ -55,6 +70,7 @@ public class TrajetoAdapter extends RecyclerView.Adapter<TrajetoAdapter.TrajetoV
         private TextView textKmRodados;
         private TextView textVelocidadeMax;
         private TextView textDuracao;
+        private MapView mapPreview;
 
         public TrajetoViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -64,6 +80,10 @@ public class TrajetoAdapter extends RecyclerView.Adapter<TrajetoAdapter.TrajetoV
             textKmRodados = itemView.findViewById(R.id.text_km_rodados);
             textVelocidadeMax = itemView.findViewById(R.id.text_velocidade_max);
             textDuracao = itemView.findViewById(R.id.text_duracao);
+            mapPreview = itemView.findViewById(R.id.map_preview);
+
+            mapPreview.setMultiTouchControls(true);
+            mapPreview.setClickable(false);
 
             itemView.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
@@ -91,6 +111,98 @@ public class TrajetoAdapter extends RecyclerView.Adapter<TrajetoAdapter.TrajetoV
                 long horas = trajeto.getDuracao() / 60;
                 long minutos = trajeto.getDuracao() % 60;
                 textDuracao.setText(String.format("%02d:%02d", horas, minutos));
+            }
+
+            carregarPreviewMapa(trajeto);
+        }
+
+        public void cleanup() {
+            if (mapPreview != null) {
+                mapPreview.onDetach();
+            }
+        }
+
+        private void carregarPreviewMapa(Trajeto trajeto) {
+            mapPreview.getOverlays().clear();
+
+            List<Trajeto.Ponto> pontos = trajeto.getPontos();
+            if (pontos == null || pontos.isEmpty()) {
+                return;
+            }
+
+            final List<GeoPoint> geoPoints = new ArrayList<>();
+            double minLat = Double.MAX_VALUE, maxLat = -Double.MAX_VALUE;
+            double minLon = Double.MAX_VALUE, maxLon = -Double.MAX_VALUE;
+
+            for (Trajeto.Ponto ponto : pontos) {
+                if (ponto != null && ponto.getLatitude() != null && ponto.getLongitude() != null) {
+                    GeoPoint geoPoint = new GeoPoint(ponto.getLatitude(), ponto.getLongitude());
+                    geoPoints.add(geoPoint);
+
+                    minLat = Math.min(minLat, ponto.getLatitude());
+                    maxLat = Math.max(maxLat, ponto.getLatitude());
+                    minLon = Math.min(minLon, ponto.getLongitude());
+                    maxLon = Math.max(maxLon, ponto.getLongitude());
+                }
+            }
+
+            if (geoPoints.isEmpty()) {
+                return;
+            }
+
+            try {
+                Polyline polyline = new Polyline(mapPreview);
+                polyline.setPoints(geoPoints);
+                polyline.setWidth(8f);
+                polyline.setColor(Color.parseColor("#00D4FF"));
+                mapPreview.getOverlays().add(polyline);
+
+                Marker markerInicio = new Marker(mapPreview);
+                markerInicio.setPosition(geoPoints.get(0));
+                markerInicio.setTitle("Início");
+                mapPreview.getOverlays().add(markerInicio);
+
+                if (geoPoints.size() > 1) {
+                    Marker markerFim = new Marker(mapPreview);
+                    markerFim.setPosition(geoPoints.get(geoPoints.size() - 1));
+                    markerFim.setTitle("Fim");
+                    mapPreview.getOverlays().add(markerFim);
+                }
+
+                final double finalMinLat = minLat;
+                final double finalMaxLat = maxLat;
+                final double finalMinLon = minLon;
+                final double finalMaxLon = maxLon;
+
+                mapPreview.post(() -> {
+                    if (geoPoints.size() == 1) {
+                        mapPreview.getController().setZoom(16);
+                        mapPreview.getController().setCenter(geoPoints.get(0));
+                    } else {
+                        double centerLat = (finalMinLat + finalMaxLat) / 2;
+                        double centerLon = (finalMinLon + finalMaxLon) / 2;
+                        GeoPoint center = new GeoPoint(centerLat, centerLon);
+                        mapPreview.getController().setCenter(center);
+
+                        double latSpan = finalMaxLat - finalMinLat;
+                        double lonSpan = finalMaxLon - finalMinLon;
+                        double maxSpan = Math.max(latSpan, lonSpan);
+
+                        int zoom = 15;
+                        if (maxSpan < 0.01) zoom = 17;
+                        else if (maxSpan < 0.05) zoom = 16;
+                        else if (maxSpan < 0.1) zoom = 15;
+                        else if (maxSpan < 0.5) zoom = 13;
+                        else if (maxSpan < 1.0) zoom = 12;
+                        else if (maxSpan < 5.0) zoom = 10;
+                        else zoom = 8;
+
+                        mapPreview.getController().setZoom(zoom);
+                    }
+                    mapPreview.invalidate();
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
