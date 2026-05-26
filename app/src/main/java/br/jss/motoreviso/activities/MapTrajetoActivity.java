@@ -156,7 +156,7 @@ public class MapTrajetoActivity extends AppCompatActivity {
 
         Log.d(TAG, "  Total de pontos: " + pontos.size());
 
-        List<GeoPoint> geoPoints = new ArrayList<>();
+        final List<GeoPoint> geoPoints = new ArrayList<>();
         double minLat = Double.MAX_VALUE, maxLat = -Double.MAX_VALUE;
         double minLon = Double.MAX_VALUE, maxLon = -Double.MAX_VALUE;
 
@@ -210,6 +210,11 @@ public class MapTrajetoActivity extends AppCompatActivity {
             Log.e(TAG, "✗ Erro ao plotar polyline/marcadores", e);
         }
 
+        final double finalMinLat = minLat;
+        final double finalMaxLat = maxLat;
+        final double finalMinLon = minLon;
+        final double finalMaxLon = maxLon;
+
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (isFinishing() || isDestroyed() || mapView == null) return;
             try {
@@ -217,13 +222,13 @@ public class MapTrajetoActivity extends AppCompatActivity {
                     mapView.getController().setZoom(16);
                     mapView.getController().setCenter(geoPoints.get(0));
                 } else {
-                    double centerLat = (minLat + maxLat) / 2;
-                    double centerLon = (minLon + maxLon) / 2;
+                    double centerLat = (finalMinLat + finalMaxLat) / 2;
+                    double centerLon = (finalMinLon + finalMaxLon) / 2;
                     GeoPoint center = new GeoPoint(centerLat, centerLon);
                     mapView.getController().setCenter(center);
 
-                    double latSpan = maxLat - minLat;
-                    double lonSpan = maxLon - minLon;
+                    double latSpan = finalMaxLat - finalMinLat;
+                    double lonSpan = finalMaxLon - finalMinLon;
                     double maxSpan = Math.max(latSpan, lonSpan);
 
                     int zoom = 15;
