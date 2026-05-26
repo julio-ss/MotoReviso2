@@ -118,54 +118,66 @@ public class TrajetoAdapter extends RecyclerView.Adapter<TrajetoAdapter.TrajetoV
 
         public void cleanup() {
             if (mapPreview != null) {
-                mapPreview.onDetach();
+                try {
+                    mapPreview.onDetach();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
 
         private void carregarPreviewMapa(Trajeto trajeto) {
-            mapPreview.getOverlays().clear();
-
-            List<Trajeto.Ponto> pontos = trajeto.getPontos();
-            if (pontos == null || pontos.isEmpty()) {
-                return;
-            }
-
-            final List<GeoPoint> geoPoints = new ArrayList<>();
-            double minLat = Double.MAX_VALUE, maxLat = -Double.MAX_VALUE;
-            double minLon = Double.MAX_VALUE, maxLon = -Double.MAX_VALUE;
-
-            for (Trajeto.Ponto ponto : pontos) {
-                if (ponto != null && ponto.getLatitude() != null && ponto.getLongitude() != null) {
-                    GeoPoint geoPoint = new GeoPoint(ponto.getLatitude(), ponto.getLongitude());
-                    geoPoints.add(geoPoint);
-
-                    minLat = Math.min(minLat, ponto.getLatitude());
-                    maxLat = Math.max(maxLat, ponto.getLatitude());
-                    minLon = Math.min(minLon, ponto.getLongitude());
-                    maxLon = Math.max(maxLon, ponto.getLongitude());
-                }
-            }
-
-            if (geoPoints.isEmpty()) {
-                return;
-            }
-
             try {
+                mapPreview.getOverlays().clear();
+
+                List<Trajeto.Ponto> pontos = trajeto.getPontos();
+                if (pontos == null || pontos.isEmpty()) {
+                    return;
+                }
+
+                final List<GeoPoint> geoPoints = new ArrayList<>();
+                double minLat = Double.MAX_VALUE, maxLat = -Double.MAX_VALUE;
+                double minLon = Double.MAX_VALUE, maxLon = -Double.MAX_VALUE;
+
+                for (Trajeto.Ponto ponto : pontos) {
+                    if (ponto != null && ponto.getLatitude() != null && ponto.getLongitude() != null) {
+                        GeoPoint geoPoint = new GeoPoint(ponto.getLatitude(), ponto.getLongitude());
+                        geoPoints.add(geoPoint);
+
+                        minLat = Math.min(minLat, ponto.getLatitude());
+                        maxLat = Math.max(maxLat, ponto.getLatitude());
+                        minLon = Math.min(minLon, ponto.getLongitude());
+                        maxLon = Math.max(maxLon, ponto.getLongitude());
+                    }
+                }
+
+                if (geoPoints.isEmpty()) {
+                    return;
+                }
+
+                String origem = trajeto.getOrigem() != null ? trajeto.getOrigem() : "Início";
+                String destino = trajeto.getDestino() != null ? trajeto.getDestino() : "Fim";
+
                 Polyline polyline = new Polyline(mapPreview);
                 polyline.setPoints(geoPoints);
-                polyline.setWidth(8f);
+                polyline.setWidth(10f);
                 polyline.setColor(Color.parseColor("#00D4FF"));
-                mapPreview.getOverlays().add(polyline);
+                polyline.setGeodesic(true);
+                mapPreview.getOverlays().add(0, polyline);
 
                 Marker markerInicio = new Marker(mapPreview);
                 markerInicio.setPosition(geoPoints.get(0));
-                markerInicio.setTitle("Início");
+                markerInicio.setTitle("De: " + origem);
+                markerInicio.setSnippet("Ponto de partida");
+                markerInicio.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
                 mapPreview.getOverlays().add(markerInicio);
 
                 if (geoPoints.size() > 1) {
                     Marker markerFim = new Marker(mapPreview);
                     markerFim.setPosition(geoPoints.get(geoPoints.size() - 1));
-                    markerFim.setTitle("Fim");
+                    markerFim.setTitle("Para: " + destino);
+                    markerFim.setSnippet("Ponto de chegada");
+                    markerFim.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
                     mapPreview.getOverlays().add(markerFim);
                 }
 
@@ -175,31 +187,35 @@ public class TrajetoAdapter extends RecyclerView.Adapter<TrajetoAdapter.TrajetoV
                 final double finalMaxLon = maxLon;
 
                 mapPreview.post(() -> {
-                    if (geoPoints.size() == 1) {
-                        mapPreview.getController().setZoom(16);
-                        mapPreview.getController().setCenter(geoPoints.get(0));
-                    } else {
-                        double centerLat = (finalMinLat + finalMaxLat) / 2;
-                        double centerLon = (finalMinLon + finalMaxLon) / 2;
-                        GeoPoint center = new GeoPoint(centerLat, centerLon);
-                        mapPreview.getController().setCenter(center);
+                    try {
+                        if (geoPoints.size() == 1) {
+                            mapPreview.getController().setZoom(16);
+                            mapPreview.getController().setCenter(geoPoints.get(0));
+                        } else {
+                            double centerLat = (finalMinLat + finalMaxLat) / 2;
+                            double centerLon = (finalMinLon + finalMaxLon) / 2;
+                            GeoPoint center = new GeoPoint(centerLat, centerLon);
+                            mapPreview.getController().setCenter(center);
 
-                        double latSpan = finalMaxLat - finalMinLat;
-                        double lonSpan = finalMaxLon - finalMinLon;
-                        double maxSpan = Math.max(latSpan, lonSpan);
+                            double latSpan = finalMaxLat - finalMinLat;
+                            double lonSpan = finalMaxLon - finalMinLon;
+                            double maxSpan = Math.max(latSpan, lonSpan);
 
-                        int zoom = 15;
-                        if (maxSpan < 0.01) zoom = 17;
-                        else if (maxSpan < 0.05) zoom = 16;
-                        else if (maxSpan < 0.1) zoom = 15;
-                        else if (maxSpan < 0.5) zoom = 13;
-                        else if (maxSpan < 1.0) zoom = 12;
-                        else if (maxSpan < 5.0) zoom = 10;
-                        else zoom = 8;
+                            int zoom = 15;
+                            if (maxSpan < 0.01) zoom = 17;
+                            else if (maxSpan < 0.05) zoom = 16;
+                            else if (maxSpan < 0.1) zoom = 15;
+                            else if (maxSpan < 0.5) zoom = 13;
+                            else if (maxSpan < 1.0) zoom = 12;
+                            else if (maxSpan < 5.0) zoom = 10;
+                            else zoom = 8;
 
-                        mapPreview.getController().setZoom(zoom);
+                            mapPreview.getController().setZoom(zoom);
+                        }
+                        mapPreview.invalidate();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    mapPreview.invalidate();
                 });
             } catch (Exception e) {
                 e.printStackTrace();
