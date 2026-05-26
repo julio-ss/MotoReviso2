@@ -192,25 +192,27 @@ public class TrajetoAdapter extends RecyclerView.Adapter<TrajetoAdapter.TrajetoV
                             mapPreview.getController().setZoom(16);
                             mapPreview.getController().setCenter(geoPoints.get(0));
                         } else {
-                            double centerLat = (finalMinLat + finalMaxLat) / 2;
-                            double centerLon = (finalMinLon + finalMaxLon) / 2;
-                            GeoPoint center = new GeoPoint(centerLat, centerLon);
-                            mapPreview.getController().setCenter(center);
-
                             double latSpan = finalMaxLat - finalMinLat;
                             double lonSpan = finalMaxLon - finalMinLon;
                             double maxSpan = Math.max(latSpan, lonSpan);
 
                             int zoom = 15;
-                            if (maxSpan < 0.01) zoom = 17;
-                            else if (maxSpan < 0.05) zoom = 16;
-                            else if (maxSpan < 0.1) zoom = 15;
-                            else if (maxSpan < 0.5) zoom = 13;
-                            else if (maxSpan < 1.0) zoom = 12;
-                            else if (maxSpan < 5.0) zoom = 10;
-                            else zoom = 8;
+                            if (maxSpan < 0.005) zoom = 18;
+                            else if (maxSpan < 0.01) zoom = 17;
+                            else if (maxSpan < 0.02) zoom = 16;
+                            else if (maxSpan < 0.05) zoom = 15;
+                            else if (maxSpan < 0.1) zoom = 14;
+                            else if (maxSpan < 0.5) zoom = 12;
+                            else if (maxSpan < 1.0) zoom = 11;
+                            else if (maxSpan < 5.0) zoom = 9;
+                            else zoom = 7;
+
+                            double centerLat = (finalMinLat + finalMaxLat) / 2;
+                            double centerLon = (finalMinLon + finalMaxLon) / 2;
+                            GeoPoint center = new GeoPoint(centerLat, centerLon);
 
                             mapPreview.getController().setZoom(zoom);
+                            mapPreview.getController().setCenter(center);
                         }
                         mapPreview.invalidate();
                     } catch (Exception e) {
