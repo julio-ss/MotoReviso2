@@ -93,8 +93,8 @@ dependencies {
     // Security Crypto
     implementation libs.androidx.security.crypto
 
-    // Google Maps
-    implementation libs.play.services.maps
+    // Maps (OSMDroid - gratuito e open source)
+    implementation libs.osmdroid.android
 
     // LocalBroadcastManager (comunicação intra-app no rastreamento)
     implementation libs.androidx.localbroadcastmanager

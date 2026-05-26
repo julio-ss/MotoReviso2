@@ -13,15 +13,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
+import org.osmdroid.config.Configuration;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,23 +27,23 @@ import br.jss.motoreviso.R;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.Trajeto;
 
-public class MapTrajetoActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapTrajetoActivity extends AppCompatActivity {
     private static final String TAG = "MapTrajetoActivity";
 
-    private GoogleMap googleMap;
+    private MapView mapView;
     private TextView textDistancia, textDuracao, textVelMax, textSemDados;
     private LinearLayout layoutCarregando, layoutSemDados;
     private FirebaseManager firebaseManager;
     private String trajetoId;
     private Trajeto trajeto;
 
-    // flags para controlar a race condition entre mapa e dados
     private boolean mapaPronto = false;
     private boolean dadosProntos = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Configuration.getInstance().setUserAgentValue(getPackageName());
         setContentView(R.layout.activity_map_trajeto);
 
         trajetoId = getIntent().getStringExtra("TRAJETO_ID");
@@ -68,11 +64,10 @@ public class MapTrajetoActivity extends AppCompatActivity implements OnMapReadyC
         layoutCarregando = findViewById(R.id.layout_carregando);
         layoutSemDados = findViewById(R.id.layout_sem_dados);
 
-        SupportMapFragment mapFragment = (SupportMapFragment)
-                getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-        }
+        mapView = findViewById(R.id.map_view);
+        mapView.setMultiTouchControls(true);
+        mapaPronto = true;
+        Log.d(TAG, "✓ Mapa inicializado");
 
         if (trajetoId != null) {
             carregarTrajeto();
@@ -142,34 +137,11 @@ public class MapTrajetoActivity extends AppCompatActivity implements OnMapReadyC
         textVelMax.setText(String.format(Locale.getDefault(), "%.0f km/h", velMax != null ? velMax : 0.0));
     }
 
-    @Override
-    public void onMapReady(GoogleMap map) {
-        try {
-            this.googleMap = map;
-            googleMap.getUiSettings().setZoomControlsEnabled(true);
-            googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-            googleMap.getUiSettings().setMapToolbarEnabled(false);
-
-            // Define um tipo de mapa para garantir visibilidade
-            googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-
-            mapaPronto = true;
-            Log.d(TAG, "✓ Mapa pronto — dadosProntos=" + dadosProntos);
-
-            if (dadosProntos) {
-                plotarRotaOuMostrarVazio();
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "✗ Erro no onMapReady", e);
-            mostrarErro("Erro ao carregar o mapa: " + e.getMessage());
-        }
-    }
-
     private void plotarRotaOuMostrarVazio() {
         layoutCarregando.setVisibility(View.GONE);
-        Log.d(TAG, "→ Plotando rota — trajeto=" + (trajeto != null) + ", mapa=" + (googleMap != null));
+        Log.d(TAG, "→ Plotando rota — trajeto=" + (trajeto != null) + ", mapa=" + (mapView != null));
 
-        if (trajeto == null || googleMap == null) {
+        if (trajeto == null || mapView == null) {
             Log.e(TAG, "✗ Trajeto ou mapa nulo");
             return;
         }
@@ -184,79 +156,94 @@ public class MapTrajetoActivity extends AppCompatActivity implements OnMapReadyC
 
         Log.d(TAG, "  Total de pontos: " + pontos.size());
 
-        List<LatLng> latLngList = new ArrayList<>();
-        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+        List<GeoPoint> geoPoints = new ArrayList<>();
+        double minLat = Double.MAX_VALUE, maxLat = -Double.MAX_VALUE;
+        double minLon = Double.MAX_VALUE, maxLon = -Double.MAX_VALUE;
 
         for (Trajeto.Ponto ponto : pontos) {
             if (ponto != null && ponto.getLatitude() != null && ponto.getLongitude() != null) {
-                LatLng latlng = new LatLng(ponto.getLatitude(), ponto.getLongitude());
-                latLngList.add(latlng);
-                boundsBuilder.include(latlng);
-                if (latLngList.size() == 1) {
+                GeoPoint geoPoint = new GeoPoint(ponto.getLatitude(), ponto.getLongitude());
+                geoPoints.add(geoPoint);
+
+                minLat = Math.min(minLat, ponto.getLatitude());
+                maxLat = Math.max(maxLat, ponto.getLatitude());
+                minLon = Math.min(minLon, ponto.getLongitude());
+                maxLon = Math.max(maxLon, ponto.getLongitude());
+
+                if (geoPoints.size() == 1) {
                     Log.d(TAG, "  Primeiro ponto: " + ponto.getLatitude() + ", " + ponto.getLongitude());
                 }
             }
         }
 
-        if (latLngList.isEmpty()) {
+        if (geoPoints.isEmpty()) {
             Log.e(TAG, "✗ Nenhum ponto com lat/lon válido");
             layoutSemDados.setVisibility(View.VISIBLE);
             textSemDados.setText("Dados de GPS inválidos neste trajeto");
             return;
         }
 
-        Log.d(TAG, "✓ " + latLngList.size() + " pontos válidos prontos para plotar");
+        Log.d(TAG, "✓ " + geoPoints.size() + " pontos válidos prontos para plotar");
 
         try {
-            googleMap.addPolyline(new PolylineOptions()
-                    .addAll(latLngList)
-                    .width(10f)
-                    .color(Color.parseColor("#00D4FF"))
-                    .geodesic(true));
+            Polyline polyline = new Polyline(mapView);
+            polyline.setPoints(geoPoints);
+            polyline.setWidth(10f);
+            polyline.setColor(Color.parseColor("#00D4FF"));
+            mapView.getOverlays().add(polyline);
             Log.d(TAG, "✓ Polyline adicionada");
 
-            googleMap.addMarker(new MarkerOptions()
-                    .position(latLngList.get(0))
-                    .title("Início")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+            Marker markerInicio = new Marker(mapView);
+            markerInicio.setPosition(geoPoints.get(0));
+            markerInicio.setTitle("Início");
+            markerInicio.setSnippet("Ponto inicial do trajeto");
+            mapView.getOverlays().add(markerInicio);
             Log.d(TAG, "✓ Marcador de início adicionado");
 
-            LatLng fim = latLngList.get(latLngList.size() - 1);
-            googleMap.addMarker(new MarkerOptions()
-                    .position(fim)
-                    .title("Fim")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            Marker markerFim = new Marker(mapView);
+            markerFim.setPosition(geoPoints.get(geoPoints.size() - 1));
+            markerFim.setTitle("Fim");
+            markerFim.setSnippet("Ponto final do trajeto");
+            mapView.getOverlays().add(markerFim);
             Log.d(TAG, "✓ Marcador de fim adicionado");
         } catch (Exception e) {
             Log.e(TAG, "✗ Erro ao plotar polyline/marcadores", e);
         }
 
-        // setOnMapLoadedCallback só dispara uma vez: se o mapa já estava pronto antes dos
-        // dados chegarem, o callback nunca mais dispara e a câmera nunca move.
-        // postDelayed garante que a view já está medida e a câmera se moverá corretamente.
-        final LatLngBounds bounds;
-        try {
-            bounds = boundsBuilder.build();
-        } catch (Exception e) {
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngList.get(0), 15));
-            return;
-        }
-
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            if (isFinishing() || isDestroyed() || googleMap == null) return;
+            if (isFinishing() || isDestroyed() || mapView == null) return;
             try {
-                if (latLngList.size() == 1) {
-                    // trajeto de ponto único — centraliza com zoom fixo
-                    googleMap.animateCamera(
-                            CameraUpdateFactory.newLatLngZoom(latLngList.get(0), 16));
+                if (geoPoints.size() == 1) {
+                    mapView.getController().setZoom(16);
+                    mapView.getController().setCenter(geoPoints.get(0));
                 } else {
-                    googleMap.animateCamera(
-                            CameraUpdateFactory.newLatLngBounds(bounds, 150));
+                    double centerLat = (minLat + maxLat) / 2;
+                    double centerLon = (minLon + maxLon) / 2;
+                    GeoPoint center = new GeoPoint(centerLat, centerLon);
+                    mapView.getController().setCenter(center);
+
+                    double latSpan = maxLat - minLat;
+                    double lonSpan = maxLon - minLon;
+                    double maxSpan = Math.max(latSpan, lonSpan);
+
+                    int zoom = 15;
+                    if (maxSpan < 0.01) zoom = 17;
+                    else if (maxSpan < 0.05) zoom = 16;
+                    else if (maxSpan < 0.1) zoom = 15;
+                    else if (maxSpan < 0.5) zoom = 13;
+                    else if (maxSpan < 1.0) zoom = 12;
+                    else if (maxSpan < 5.0) zoom = 10;
+                    else zoom = 8;
+
+                    mapView.getController().setZoom(zoom);
                 }
+                mapView.invalidate();
             } catch (Exception e) {
                 Log.e(TAG, "Erro ao ajustar câmera", e);
-                googleMap.moveCamera(
-                        CameraUpdateFactory.newLatLngZoom(latLngList.get(0), 15));
+                if (!geoPoints.isEmpty()) {
+                    mapView.getController().setZoom(15);
+                    mapView.getController().setCenter(geoPoints.get(0));
+                }
             }
         }, 400);
     }
@@ -266,5 +253,29 @@ public class MapTrajetoActivity extends AppCompatActivity implements OnMapReadyC
         layoutSemDados.setVisibility(View.VISIBLE);
         textSemDados.setText(mensagem);
         Toast.makeText(this, mensagem, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mapView != null) {
+            mapView.onResume();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if (mapView != null) {
+            mapView.onPause();
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mapView != null) {
+            mapView.onDetach();
+        }
+        super.onDestroy();
     }
 }
