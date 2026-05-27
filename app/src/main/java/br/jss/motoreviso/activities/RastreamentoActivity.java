@@ -227,6 +227,12 @@ public class RastreamentoActivity extends AppCompatActivity {
             return;
         }
 
+        // Garantir que qualquer instância anterior foi parada
+        if (servicoBound) {
+            unbindService(serviceConnection);
+            servicoBound = false;
+        }
+
         Intent intent = new Intent(this, RastreamentoService.class);
         intent.putExtra("VEICULO_ID", veiculoId);
         intent.putExtra("KM_INICIAL", kmAtual != null ? kmAtual : 0L);
@@ -271,9 +277,14 @@ public class RastreamentoActivity extends AppCompatActivity {
 
         Trajeto trajeto = rastreamentoService.finalizarETrajeto();
         Log.d(TAG, String.format("Encerrando: %.3f km, %d pontos",
-                trajeto.getKmRodados() != null ? trajeto.getKmRodados() : 0.0,
+                trajeto.getDistanciaKm(),
                 trajeto.getPontos() != null ? trajeto.getPontos().size() : 0));
 
+        // Resetar UI imediatamente para evitar conflito com broadcasts
+        resetarTela();
+        atualizarBotoes(false, false);
+
+        // Depois parar o serviço
         Intent stopIntent = new Intent(this, RastreamentoService.class);
         stopIntent.setAction(RastreamentoService.ACTION_STOP);
         startService(stopIntent);
@@ -290,9 +301,6 @@ public class RastreamentoActivity extends AppCompatActivity {
         } else if (!temPontos) {
             Toast.makeText(this, "Nenhum ponto GPS registrado. Trajeto não salvo.", Toast.LENGTH_LONG).show();
         }
-
-        resetarTela();
-        atualizarBotoes(false, false);
     }
 
     private void salvarTrajeto(Trajeto trajeto) {

@@ -267,24 +267,11 @@ public class RastreamentoService extends Service {
         PendingIntent openPending = PendingIntent.getActivity(this, 0, openIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        Intent pauseIntent = new Intent(this, RastreamentoReceiver.class);
-        pauseIntent.setAction(isPausado ? ACTION_RESUME : ACTION_PAUSE);
-        PendingIntent pausePending = PendingIntent.getBroadcast(this, 1, pauseIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-        Intent stopIntent = new Intent(this, RastreamentoReceiver.class);
-        stopIntent.setAction(ACTION_STOP);
-        PendingIntent stopPending = PendingIntent.getBroadcast(this, 2, stopIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
         return new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_location_modern)
                 .setContentTitle("Rastreando — " + distancia)
                 .setContentText(tempo + "  •  " + velocidade)
                 .setContentIntent(openPending)
-                .addAction(isPausado ? R.drawable.ic_play_modern : R.drawable.ic_stop_modern,
-                        isPausado ? "Continuar" : "Pausar", pausePending)
-                .addAction(R.drawable.ic_close_modern, "Encerrar", stopPending)
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
