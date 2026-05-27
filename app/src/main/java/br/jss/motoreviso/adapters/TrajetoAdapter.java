@@ -65,8 +65,6 @@ public class TrajetoAdapter extends RecyclerView.Adapter<TrajetoAdapter.TrajetoV
 
     public class TrajetoViewHolder extends RecyclerView.ViewHolder {
         private TextView textData;
-        private TextView textOrigem;
-        private TextView textDestino;
         private TextView textKmRodados;
         private TextView textVelocidadeMax;
         private TextView textDuracao;
@@ -75,8 +73,6 @@ public class TrajetoAdapter extends RecyclerView.Adapter<TrajetoAdapter.TrajetoV
         public TrajetoViewHolder(@NonNull View itemView) {
             super(itemView);
             textData = itemView.findViewById(R.id.text_data);
-            textOrigem = itemView.findViewById(R.id.text_origem);
-            textDestino = itemView.findViewById(R.id.text_destino);
             textKmRodados = itemView.findViewById(R.id.text_km_rodados);
             textVelocidadeMax = itemView.findViewById(R.id.text_velocidade_max);
             textDuracao = itemView.findViewById(R.id.text_duracao);
@@ -97,9 +93,6 @@ public class TrajetoAdapter extends RecyclerView.Adapter<TrajetoAdapter.TrajetoV
             if (trajeto.getDataInicio() != null) {
                 textData.setText(sdf.format(trajeto.getDataInicio()));
             }
-
-            textOrigem.setText(trajeto.getOrigem() != null ? trajeto.getOrigem() : "Desconhecido");
-            textDestino.setText(trajeto.getDestino() != null ? trajeto.getDestino() : "Desconhecido");
 
             textKmRodados.setText(String.format("%.2f km",
                     trajeto.getKmRodados() != null ? trajeto.getKmRodados() : 0));
