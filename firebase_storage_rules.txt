@@ -1,0 +1,29 @@
+// Firebase Storage Rules - Copie e cole estas regras no Console Firebase
+// Acesse: Firebase Console > Seu Projeto > Storage > Regras
+
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Regras para imagens de veículos
+    match /veiculo_images/{userId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Regras para fotos de perfil
+    match /profile_images/{userId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Regras genéricas para qualquer arquivo
+    match /{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+      allow delete: if request.auth != null;
+    }
+  }
+}

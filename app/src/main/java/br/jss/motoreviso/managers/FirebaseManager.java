@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -25,7 +26,7 @@ public class FirebaseManager {
     private static final String COLLECTION_MANUTENCOES = "manutencoes";
     private static final String COLLECTION_TRAJETOS = "trajetos";
     private static final String COLLECTION_IMAGENS = "imagens";
-    private static final String STORAGE_VEICULOS = "veiculos";
+    private static final String STORAGE_VEICULOS = "veiculo_images";
 
     private final FirebaseFirestore db;
     private final FirebaseStorage storage;
@@ -232,8 +233,13 @@ public class FirebaseManager {
             return;
         }
 
+        String userId = FirebaseAuth.getInstance().getCurrentUser() != null
+                ? FirebaseAuth.getInstance().getCurrentUser().getUid()
+                : "anonymous";
+
         StorageReference reference = storage.getReference()
                 .child(STORAGE_VEICULOS)
+                .child(userId)
                 .child(nomeArquivo);
 
         reference.putFile(uri)
