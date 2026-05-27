@@ -277,7 +277,7 @@ public class RastreamentoActivity extends AppCompatActivity {
 
         Trajeto trajeto = rastreamentoService.finalizarETrajeto();
         Log.d(TAG, String.format("Encerrando: %.3f km, %d pontos",
-                trajeto.getDistanciaKm(),
+                trajeto.getKmRodados() != null ? trajeto.getKmRodados() : 0.0,
                 trajeto.getPontos() != null ? trajeto.getPontos().size() : 0));
 
         // Resetar UI imediatamente para evitar conflito com broadcasts
