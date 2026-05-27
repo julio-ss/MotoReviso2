@@ -11,7 +11,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -20,6 +19,7 @@ import br.jss.motoreviso.R;
 import br.jss.motoreviso.adapters.DetalheVeiculoTabAdapter;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.Veiculo;
+import br.jss.motoreviso.utils.ImagemLoader;
 import br.jss.motoreviso.utils.SystemBarHelper;
 
 public class DetalheVeiculoActivity extends AppCompatActivity {
@@ -89,13 +89,7 @@ public class DetalheVeiculoActivity extends AppCompatActivity {
     }
 
     private void exibirDadosVeiculo() {
-        if (veiculoAtual.getUrlImagemPrincipal() != null && !veiculoAtual.getUrlImagemPrincipal().isEmpty()) {
-            Glide.with(this)
-                    .load(veiculoAtual.getUrlImagemPrincipal())
-                    .centerCrop()
-                    .placeholder(R.drawable.ic_car_modern)
-                    .into(imgVeiculo);
-        }
+        ImagemLoader.carregarImagem(this, imgVeiculo, veiculoAtual.getUrlImagemPrincipal());
 
         textMarcaModelo.setText(veiculoAtual.getMarca() + " " + veiculoAtual.getModelo());
         textPlaca.setText("Placa: " + veiculoAtual.getPlaca());

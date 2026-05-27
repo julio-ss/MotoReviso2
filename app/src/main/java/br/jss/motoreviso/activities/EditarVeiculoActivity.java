@@ -13,12 +13,12 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import br.jss.motoreviso.R;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.Veiculo;
+import br.jss.motoreviso.utils.ImagemLoader;
 import br.jss.motoreviso.utils.SystemBarHelper;
 
 public class EditarVeiculoActivity extends AppCompatActivity {
@@ -111,16 +111,7 @@ public class EditarVeiculoActivity extends AppCompatActivity {
         edtKmAtual.setText(veiculoAtual.getKmAtual() != null ? veiculoAtual.getKmAtual().toString() : "0");
         edtDescricao.setText(veiculoAtual.getDescricao() != null ? veiculoAtual.getDescricao() : "");
 
-        if (veiculoAtual.getUrlImagemPrincipal() != null && !veiculoAtual.getUrlImagemPrincipal().isEmpty()) {
-            Glide.with(this)
-                    .load(veiculoAtual.getUrlImagemPrincipal())
-                    .centerCrop()
-                    .placeholder(R.drawable.ic_car_modern)
-                    .error(R.drawable.ic_car_modern)
-                    .into(imgVeiculo);
-        } else {
-            imgVeiculo.setImageResource(R.drawable.ic_car_modern);
-        }
+        ImagemLoader.carregarImagem(this, imgVeiculo, veiculoAtual.getUrlImagemPrincipal());
     }
 
     private void salvarAlteracoes() {
@@ -145,28 +136,16 @@ public class EditarVeiculoActivity extends AppCompatActivity {
 
         veiculoAtual.setDescricao(edtDescricao.getText().toString());
 
+        // Se uma nova imagem foi selecionada, salvar seu caminho local
         if (imagemUri != null) {
-            progressEditar.setVisibility(android.view.View.VISIBLE);
-            String nomeImagem = "veiculo_" + veiculoId + "_" + System.currentTimeMillis();
-            firebaseManager.uploadImagemVeiculo(imagemUri, nomeImagem, new FirebaseManager.OnUploadCompleteListener() {
-                @Override
-                public void onUploadComplete(String downloadUrl) {
-                    veiculoAtual.setUrlImagemPrincipal(downloadUrl);
-                    atualizarVeiculoFirebase();
-                }
-
-                @Override
-                public void onUploadFailed(Exception exception) {
-                    progressEditar.setVisibility(android.view.View.GONE);
-                    Toast.makeText(EditarVeiculoActivity.this, "Erro ao fazer upload: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            atualizarVeiculoFirebase();
+            veiculoAtual.setUrlImagemPrincipal(imagemUri.toString());
         }
+
+        atualizarVeiculoFirebase();
     }
 
     private void atualizarVeiculoFirebase() {
+        progressEditar.setVisibility(android.view.View.VISIBLE);
         firebaseManager.atualizarVeiculo(veiculoId, veiculoAtual)
                 .addOnSuccessListener(aVoid -> {
                     progressEditar.setVisibility(android.view.View.GONE);
@@ -178,4 +157,3 @@ public class EditarVeiculoActivity extends AppCompatActivity {
                     Toast.makeText(EditarVeiculoActivity.this, "Erro ao atualizar: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-}

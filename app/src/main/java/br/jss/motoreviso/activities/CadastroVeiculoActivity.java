@@ -128,23 +128,12 @@ public class CadastroVeiculoActivity extends AppCompatActivity {
         veiculo.setDescricao(edtDescricao.getText().toString());
         veiculo.setDataUltimaRevisao(System.currentTimeMillis());
 
+        // Salvar caminho local da imagem (sem fazer upload para Firebase)
         if (imagemUri != null) {
-            firebaseManager.uploadImagemVeiculo(imagemUri, "temp_" + System.currentTimeMillis(), new FirebaseManager.OnUploadCompleteListener() {
-                @Override
-                public void onUploadComplete(String downloadUrl) {
-                    veiculo.setUrlImagemPrincipal(downloadUrl);
-                    salvarVeiculoNoFirebase(veiculo);
-                }
-
-                @Override
-                public void onUploadFailed(Exception exception) {
-                    Toast.makeText(CadastroVeiculoActivity.this, "Erro ao fazer upload", Toast.LENGTH_SHORT).show();
-                    salvarVeiculoNoFirebase(veiculo);
-                }
-            });
-        } else {
-            salvarVeiculoNoFirebase(veiculo);
+            veiculo.setUrlImagemPrincipal(imagemUri.toString());
         }
+
+        salvarVeiculoNoFirebase(veiculo);
     }
 
     private void salvarVeiculoNoFirebase(Veiculo veiculo) {
