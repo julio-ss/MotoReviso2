@@ -137,11 +137,41 @@ public class TrajetosFragment extends Fragment implements TrajetoAdapter.OnTraje
                     if (!isAdded()) return;
                     if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
                         Veiculo veiculo = task.getResult().toObject(Veiculo.class);
-                        ShareHelper.compartilharWhatsApp(getActivity(), veiculo, trajeto);
+                        showSharingDialog(veiculo, trajeto);
                     } else {
                         Toast.makeText(getContext(), "Erro ao carregar dados do veículo", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void showSharingDialog(Veiculo veiculo, Trajeto trajeto) {
+        if (getActivity() == null) return;
+
+        View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_compartilhamento, null);
+
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        dialogView.findViewById(R.id.btn_whatsapp).setOnClickListener(v -> {
+            ShareHelper.compartilharWhatsApp(getActivity(), veiculo, trajeto);
+            dialog.dismiss();
+        });
+
+        dialogView.findViewById(R.id.btn_instagram).setOnClickListener(v -> {
+            ShareHelper.compartilharInstagram(getActivity(), veiculo, trajeto);
+            dialog.dismiss();
+        });
+
+        dialogView.findViewById(R.id.btn_email).setOnClickListener(v -> {
+            ShareHelper.compartilharEmail(getActivity(), veiculo, trajeto);
+            dialog.dismiss();
+        });
+
+        dialogView.findViewById(R.id.btn_fechar).setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
     }
 
     @Override
