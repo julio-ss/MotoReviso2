@@ -28,7 +28,8 @@ public class ShareHelper {
         String mensagem = gerarMensagemCompartilhamento(veiculo, trajeto);
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822");
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Informações do Trajeto - " + veiculo.getMarcaModelo());
+        String marcaModelo = getMarcaModelo(veiculo);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Informações do Trajeto - " + marcaModelo);
         intent.putExtra(Intent.EXTRA_TEXT, mensagem);
         context.startActivity(Intent.createChooser(intent, "Enviar por email"));
     }
@@ -56,7 +57,7 @@ public class ShareHelper {
 
         if (veiculo != null) {
             sb.append("📋 *Veículo*\n");
-            sb.append("Marca/Modelo: ").append(veiculo.getMarcaModelo()).append("\n");
+            sb.append("Marca/Modelo: ").append(getMarcaModelo(veiculo)).append("\n");
             sb.append("Placa: ").append(veiculo.getPlaca()).append("\n");
             sb.append("KM: ").append(String.format("%.0f km", veiculo.getKmAtual())).append("\n\n");
         }
@@ -88,5 +89,17 @@ public class ShareHelper {
         sb.append("\n_Compartilhado via MotoReviso_");
 
         return sb.toString();
+    }
+
+    private static String getMarcaModelo(Veiculo veiculo) {
+        if (veiculo == null) {
+            return "";
+        }
+        String marca = veiculo.getMarca() != null ? veiculo.getMarca() : "";
+        String modelo = veiculo.getModelo() != null ? veiculo.getModelo() : "";
+        if (marca.isEmpty() && modelo.isEmpty()) {
+            return "N/A";
+        }
+        return (marca + " " + modelo).trim();
     }
 }
