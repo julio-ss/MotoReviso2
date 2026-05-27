@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import br.jss.motoreviso.R;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.Veiculo;
+import br.jss.motoreviso.utils.SystemBarHelper;
 
 public class CadastroVeiculoActivity extends AppCompatActivity {
     private RadioGroup radioGroupTipo;
@@ -35,6 +36,8 @@ public class CadastroVeiculoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_veiculo);
+
+        SystemBarHelper.applySystemBarPadding(this, findViewById(android.R.id.content));
 
         firebaseManager = FirebaseManager.getInstance();
         inicializarViews();

@@ -16,6 +16,7 @@ import br.jss.motoreviso.R;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.Manutencao;
 import br.jss.motoreviso.utils.ManutencaoFormatter;
+import br.jss.motoreviso.utils.SystemBarHelper;
 
 public class DetalheManutencaoActivity extends AppCompatActivity {
     private static final String TAG = "DetalheManutencaoActivity";
@@ -43,6 +44,8 @@ public class DetalheManutencaoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalhe_manutencao);
+
+        SystemBarHelper.applySystemBarPadding(this, findViewById(android.R.id.content));
 
         inicializarViews();
         obterDadosIntent();

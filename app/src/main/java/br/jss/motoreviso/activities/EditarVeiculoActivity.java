@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import br.jss.motoreviso.R;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.Veiculo;
+import br.jss.motoreviso.utils.SystemBarHelper;
 
 public class EditarVeiculoActivity extends AppCompatActivity {
     private String veiculoId;
@@ -22,6 +23,8 @@ public class EditarVeiculoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editar_veiculo);
+
+        SystemBarHelper.applySystemBarPadding(this, findViewById(android.R.id.content));
 
         veiculoId = getIntent().getStringExtra("VEICULO_ID");
         if (veiculoId == null) {

@@ -26,6 +26,7 @@ import java.util.Locale;
 import br.jss.motoreviso.R;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.Trajeto;
+import br.jss.motoreviso.utils.SystemBarHelper;
 
 public class MapTrajetoActivity extends AppCompatActivity {
     private static final String TAG = "MapTrajetoActivity";
@@ -45,6 +46,8 @@ public class MapTrajetoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Configuration.getInstance().setUserAgentValue(getPackageName());
         setContentView(R.layout.activity_map_trajeto);
+
+        SystemBarHelper.applySystemBarPadding(this, findViewById(android.R.id.content));
 
         trajetoId = getIntent().getStringExtra("TRAJETO_ID");
         firebaseManager = FirebaseManager.getInstance();

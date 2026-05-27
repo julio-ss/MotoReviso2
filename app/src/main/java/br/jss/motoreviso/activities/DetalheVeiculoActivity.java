@@ -20,6 +20,7 @@ import br.jss.motoreviso.R;
 import br.jss.motoreviso.adapters.DetalheVeiculoTabAdapter;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.Veiculo;
+import br.jss.motoreviso.utils.SystemBarHelper;
 
 public class DetalheVeiculoActivity extends AppCompatActivity {
     private String veiculoId;
@@ -38,6 +39,8 @@ public class DetalheVeiculoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalhe_veiculo);
         overridePendingTransition(R.anim.anim_fade_in, R.anim.anim_fade_out);
+
+        SystemBarHelper.applySystemBarPadding(this, findViewById(android.R.id.content));
 
         veiculoId = getIntent().getStringExtra("VEICULO_ID");
         if (veiculoId == null) {

@@ -12,6 +12,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import br.jss.motoreviso.R;
 import br.jss.motoreviso.utils.BiometricHelper;
 import br.jss.motoreviso.utils.SecurePreferencesManager;
+import br.jss.motoreviso.utils.SystemBarHelper;
 
 public class SetupPinActivity extends AppCompatActivity {
 
@@ -24,6 +25,8 @@ public class SetupPinActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup_pin);
+
+        SystemBarHelper.applySystemBarPadding(this, findViewById(android.R.id.content));
 
         securePrefs = new SecurePreferencesManager(this);
 
