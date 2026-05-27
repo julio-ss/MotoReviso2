@@ -38,6 +38,7 @@ import br.jss.motoreviso.R;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.Trajeto;
 import br.jss.motoreviso.services.RastreamentoService;
+import br.jss.motoreviso.utils.SystemBarHelper;
 
 public class RastreamentoActivity extends AppCompatActivity {
     private static final String TAG = "RastreamentoActivity";
@@ -121,6 +122,8 @@ public class RastreamentoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Configuration.getInstance().setUserAgentValue(getPackageName());
         setContentView(R.layout.activity_rastreamento);
+
+        SystemBarHelper.applySystemBarPadding(this, findViewById(android.R.id.content));
 
         veiculoId = getIntent().getStringExtra("VEICULO_ID");
         kmAtual = getIntent().getLongExtra("KM_ATUAL", 0L);

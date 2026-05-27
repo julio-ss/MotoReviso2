@@ -26,6 +26,7 @@ import br.jss.motoreviso.R;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.Manutencao;
 import br.jss.motoreviso.models.Veiculo;
+import br.jss.motoreviso.utils.SystemBarHelper;
 
 public class CadastroManutencaoActivity extends AppCompatActivity {
     private static final String TAG = "CadastroManutencaoActivity";
@@ -47,6 +48,8 @@ public class CadastroManutencaoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_manutencao);
+
+        SystemBarHelper.applySystemBarPadding(this, findViewById(android.R.id.content));
 
         veiculoId = getIntent().getStringExtra("VEICULO_ID");
         manutencaoId = getIntent().getStringExtra("MANUTENCAO_ID");

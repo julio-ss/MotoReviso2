@@ -16,6 +16,7 @@ import br.jss.motoreviso.fragments.ConfiguracoesFragment;
 import br.jss.motoreviso.fragments.ManutencoesFragment;
 import br.jss.motoreviso.fragments.TrajetosFragment;
 import br.jss.motoreviso.fragments.VeiculosFragment;
+import br.jss.motoreviso.utils.SystemBarHelper;
 
 public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigation;
@@ -26,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        SystemBarHelper.applySystemBarPadding(this, findViewById(R.id.frame_layout));
 
         bottomNavigation = findViewById(R.id.bottom_navigation);
         frameLayout = findViewById(R.id.frame_layout);

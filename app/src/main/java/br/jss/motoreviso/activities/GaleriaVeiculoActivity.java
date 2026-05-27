@@ -17,6 +17,7 @@ import br.jss.motoreviso.R;
 import br.jss.motoreviso.adapters.ImagemVeiculoAdapter;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.ImagemVeiculo;
+import br.jss.motoreviso.utils.SystemBarHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,8 @@ public class GaleriaVeiculoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_galeria_veiculo);
+
+        SystemBarHelper.applySystemBarPadding(this, findViewById(android.R.id.content));
 
         veiculoId = getIntent().getStringExtra("VEICULO_ID");
         if (veiculoId == null || veiculoId.isEmpty()) {

@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 import br.jss.motoreviso.R;
 import br.jss.motoreviso.utils.BiometricHelper;
 import br.jss.motoreviso.utils.SecurePreferencesManager;
+import br.jss.motoreviso.utils.SystemBarHelper;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -38,6 +39,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        SystemBarHelper.applySystemBarPadding(this, findViewById(android.R.id.content));
 
         auth = FirebaseAuth.getInstance();
         securePrefs = new SecurePreferencesManager(this);
