@@ -35,6 +35,7 @@ import br.jss.motoreviso.R;
 import br.jss.motoreviso.activities.RastreamentoActivity;
 import br.jss.motoreviso.models.Trajeto;
 import br.jss.motoreviso.receivers.RastreamentoReceiver;
+import br.jss.motoreviso.utils.GpsVelocityProcessor;
 
 public class RastreamentoService extends Service {
     private static final String TAG = "RastreamentoService";
@@ -56,6 +57,7 @@ public class RastreamentoService extends Service {
     private LocationCallback locationCallback;
     private NotificationManager notificationManager;
     private LocalBroadcastManager localBroadcastManager;
+    private GpsVelocityProcessor gpsVelocityProcessor;
 
     private boolean pausado = false;
     private boolean rastreando = false;
@@ -130,6 +132,7 @@ public class RastreamentoService extends Service {
         velocidadeAtual = 0;
         pontosRota.clear();
         ultimaLocalizacao = null;
+        gpsVelocityProcessor = new GpsVelocityProcessor();
 
         Log.d(TAG, "Iniciando rastreamento para veículo: " + veiculoId);
 
@@ -162,8 +165,8 @@ public class RastreamentoService extends Service {
     private void processarLocalizacao(Location location) {
         if (pausado || !rastreando) return;
 
-        velocidadeAtual = location.hasSpeed() ? location.getSpeed() * 3.6 : 0.0;
-        if (velocidadeAtual > velocidadeMaxima) velocidadeMaxima = velocidadeAtual;
+        velocidadeAtual = gpsVelocityProcessor.procesarLocalizacao(location);
+        velocidadeMaxima = gpsVelocityProcessor.getVelocidadeMaxima();
 
         if (ultimaLocalizacao != null) {
             float[] result = new float[1];
