@@ -1,5 +1,6 @@
 package br.jss.motoreviso.fragments;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,8 +28,10 @@ import br.jss.motoreviso.activities.MapTrajetoActivity;
 import br.jss.motoreviso.adapters.TrajetoAdapter;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.Trajeto;
+import br.jss.motoreviso.models.Veiculo;
+import br.jss.motoreviso.utils.ShareHelper;
 
-public class TrajetosFragment extends Fragment {
+public class TrajetosFragment extends Fragment implements TrajetoAdapter.OnTrajetoMenuListener {
     private static final String TAG = "TrajetosFragment";
 
     private RecyclerView recyclerView;
@@ -36,6 +40,7 @@ public class TrajetosFragment extends Fragment {
     private ProgressBar progressBar;
     private TextView textVazioMensagem;
     private FirebaseManager firebaseManager;
+    private Veiculo veiculoAtual;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,6 +72,7 @@ public class TrajetosFragment extends Fragment {
                 startActivity(intent);
             }
         });
+        adapter.setMenuListener(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
     }
@@ -117,5 +123,60 @@ public class TrajetosFragment extends Fragment {
                         textVazioMensagem.setVisibility(View.VISIBLE);
                     }
                 });
+    }
+
+    @Override
+    public void onShare(Trajeto trajeto) {
+        if (trajeto.getVeiculoId() == null) {
+            Toast.makeText(getContext(), "Trajeto sem veículo associado", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        firebaseManager.obterVeiculo(trajeto.getVeiculoId())
+                .addOnCompleteListener(task -> {
+                    if (!isAdded()) return;
+                    if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
+                        Veiculo veiculo = task.getResult().toObject(Veiculo.class);
+                        ShareHelper.compartilharWhatsApp(getActivity(), veiculo, trajeto);
+                    } else {
+                        Toast.makeText(getContext(), "Erro ao carregar dados do veículo", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    @Override
+    public void onEdit(Trajeto trajeto) {
+        Toast.makeText(getContext(), "Editar trajeto - Em desenvolvimento", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onTransfer(Trajeto trajeto) {
+        Toast.makeText(getContext(), "Transferir trajeto - Em desenvolvimento", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDelete(Trajeto trajeto) {
+        if (getActivity() == null) return;
+
+        new AlertDialog.Builder(getActivity())
+                .setTitle("Excluir Trajeto")
+                .setMessage("Tem certeza que deseja excluir este trajeto? Esta ação não pode ser desfeita.")
+                .setPositiveButton("Excluir", (dialog, which) -> {
+                    if (trajeto.getId() != null) {
+                        firebaseManager.deletarTrajeto(trajeto.getId())
+                                .addOnCompleteListener(task -> {
+                                    if (!isAdded()) return;
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(getContext(), "Trajeto excluído com sucesso", Toast.LENGTH_SHORT).show();
+                                        trajetos.remove(trajeto);
+                                        adapter.notifyDataSetChanged();
+                                    } else {
+                                        Toast.makeText(getContext(), "Erro ao excluir trajeto", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 }

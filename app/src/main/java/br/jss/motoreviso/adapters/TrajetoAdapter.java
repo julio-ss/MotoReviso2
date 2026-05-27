@@ -1,9 +1,11 @@
 package br.jss.motoreviso.adapters;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,15 +28,27 @@ import br.jss.motoreviso.models.Trajeto;
 public class TrajetoAdapter extends RecyclerView.Adapter<TrajetoAdapter.TrajetoViewHolder> {
     private List<Trajeto> trajetos;
     private OnTrajetoClickListener clickListener;
+    private OnTrajetoMenuListener menuListener;
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", new Locale("pt", "BR"));
 
     public interface OnTrajetoClickListener {
         void onTrajetoClick(Trajeto trajeto);
     }
 
+    public interface OnTrajetoMenuListener {
+        void onShare(Trajeto trajeto);
+        void onEdit(Trajeto trajeto);
+        void onTransfer(Trajeto trajeto);
+        void onDelete(Trajeto trajeto);
+    }
+
     public TrajetoAdapter(List<Trajeto> trajetos, OnTrajetoClickListener listener) {
         this.trajetos = trajetos;
         this.clickListener = listener;
+    }
+
+    public void setMenuListener(OnTrajetoMenuListener menuListener) {
+        this.menuListener = menuListener;
     }
 
     @NonNull
@@ -87,6 +101,39 @@ public class TrajetoAdapter extends RecyclerView.Adapter<TrajetoAdapter.TrajetoV
                     clickListener.onTrajetoClick(trajetos.get(pos));
                 }
             });
+
+            itemView.setOnLongClickListener(v -> {
+                int pos = getAdapterPosition();
+                if (pos != RecyclerView.NO_ID && menuListener != null) {
+                    showTrajetoMenu(v, trajetos.get(pos));
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        private void showTrajetoMenu(View view, Trajeto trajeto) {
+            Context context = view.getContext();
+            PopupMenu menu = new PopupMenu(context, view);
+            menu.inflate(R.menu.menu_trajeto);
+            menu.setOnMenuItemClickListener(item -> {
+                int itemId = item.getItemId();
+                if (itemId == R.id.action_share) {
+                    menuListener.onShare(trajeto);
+                    return true;
+                } else if (itemId == R.id.action_edit) {
+                    menuListener.onEdit(trajeto);
+                    return true;
+                } else if (itemId == R.id.action_transfer) {
+                    menuListener.onTransfer(trajeto);
+                    return true;
+                } else if (itemId == R.id.action_delete) {
+                    menuListener.onDelete(trajeto);
+                    return true;
+                }
+                return false;
+            });
+            menu.show();
         }
 
         public void bind(Trajeto trajeto) {
