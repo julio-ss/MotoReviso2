@@ -204,125 +204,185 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingHorizontal="16dp"
-            android:paddingVertical="16dp"
+            android:paddingVertical="12dp"
             android:gravity="center"
             android:weightSum="4">
 
             <!-- Óleo (Oil) -->
-            <FrameLayout
+            <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="70dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center">
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
 
-                <ProgressBar
-                    android:id="@+id/progress_oleo"
+                <FrameLayout
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:layout_gravity="center"
-                    android:max="100"
-                    android:progress="72"
-                    android:indeterminate="false"
-                    android:progressDrawable="@drawable/bg_progress_circular"
-                    style="?android:attr/progressBarStyleHorizontal" />
+                    android:layout_marginBottom="4dp">
+
+                    <ProgressBar
+                        android:id="@+id/progress_oleo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:max="100"
+                        android:progress="72"
+                        android:indeterminate="false"
+                        android:progressDrawable="@drawable/bg_progress_circular"
+                        style="?android:attr/progressBarStyleHorizontal" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="72"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                </FrameLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="72"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary" />
+                    android:text="Óleo"
+                    android:textSize="9sp"
+                    android:textColor="@color/text_secondary" />
 
-            </FrameLayout>
+            </LinearLayout>
 
             <!-- Pneus (Tires) -->
-            <FrameLayout
+            <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="70dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center">
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
 
-                <ProgressBar
-                    android:id="@+id/progress_pneus"
+                <FrameLayout
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:layout_gravity="center"
-                    android:max="100"
-                    android:progress="59"
-                    android:indeterminate="false"
-                    android:progressDrawable="@drawable/bg_progress_circular"
-                    style="?android:attr/progressBarStyleHorizontal" />
+                    android:layout_marginBottom="4dp">
+
+                    <ProgressBar
+                        android:id="@+id/progress_pneus"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:max="100"
+                        android:progress="59"
+                        android:indeterminate="false"
+                        android:progressDrawable="@drawable/bg_progress_circular"
+                        style="?android:attr/progressBarStyleHorizontal" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="59"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                </FrameLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="59"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary" />
+                    android:text="Pneus"
+                    android:textSize="9sp"
+                    android:textColor="@color/text_secondary" />
 
-            </FrameLayout>
+            </LinearLayout>
 
             <!-- Freios (Brakes) -->
-            <FrameLayout
+            <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="70dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center">
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
 
-                <ProgressBar
-                    android:id="@+id/progress_freios"
+                <FrameLayout
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:layout_gravity="center"
-                    android:max="100"
-                    android:progress="89"
-                    android:indeterminate="false"
-                    android:progressDrawable="@drawable/bg_progress_circular"
-                    style="?android:attr/progressBarStyleHorizontal" />
+                    android:layout_marginBottom="4dp">
+
+                    <ProgressBar
+                        android:id="@+id/progress_freios"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:max="100"
+                        android:progress="89"
+                        android:indeterminate="false"
+                        android:progressDrawable="@drawable/bg_progress_circular"
+                        style="?android:attr/progressBarStyleHorizontal" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="89"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                </FrameLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="89"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary" />
+                    android:text="Freios"
+                    android:textSize="9sp"
+                    android:textColor="@color/text_secondary" />
 
-            </FrameLayout>
+            </LinearLayout>
 
             <!-- Corrente (Chain) -->
-            <FrameLayout
+            <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="70dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center">
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
 
-                <ProgressBar
-                    android:id="@+id/progress_corrente"
+                <FrameLayout
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:layout_gravity="center"
-                    android:max="100"
-                    android:progress="41"
-                    android:indeterminate="false"
-                    android:progressDrawable="@drawable/bg_progress_circular"
-                    style="?android:attr/progressBarStyleHorizontal" />
+                    android:layout_marginBottom="4dp">
+
+                    <ProgressBar
+                        android:id="@+id/progress_corrente"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:max="100"
+                        android:progress="41"
+                        android:indeterminate="false"
+                        android:progressDrawable="@drawable/bg_progress_circular"
+                        style="?android:attr/progressBarStyleHorizontal" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="41"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                </FrameLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="41"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary" />
+                    android:text="Corrente"
+                    android:textSize="9sp"
+                    android:textColor="@color/text_secondary" />
 
-            </FrameLayout>
+            </LinearLayout>
 
         </LinearLayout>
 
