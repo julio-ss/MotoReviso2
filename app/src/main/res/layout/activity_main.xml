@@ -19,7 +19,19 @@
         android:background="@drawable/bg_bottom_nav"
         app:fabCradleMargin="12dp"
         app:fabCradleRoundedCornerRadius="16dp"
-        app:hideOnScroll="false" />
+        app:hideOnScroll="false">
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            app:itemIconTint="@color/nav_item_color"
+            app:itemTextColor="@color/nav_item_color"
+            app:labelVisibilityMode="labeled"
+            app:menu="@menu/menu_navigation" />
+
+    </com.google.android.material.bottomappbar.BottomAppBar>
 
     <!-- FAB Centralizado para Rastreamento -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
