@@ -13,6 +13,8 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="materialButtonStyle">@style/Widget.MotoReviso.Button</item>
         <item name="materialCardViewStyle">@style/Widget.MotoReviso.Card</item>
+        <!-- Dialog button colors -->
+        <item name="android:buttonBarButtonStyle">@style/Widget.MotoReviso.Button.Dialog</item>
     </style>
 
     <style name="Widget.MotoReviso.Button" parent="Widget.MaterialComponents.Button">
@@ -30,6 +32,13 @@
         <item name="android:textSize">15sp</item>
         <item name="strokeColor">@color/secondary</item>
         <item name="android:minHeight">52dp</item>
+    </style>
+
+    <!-- Dialog Button Style with White Text -->
+    <style name="Widget.MotoReviso.Button.Dialog" parent="android:Widget.Button">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="Widget.MotoReviso.Card" parent="Widget.MaterialComponents.CardView">
