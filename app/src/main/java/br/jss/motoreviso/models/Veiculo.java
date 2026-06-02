@@ -23,6 +23,7 @@ public class Veiculo {
     private Long kmTroca;
     private Long dataCadastro;
     private Long dataUltimaRevisao;
+    private Long dataProximaRevisao;  // Data agendada para próxima revisão
     private String urlImagemPrincipal;
     private Long intervaloRevisao; // padrão 5000 km
     private String descricao;
@@ -224,6 +225,14 @@ public class Veiculo {
 
     public void setDataUltimaRevisao(Long dataUltimaRevisao) {
         this.dataUltimaRevisao = dataUltimaRevisao;
+    }
+
+    public Long getDataProximaRevisao() {
+        return dataProximaRevisao;
+    }
+
+    public void setDataProximaRevisao(Long dataProximaRevisao) {
+        this.dataProximaRevisao = dataProximaRevisao;
     }
 
     public String getUrlImagemPrincipal() {

@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.app.DatePickerDialog;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -44,7 +47,8 @@ public class DashboardFragment extends Fragment {
     private TextView textGreeting, textVeiculoNome, textKmAtual, textProxRevisao;
     private TextView textCustoMes, textKmMes, textConsumo;
     private TextView textUltimoTrajeto, textUltimoData, textDist, textVelMax;
-    private TextView textProgressPercent;
+    private TextView textProgressPercent, textDataProximaRevisao;
+    private MaterialButton btnAgendarRevisao;
     private ProgressBar progressRevision, progressLoading;
     private ProgressBar progressOleo, progressPneus, progressFreios, progressCorrente;
     private MaterialCardView cardVeiculo, cardRevision, cardTrajeto;
@@ -80,6 +84,8 @@ public class DashboardFragment extends Fragment {
         // Revision card
         textProxRevisao = view.findViewById(R.id.text_prox_revisao);
         textProgressPercent = view.findViewById(R.id.text_progress_percent);
+        textDataProximaRevisao = view.findViewById(R.id.text_data_proxima_revisao);
+        btnAgendarRevisao = view.findViewById(R.id.btn_agendar_revisao);
         progressRevision = view.findViewById(R.id.progress_revisao);
         cardRevision = view.findViewById(R.id.card_revisao);
 
@@ -196,6 +202,20 @@ public class DashboardFragment extends Fragment {
         // Show remaining KM below
         textProxRevisao.setText(formatKm(kmRestante) + " km restantes");
 
+        // Show scheduled revision date if available
+        if (veiculo.getDataProximaRevisao() != null && veiculo.getDataProximaRevisao() > 0) {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            String dataFormatada = sdf.format(new Date(veiculo.getDataProximaRevisao()));
+            textDataProximaRevisao.setText("Agendada: " + dataFormatada);
+        } else {
+            textDataProximaRevisao.setText("Data a agendar");
+        }
+
+        // Schedule revision date when clicking Agendar button
+        btnAgendarRevisao.setOnClickListener(v -> {
+            showDatePickerForRevision(veiculo);
+        });
+
         // Navigate to Manutenções when clicking on revision card
         cardRevision.setOnClickListener(v -> {
             if (getActivity() != null && getActivity() instanceof MainActivity) {
@@ -203,6 +223,53 @@ public class DashboardFragment extends Fragment {
                 mainActivity.carregarFragment(new ManutencoesFragment());
             }
         });
+    }
+
+    private void showDatePickerForRevision(Veiculo veiculo) {
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+
+        // If there's a scheduled date, use it as initial date
+        if (veiculo.getDataProximaRevisao() != null && veiculo.getDataProximaRevisao() > 0) {
+            calendar.setTimeInMillis(veiculo.getDataProximaRevisao());
+        } else {
+            // Default: next week
+            calendar.add(java.util.Calendar.DAY_OF_MONTH, 7);
+        }
+
+        int year = calendar.get(java.util.Calendar.YEAR);
+        int month = calendar.get(java.util.Calendar.MONTH);
+        int day = calendar.get(java.util.Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+            getContext(),
+            (view, selectedYear, selectedMonth, selectedDay) -> {
+                // Create calendar with selected date
+                java.util.Calendar selectedCalendar = java.util.Calendar.getInstance();
+                selectedCalendar.set(selectedYear, selectedMonth, selectedDay);
+                long selectedDateMillis = selectedCalendar.getTimeInMillis();
+
+                // Update vehicle with scheduled date
+                veiculo.setDataProximaRevisao(selectedDateMillis);
+
+                // Save to Firebase
+                firebaseManager.atualizarVeiculo(veiculo.getId(), veiculo)
+                    .addOnSuccessListener(unused -> {
+                        // Update display with new date
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                        String dataFormatada = sdf.format(new Date(selectedDateMillis));
+                        textDataProximaRevisao.setText("Agendada: " + dataFormatada);
+
+                        // Show confirmation
+                        Log.d(TAG, "Revisão agendada para: " + dataFormatada);
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Erro ao agendar revisão: " + e.getMessage());
+                    });
+            },
+            year, month, day
+        );
+
+        datePickerDialog.show();
     }
 
     private void loadStats(String veiculoId) {

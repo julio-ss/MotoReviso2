@@ -490,7 +490,17 @@
                         android:textColor="@color/text_primary"
                         android:layout_marginTop="4dp" />
 
+                    <TextView
+                        android:id="@+id/text_data_proxima_revisao"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Data a agendar"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginTop="4dp" />
+
                     <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_agendar_revisao"
                         android:layout_width="wrap_content"
                         android:layout_height="32dp"
                         android:text="Agendar"
