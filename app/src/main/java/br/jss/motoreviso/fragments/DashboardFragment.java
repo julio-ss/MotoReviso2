@@ -62,18 +62,26 @@ public class DashboardFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "DashboardFragment onCreateView called");
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
+        Log.d(TAG, "Layout inflated, initializing views");
         initializeViews(view);
+
+        Log.d(TAG, "Views initialized, setting up data");
         setupData();
 
+        Log.d(TAG, "DashboardFragment created successfully");
         return view;
     }
 
     private void initializeViews(View view) {
+        Log.d(TAG, "initializeViews: Starting");
         // Headers
         textGreeting = view.findViewById(R.id.text_greeting);
+        Log.d(TAG, "initializeViews: Found text_greeting");
         btnNotificacao = view.findViewById(R.id.btn_notificacao);
+        Log.d(TAG, "initializeViews: Found btn_notificacao");
 
         // Vehicle card
         imgVeiculo = view.findViewById(R.id.img_veiculo);
@@ -118,8 +126,10 @@ public class DashboardFragment extends Fragment {
     }
 
     private void setupData() {
+        Log.d(TAG, "setupData: Starting to load vehicle data");
         progressLoading.setVisibility(View.VISIBLE);
 
+        Log.d(TAG, "setupData: Calling carregarVeiculoPrincipal");
         firebaseManager.carregarVeiculoPrincipal(new FirebaseManager.VeiculoCallback() {
             @Override
             public void onSuccess(Veiculo veiculo) {
