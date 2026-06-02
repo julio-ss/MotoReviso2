@@ -236,27 +236,29 @@ public class FirebaseManager {
             return;
         }
 
-        String userId = FirebaseAuth.getInstance().getCurrentUser() != null
-                ? FirebaseAuth.getInstance().getCurrentUser().getUid()
-                : "anonymous";
-
+        // Usar caminho simples: vehicles/{filename}
+        // Isso evita problemas com pastas aninhadas e buckets não configurados
         StorageReference reference = storage.getReference()
-                .child(STORAGE_VEICULOS)
-                .child(userId)
+                .child("vehicles")
                 .child(nomeArquivo);
 
+        Log.d(TAG, "Iniciando upload para: vehicles/" + nomeArquivo);
+
         reference.putFile(uri)
-                .addOnSuccessListener(taskSnapshot ->
-                        reference.getDownloadUrl()
-                                .addOnSuccessListener(downloadUri -> {
-                                    if (callback != null) {
-                                        callback.onUploadComplete(downloadUri.toString());
-                                    }
-                                })
-                                .addOnFailureListener(e -> {
-                                    Log.e(TAG, "Erro ao obter URL de download", e);
-                                    if (callback != null) callback.onUploadFailed(e);
-                                }))
+                .addOnSuccessListener(taskSnapshot -> {
+                    Log.d(TAG, "Upload concluído, obtendo URL de download...");
+                    reference.getDownloadUrl()
+                            .addOnSuccessListener(downloadUri -> {
+                                Log.d(TAG, "URL de download obtida: " + downloadUri.toString());
+                                if (callback != null) {
+                                    callback.onUploadComplete(downloadUri.toString());
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e(TAG, "Erro ao obter URL de download", e);
+                                if (callback != null) callback.onUploadFailed(e);
+                            });
+                })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Erro no upload da imagem", e);
                     if (callback != null) callback.onUploadFailed(e);
