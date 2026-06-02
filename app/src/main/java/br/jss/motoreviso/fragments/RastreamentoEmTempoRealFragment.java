@@ -181,7 +181,7 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
 
                     textVelocidade.setText(String.valueOf(velocidadeAtual));
                     progressSpeedometer.setProgress(velocidadeAtual);
-                    textDistancia.setText(String.format(Locale.US, "%.1f", distanciaTotal / 1000));
+                    textDistancia.setText(String.format(Locale.US, "%.1f", distanciaTotal / 1000.0));
                     textTempo.setText(String.format("%02d:%02d", minutos, segundos));
 
                     // Simular variação em outros dados
