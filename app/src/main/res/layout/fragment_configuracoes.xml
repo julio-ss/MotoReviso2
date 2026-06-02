@@ -12,7 +12,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="20dp"
-        android:paddingBottom="32dp">
+        android:paddingBottom="80dp">
 
         <TextView
             android:id="@+id/text_configuracao"
