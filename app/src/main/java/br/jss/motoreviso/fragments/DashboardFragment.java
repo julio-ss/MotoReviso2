@@ -150,14 +150,26 @@ public class DashboardFragment extends Fragment {
     }
 
     private void updateVeiculoCard(Veiculo veiculo) {
+        Log.d(TAG, "updateVeiculoCard: Updating vehicle card");
         textVeiculoNome.setText(veiculo.getMarca() + " " + veiculo.getModelo());
         textKmAtual.setText(formatKm(veiculo.getKmAtual()) + " km");
 
+        // Load vehicle image
+        loadVehicleImage(veiculo);
+    }
+
+    private void loadVehicleImage(Veiculo veiculo) {
         if (veiculo.getUrlImagemPrincipal() != null && !veiculo.getUrlImagemPrincipal().isEmpty()) {
+            Log.d(TAG, "Loading vehicle image: " + veiculo.getUrlImagemPrincipal());
             Glide.with(this)
                     .load(veiculo.getUrlImagemPrincipal())
+                    .placeholder(R.drawable.ic_car_modern)  // Show default while loading
+                    .error(R.drawable.ic_car_modern)  // Show default if error
                     .centerCrop()
                     .into(imgVeiculo);
+        } else {
+            Log.d(TAG, "No vehicle image URL, using default");
+            imgVeiculo.setImageResource(R.drawable.ic_car_modern);
         }
 
         // Update health indicators
