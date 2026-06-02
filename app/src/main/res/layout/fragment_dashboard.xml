@@ -206,7 +206,6 @@
             android:paddingHorizontal="16dp"
             android:paddingVertical="16dp"
             android:gravity="center"
-            android:justifyContent="space_around"
             android:weightSum="4">
 
             <!-- Óleo (Oil) -->
