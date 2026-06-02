@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.LinearLayout;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -39,7 +40,8 @@ public class DashboardFragment extends Fragment {
     private TextView textCustoMes, textKmMes, textConsumo;
     private TextView textUltimoTrajeto, textUltimoData, textDist, textVelMax;
     private ProgressBar progressRevision, progressLoading;
-    private MaterialCardView cardVeiculo, cardRevision, cardStats, cardTrajeto;
+    private MaterialCardView cardVeiculo, cardRevision, cardTrajeto;
+    private ViewGroup cardStats;  // Changed from MaterialCardView to ViewGroup (it's a LinearLayout)
     private View btnNotificacao;
 
     private FirebaseManager firebaseManager;
@@ -177,13 +179,21 @@ public class DashboardFragment extends Fragment {
     }
 
     private void updateTrajetoCard(Trajeto trajeto) {
-        textUltimoTrajeto.setText(trajeto.getNome());
+        // Use origem and destino instead of nome
+        String trajName = (trajeto.getOrigem() != null ? trajeto.getOrigem() : "Trajeto") +
+                         " → " +
+                         (trajeto.getDestino() != null ? trajeto.getDestino() : "");
+        textUltimoTrajeto.setText(trajName);
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         textUltimoData.setText(sdf.format(new Date(trajeto.getDataCadastro())));
 
-        textDist.setText(String.format("%.1f km", trajeto.getDistancia()));
-        textVelMax.setText(String.format("%d km/h", trajeto.getVelocidadeMaxima()));
+        // Use getKmRodados() instead of getDistancia()
+        Double kmRodados = trajeto.getKmRodados() != null ? trajeto.getKmRodados() : 0.0;
+        textDist.setText(String.format("%.1f km", kmRodados));
+
+        Integer velMax = trajeto.getVelocidadeMaxima() != null ? trajeto.getVelocidadeMaxima().intValue() : 0;
+        textVelMax.setText(String.format("%d km/h", velMax));
 
         cardTrajeto.setOnClickListener(v -> {
             // Navigate to maps or trajectory detail
@@ -191,10 +201,10 @@ public class DashboardFragment extends Fragment {
     }
 
     private String getHora() {
-        int hora = new java.util.Calendar.Builder()
-                .setInstant(System.currentTimeMillis())
-                .build()
-                .get(java.util.Calendar.HOUR_OF_DAY);
+        // Use Calendar.getInstance() for API 24 compatibility instead of Calendar.Builder (requires API 26)
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        int hora = calendar.get(java.util.Calendar.HOUR_OF_DAY);
 
         if (hora >= 5 && hora < 12) {
             return "Bom dia";
