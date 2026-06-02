@@ -53,7 +53,7 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
     private TextView textTempo;
     private TextView textAltitude;
     private TextView textInclinacao;
-    private TextView textHora;
+    private View statusIndicator;
     private ImageView imgCompass;
     private MaterialButton btnIniciar;
     private MaterialButton btnPausar;
@@ -114,7 +114,6 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
         inicializarViews(view);
         configurarListeners();
         verificarPermissoes();
-        atualizarHora();
 
         return view;
     }
@@ -157,7 +156,7 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
         textTempo = view.findViewById(R.id.text_tempo);
         textAltitude = view.findViewById(R.id.text_altitude);
         textInclinacao = view.findViewById(R.id.text_inclinacao);
-        textHora = view.findViewById(R.id.text_hora);
+        statusIndicator = view.findViewById(R.id.status_indicator);
         imgCompass = view.findViewById(R.id.img_compass);
         btnIniciar = view.findViewById(R.id.btn_iniciar);
         btnPausar = view.findViewById(R.id.btn_pausar);
@@ -204,6 +203,9 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
         btnPausar.setEnabled(true);
         btnParar.setEnabled(true);
 
+        // Mudar cor do indicador para verde e iniciar animação
+        atualizarIndicador(true);
+
         Toast.makeText(getContext(), "Rastreamento iniciado", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "Rastreamento iniciado com serviço real");
     }
@@ -240,6 +242,9 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
         // Resetar UI imediatamente
         resetarTela();
         atualizarBotoes(false);
+
+        // Mudar cor do indicador para vermelho e parar animação
+        atualizarIndicador(false);
 
         // Parar o serviço
         Intent stopIntent = new Intent(getContext(), RastreamentoService.class);
@@ -323,14 +328,6 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
                 .addToBackStack(null)
                 .commit();
         }
-    }
-
-    private void atualizarHora() {
-        timerHandler.postDelayed(() -> {
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
-            textHora.setText(sdf.format(new Date()));
-            atualizarHora(); // Repetir a cada minuto
-        }, 60000);
     }
 
     private void verificarPermissoes() {
@@ -425,6 +422,22 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
             LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(trackingReceiver);
         }
         super.onPause();
+    }
+
+    private void atualizarIndicador(boolean rastreando) {
+        if (statusIndicator == null) return;
+
+        if (rastreando) {
+            // Verde com animação piscante
+            statusIndicator.setColorFilter(ContextCompat.getColor(getContext(), R.color.success));
+            statusIndicator.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
+                    getContext(), R.anim.blink_animation));
+        } else {
+            // Vermelho estático
+            statusIndicator.clearAnimation();
+            statusIndicator.setColorFilter(ContextCompat.getColor(getContext(), R.color.error));
+            statusIndicator.setAlpha(1.0f);
+        }
     }
 
     @Override
