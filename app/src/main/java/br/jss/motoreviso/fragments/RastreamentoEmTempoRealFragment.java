@@ -23,8 +23,11 @@ import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import android.content.res.ColorStateList;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -427,13 +430,15 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
 
         if (rastreando) {
             // Verde com animação piscante
-            statusIndicator.setBackgroundTint(ContextCompat.getColor(getContext(), R.color.success));
+            int greenColor = ContextCompat.getColor(getContext(), R.color.success);
+            ViewCompat.setBackgroundTintList(statusIndicator, ColorStateList.valueOf(greenColor));
             statusIndicator.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
                     getContext(), R.anim.blink_animation));
         } else {
             // Vermelho estático
             statusIndicator.clearAnimation();
-            statusIndicator.setBackgroundTint(ContextCompat.getColor(getContext(), R.color.error));
+            int redColor = ContextCompat.getColor(getContext(), R.color.error);
+            ViewCompat.setBackgroundTintList(statusIndicator, ColorStateList.valueOf(redColor));
             statusIndicator.setAlpha(1.0f);
         }
     }
