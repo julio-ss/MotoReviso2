@@ -28,7 +28,7 @@
             android:background="@android:color/transparent"
             app:itemIconTint="@color/nav_item_color"
             app:itemTextColor="@color/nav_item_color"
-            app:labelVisibilityMode="labelVisibilitySelected"
+            app:labelVisibilityMode="labeled"
             app:menu="@menu/menu_navigation" />
 
     </com.google.android.material.bottomappbar.BottomAppBar>
