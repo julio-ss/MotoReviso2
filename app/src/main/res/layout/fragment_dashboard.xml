@@ -319,6 +319,7 @@
 
         <!-- Stats Row -->
         <LinearLayout
+            android:id="@+id/card_stats"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
