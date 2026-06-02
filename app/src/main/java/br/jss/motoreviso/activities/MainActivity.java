@@ -13,6 +13,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import br.jss.motoreviso.R;
 import br.jss.motoreviso.fragments.ConfiguracoesFragment;
+import br.jss.motoreviso.fragments.DashboardFragment;
 import br.jss.motoreviso.fragments.ManutencoesFragment;
 import br.jss.motoreviso.fragments.TrajetosFragment;
 import br.jss.motoreviso.fragments.VeiculosFragment;
@@ -37,7 +38,10 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
-            if (itemId == R.id.nav_veiculos) {
+            if (itemId == R.id.nav_inicio) {
+                carregarFragment(new DashboardFragment());
+                return true;
+            } else if (itemId == R.id.nav_veiculos) {
                 carregarFragment(new VeiculosFragment());
                 return true;
             } else if (itemId == R.id.nav_manutencoes) {
@@ -55,8 +59,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         if (savedInstanceState == null) {
-            bottomNavigation.setSelectedItemId(R.id.nav_veiculos);
-            carregarFragment(new VeiculosFragment());
+            // Set Dashboard as the initial screen
+            bottomNavigation.setSelectedItemId(R.id.nav_inicio);
+            carregarFragment(new DashboardFragment());
         }
     }
 
