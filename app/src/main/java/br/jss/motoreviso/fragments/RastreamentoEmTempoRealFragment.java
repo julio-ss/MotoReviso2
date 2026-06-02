@@ -122,18 +122,22 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
     private void obterVeiculoPrincipal() {
         com.google.firebase.auth.FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            firebaseManager.carregarVeiculoPrincipal(user.getUid())
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            Veiculo veiculo = documentSnapshot.toObject(Veiculo.class);
-                            if (veiculo != null) {
-                                veiculoId = documentSnapshot.getId();
-                                kmInicial = veiculo.getKmAtual();
-                                Log.d(TAG, "Veículo principal carregado: " + veiculoId);
-                            }
-                        }
-                    })
-                    .addOnFailureListener(e -> Log.e(TAG, "Erro ao carregar veículo principal", e));
+            firebaseManager.carregarVeiculoPrincipal(veiculo -> {
+                if (veiculo != null) {
+                    // Obtém o ID do veículo via query separada
+                    firebaseManager.obterTodosVeiculos()
+                            .addOnSuccessListener(querySnapshot -> {
+                                if (querySnapshot != null && !querySnapshot.getDocuments().isEmpty()) {
+                                    veiculoId = querySnapshot.getDocuments().get(0).getId();
+                                    kmInicial = veiculo.getKmAtual();
+                                    Log.d(TAG, "Veículo principal carregado: " + veiculoId + ", km: " + kmInicial);
+                                }
+                            })
+                            .addOnFailureListener(e -> Log.e(TAG, "Erro ao obter ID do veículo", e));
+                } else {
+                    Log.w(TAG, "Nenhum veículo principal encontrado");
+                }
+            });
         }
     }
 

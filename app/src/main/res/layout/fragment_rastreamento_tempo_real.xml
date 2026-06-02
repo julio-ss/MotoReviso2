@@ -85,16 +85,15 @@
                         android:textStyle="bold" />
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:orientation="vertical">
+                        android:orientation="horizontal">
 
                         <TextView
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="12dp"
-                            android:gravity="center"
                             android:text="km/h"
                             android:textColor="@color/text_secondary"
                             android:textSize="14sp" />
