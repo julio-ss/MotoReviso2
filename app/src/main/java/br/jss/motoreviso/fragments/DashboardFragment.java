@@ -26,6 +26,8 @@ import java.util.Locale;
 
 import br.jss.motoreviso.R;
 import br.jss.motoreviso.activities.DetalheVeiculoActivity;
+import br.jss.motoreviso.activities.MainActivity;
+import br.jss.motoreviso.activities.MapTrajetoActivity;
 import br.jss.motoreviso.activities.RastreamentoActivity;
 import br.jss.motoreviso.adapters.TrajetoAdapter;
 import br.jss.motoreviso.managers.FirebaseManager;
@@ -47,6 +49,7 @@ public class DashboardFragment extends Fragment {
 
     private FirebaseManager firebaseManager;
     private TrajetoAdapter trajetoAdapter;
+    private Trajeto ultimoTrajeto;  // Store last trip for navigation
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -139,11 +142,15 @@ public class DashboardFragment extends Fragment {
         // Update health indicators
         updateHealthIndicators(veiculo);
 
-        cardVeiculo.setOnClickListener(v -> {
+        // Navigate to vehicle details when clicking the card or image
+        View.OnClickListener openDetailsListener = v -> {
             Intent intent = new Intent(getActivity(), DetalheVeiculoActivity.class);
             intent.putExtra("veiculo_id", veiculo.getId());
             startActivity(intent);
-        });
+        };
+
+        cardVeiculo.setOnClickListener(openDetailsListener);
+        imgVeiculo.setOnClickListener(openDetailsListener);
     }
 
     private void updateHealthIndicators(Veiculo veiculo) {
@@ -175,18 +182,26 @@ public class DashboardFragment extends Fragment {
 
         textProxRevisao.setText(formatKm(kmRestante) + " km restantes");
 
+        // Navigate to Manutenções when clicking on revision card
         cardRevision.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), RastreamentoActivity.class);
-            startActivity(intent);
+            if (getActivity() != null && getActivity() instanceof MainActivity) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                mainActivity.carregarFragment(new ManutencoesFragment());
+            }
         });
     }
 
     private void loadStats(String veiculoId) {
-        // Aqui você pode implementar lógica para carregar stats do Firebase
-        // Por enquanto, usando valores de exemplo
-        textKmMes.setText("320 km");
-        textCustoMes.setText("R$ 150,00");
-        textConsumo.setText("22.5 km/l");
+        // TODO: Implement real stats loading from Firebase
+        // Load actual stats for:
+        // - KM driven this month (sum of all trajetos.kmRodados where month = current)
+        // - Average consumption (kmRodados / fuel used)
+        // - Total cost this month (sum of all maintenance costs for current month)
+
+        // For now, hide stats if not available
+        textKmMes.setText("--");
+        textCustoMes.setText("--");
+        textConsumo.setText("--");
     }
 
     private void loadLastTrip(String veiculoId) {
@@ -209,6 +224,8 @@ public class DashboardFragment extends Fragment {
     }
 
     private void updateTrajetoCard(Trajeto trajeto) {
+        this.ultimoTrajeto = trajeto;  // Store for navigation
+
         // Use origem and destino instead of nome
         String trajName = (trajeto.getOrigem() != null ? trajeto.getOrigem() : "Trajeto") +
                          " → " +
@@ -225,8 +242,11 @@ public class DashboardFragment extends Fragment {
         Integer velMax = trajeto.getVelocidadeMaxima() != null ? trajeto.getVelocidadeMaxima().intValue() : 0;
         textVelMax.setText(String.format("%d km/h", velMax));
 
+        // Navigate to map trajectory when clicked
         cardTrajeto.setOnClickListener(v -> {
-            // Navigate to maps or trajectory detail
+            Intent intent = new Intent(getActivity(), MapTrajetoActivity.class);
+            intent.putExtra("trajeto_id", ultimoTrajeto.getId());
+            startActivity(intent);
         });
     }
 

@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void carregarFragment(Fragment fragment) {
+    public void carregarFragment(Fragment fragment) {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setCustomAnimations(
                 R.anim.anim_slide_in,
