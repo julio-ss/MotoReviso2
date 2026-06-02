@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -30,6 +31,8 @@ import br.jss.motoreviso.utils.ImagemLoader;
 import br.jss.motoreviso.utils.SystemBarHelper;
 
 public class EditarVeiculoActivity extends AppCompatActivity {
+    private static final String TAG = "EditarVeiculoActivity";
+
     private String veiculoId;
     private EditText edtMarca, edtModelo, edtPlaca, edtKmAtual, edtDescricao;
     private Button btnSalvar, btnCancelar;
@@ -44,17 +47,24 @@ public class EditarVeiculoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate() called");
         setContentView(R.layout.activity_editar_veiculo);
 
         SystemBarHelper.applySystemBarPadding(this, findViewById(android.R.id.content));
 
         veiculoId = getIntent().getStringExtra("VEICULO_ID");
+        Log.d(TAG, "Veiculo ID: " + veiculoId);
+
         if (veiculoId == null) {
+            Log.w(TAG, "Veiculo ID is null, finishing activity");
             finish();
             return;
         }
 
         firebaseManager = FirebaseManager.getInstance();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        Log.d(TAG, "Current user on onCreate: " + (currentUser != null ? currentUser.getEmail() : "NULL"));
+
         inicializarViews();
         setupImagemLauncher();
         carregarVeiculo();
@@ -148,6 +158,8 @@ public class EditarVeiculoActivity extends AppCompatActivity {
     }
 
     private void salvarAlteracoes() {
+        Log.d(TAG, "salvarAlteracoes() called");
+
         String marca = edtMarca.getText().toString().trim();
         String modelo = edtModelo.getText().toString().trim();
         String placa = edtPlaca.getText().toString().trim();
@@ -171,22 +183,34 @@ public class EditarVeiculoActivity extends AppCompatActivity {
 
         // Se uma nova imagem foi selecionada, fazer upload para Firebase Storage
         if (imagemUri != null) {
+            Log.d(TAG, "imagemUri is not null, checking authentication...");
+
             // Verificar se usuário está autenticado
-            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+            Log.d(TAG, "FirebaseAuth instance obtained");
+
+            FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+            Log.d(TAG, "Current user: " + (currentUser != null ? currentUser.getUid() : "NULL"));
+
             if (currentUser == null) {
+                Log.w(TAG, "User is not authenticated!");
                 Toast.makeText(this, "Você precisa estar autenticado para fazer upload de imagem", Toast.LENGTH_SHORT).show();
                 return;
             }
 
+            Log.d(TAG, "User authenticated as: " + currentUser.getEmail());
             progressEditar.setVisibility(android.view.View.VISIBLE);
+
             // Gerar nome único para a imagem
             String nomeImagem = "veiculo_" + veiculoId + "_" + System.currentTimeMillis() + ".jpg";
+            Log.d(TAG, "Starting image upload: " + nomeImagem);
 
             // Upload para Firebase Storage e obter URL
             firebaseManager.uploadImagemVeiculo(imagemUri, nomeImagem,
                 new FirebaseManager.OnUploadCompleteListener() {
                     @Override
                     public void onUploadComplete(String downloadUrl) {
+                        Log.d(TAG, "Image upload completed, URL: " + downloadUrl);
                         // Salvar URL de download no veículo
                         veiculoAtual.setUrlImagemPrincipal(downloadUrl);
                         atualizarVeiculoFirebase();
@@ -194,6 +218,7 @@ public class EditarVeiculoActivity extends AppCompatActivity {
 
                     @Override
                     public void onUploadFailed(Exception exception) {
+                        Log.e(TAG, "Image upload failed", exception);
                         progressEditar.setVisibility(android.view.View.GONE);
                         String mensagemErro = "Erro ao fazer upload da imagem";
 
@@ -214,6 +239,7 @@ public class EditarVeiculoActivity extends AppCompatActivity {
                     }
                 });
         } else {
+            Log.d(TAG, "No image selected, updating vehicle without image upload");
             // Se nenhuma imagem foi selecionada, apenas atualizar os dados
             atualizarVeiculoFirebase();
         }
