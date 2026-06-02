@@ -54,7 +54,6 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
     private TextView textAltitude;
     private TextView textInclinacao;
     private View statusIndicator;
-    private ImageView imgCompass;
     private MaterialButton btnIniciar;
     private MaterialButton btnPausar;
     private MaterialButton btnParar;
@@ -157,7 +156,6 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
         textAltitude = view.findViewById(R.id.text_altitude);
         textInclinacao = view.findViewById(R.id.text_inclinacao);
         statusIndicator = view.findViewById(R.id.status_indicator);
-        imgCompass = view.findViewById(R.id.img_compass);
         btnIniciar = view.findViewById(R.id.btn_iniciar);
         btnPausar = view.findViewById(R.id.btn_pausar);
         btnParar = view.findViewById(R.id.btn_parar);
