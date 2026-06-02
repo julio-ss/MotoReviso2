@@ -38,6 +38,7 @@ import br.jss.motoreviso.R;
 import br.jss.motoreviso.activities.MapTrajetoActivity;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.Trajeto;
+import br.jss.motoreviso.models.Veiculo;
 import br.jss.motoreviso.services.RastreamentoService;
 
 public class RastreamentoEmTempoRealFragment extends Fragment {
@@ -83,6 +84,9 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
 
         firebaseManager = FirebaseManager.getInstance();
 
+        // Obter veículo principal para rastreamento
+        obterVeiculoPrincipal();
+
         // Inicializar receiver de rastreamento
         if (trackingReceiver == null) {
             trackingReceiver = new BroadcastReceiver() {
@@ -113,6 +117,24 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
         atualizarHora();
 
         return view;
+    }
+
+    private void obterVeiculoPrincipal() {
+        com.google.firebase.auth.FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            firebaseManager.carregarVeiculoPrincipal(user.getUid())
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            Veiculo veiculo = documentSnapshot.toObject(Veiculo.class);
+                            if (veiculo != null) {
+                                veiculoId = documentSnapshot.getId();
+                                kmInicial = veiculo.getKmAtual();
+                                Log.d(TAG, "Veículo principal carregado: " + veiculoId);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(e -> Log.e(TAG, "Erro ao carregar veículo principal", e));
+        }
     }
 
     private void inicializarViews(View view) {

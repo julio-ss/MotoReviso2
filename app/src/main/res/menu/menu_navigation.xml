@@ -8,16 +8,26 @@
     <item
         android:id="@+id/nav_veiculos"
         android:icon="@drawable/ic_car_modern"
-        android:title="@string/menu_veiculos" />
+        android:title="Garagem" />
 
     <item
         android:id="@+id/nav_manutencoes"
         android:icon="@drawable/ic_wrench_modern"
-        android:title="@string/menu_manutencoes" />
+        android:title="Manutenção" />
 
+    <!-- Menu com submenu -->
     <item
-        android:id="@+id/nav_config"
+        android:id="@+id/nav_mais"
         android:icon="@drawable/ic_settings_modern"
-        android:title="@string/menu_config" />
+        android:title="Mais">
+        <menu>
+            <item
+                android:id="@+id/nav_config"
+                android:title="@string/menu_config" />
+            <item
+                android:id="@+id/nav_galeria"
+                android:title="Galeria" />
+        </menu>
+    </item>
 
 </menu>

@@ -19,6 +19,7 @@ import br.jss.motoreviso.fragments.ManutencoesFragment;
 import br.jss.motoreviso.fragments.RastreamentoEmTempoRealFragment;
 import br.jss.motoreviso.fragments.VeiculosFragment;
 import br.jss.motoreviso.utils.SystemBarHelper;
+import br.jss.motoreviso.activities.GaleriaVeiculoActivity;
 
 public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigation;
@@ -50,8 +51,14 @@ public class MainActivity extends AppCompatActivity {
             } else if (itemId == R.id.nav_manutencoes) {
                 carregarFragment(new ManutencoesFragment());
                 return true;
+            } else if (itemId == R.id.nav_mais) {
+                abrirMenuCascata();
+                return true;
             } else if (itemId == R.id.nav_config) {
                 carregarFragment(new ConfiguracoesFragment());
+                return true;
+            } else if (itemId == R.id.nav_galeria) {
+                // Abrir galeria (atividade separada se necessário)
                 return true;
             }
 
@@ -88,5 +95,27 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("VEICULO_ID", veiculoId);
         startActivity(intent);
         overridePendingTransition(R.anim.anim_fade_in, R.anim.anim_fade_out);
+    }
+
+    private void abrirMenuCascata() {
+        // Criar um PopupMenu com as opções adicionais
+        android.widget.PopupMenu popupMenu = new android.widget.PopupMenu(this,
+            bottomNavigation.findViewById(R.id.nav_mais));
+        popupMenu.inflate(R.menu.menu_mais);
+
+        popupMenu.setOnMenuItemClickListener(menuItem -> {
+            int id = menuItem.getItemId();
+            if (id == R.id.nav_config) {
+                carregarFragment(new ConfiguracoesFragment());
+                return true;
+            } else if (id == R.id.nav_galeria) {
+                Intent intent = new Intent(MainActivity.this, GaleriaVeiculoActivity.class);
+                startActivity(intent);
+                return true;
+            }
+            return false;
+        });
+
+        popupMenu.show();
     }
 }
