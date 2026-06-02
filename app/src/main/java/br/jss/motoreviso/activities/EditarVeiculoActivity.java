@@ -1,7 +1,10 @@
 package br.jss.motoreviso.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,6 +15,11 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -85,8 +93,33 @@ public class EditarVeiculoActivity extends AppCompatActivity {
     }
 
     private void selecionarImagem() {
-        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        imagemLauncher.launch(intent);
+        // Check if permission is granted
+        String permissao = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+            ? Manifest.permission.READ_MEDIA_IMAGES
+            : Manifest.permission.READ_EXTERNAL_STORAGE;
+
+        if (ContextCompat.checkSelfPermission(this, permissao) != PackageManager.PERMISSION_GRANTED) {
+            // Request permission
+            ActivityCompat.requestPermissions(this, new String[]{permissao}, 101);
+        } else {
+            // Permission already granted, open gallery
+            Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            imagemLauncher.launch(intent);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 101) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, open gallery
+                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                imagemLauncher.launch(intent);
+            } else {
+                Toast.makeText(this, "Permissão de acesso à galeria foi negada", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void carregarVeiculo() {
@@ -138,6 +171,13 @@ public class EditarVeiculoActivity extends AppCompatActivity {
 
         // Se uma nova imagem foi selecionada, fazer upload para Firebase Storage
         if (imagemUri != null) {
+            // Verificar se usuário está autenticado
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (currentUser == null) {
+                Toast.makeText(this, "Você precisa estar autenticado para fazer upload de imagem", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             progressEditar.setVisibility(android.view.View.VISIBLE);
             // Gerar nome único para a imagem
             String nomeImagem = "veiculo_" + veiculoId + "_" + System.currentTimeMillis() + ".jpg";
@@ -155,9 +195,22 @@ public class EditarVeiculoActivity extends AppCompatActivity {
                     @Override
                     public void onUploadFailed(Exception exception) {
                         progressEditar.setVisibility(android.view.View.GONE);
-                        Toast.makeText(EditarVeiculoActivity.this,
-                            "Erro ao fazer upload da imagem: " + exception.getMessage(),
-                            Toast.LENGTH_SHORT).show();
+                        String mensagemErro = "Erro ao fazer upload da imagem";
+
+                        // Mensagens de erro mais descritivas
+                        if (exception.getMessage() != null) {
+                            if (exception.getMessage().contains("Permission denied")) {
+                                mensagemErro = "Permissão negada para acessar a imagem";
+                            } else if (exception.getMessage().contains("404")) {
+                                mensagemErro = "Firebase Storage não configurado corretamente";
+                            } else if (exception.getMessage().contains("SecurityException")) {
+                                mensagemErro = "Permissão de acesso à mídia foi negada";
+                            } else {
+                                mensagemErro += ": " + exception.getMessage();
+                            }
+                        }
+
+                        Toast.makeText(EditarVeiculoActivity.this, mensagemErro, Toast.LENGTH_LONG).show();
                     }
                 });
         } else {
