@@ -302,13 +302,13 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
     private void verificarPermissoes() {
         if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
+            requestPermissions(
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_CODE);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.POST_NOTIFICATIONS)
                     != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
+                requestPermissions(
                         new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, PERMISSION_CODE + 1);
             }
         }
