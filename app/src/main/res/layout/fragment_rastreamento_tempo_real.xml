@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <!-- Header with GPS Status -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="16dp"
+        android:gravity="center_vertical">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_gps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GPS - 11 sat"
+            android:textColor="@android:color/white"
+            app:chipBackgroundColor="@color/secondary"
+            app:chipIcon="@drawable/ic_map_modern"
+            app:chipIconTint="@android:color/white"
+            android:layout_weight="0" />
+
+        <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/text_hora"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="21:48"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary" />
+
+    </LinearLayout>
+
+    <!-- Speedometer Section -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginVertical="16dp">
+
+        <!-- Speedometer Background (Circular Progress) -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ProgressBar
+                android:id="@+id/progress_speedometer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:max="200"
+                android:progress="96"
+                android:indeterminate="false"
+                android:progressDrawable="@drawable/bg_progress_circular_large"
+                style="?android:attr/progressBarStyleHorizontal" />
+
+            <!-- Speed Value -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/text_velocidade"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="96"
+                    android:textSize="64sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="km/h"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginEnd="12dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="marcha 4  6800 rpm"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </FrameLayout>
+
+    <!-- Speed Indicators Line -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="32dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center">
+
+        <View
+            android:layout_width="16dp"
+            android:layout_height="3dp"
+            android:background="@color/secondary"
+            android:layout_marginHorizontal="4dp" />
+
+        <View
+            android:layout_width="16dp"
+            android:layout_height="3dp"
+            android:background="@color/secondary"
+            android:layout_marginHorizontal="4dp" />
+
+        <View
+            android:layout_width="16dp"
+            android:layout_height="3dp"
+            android:background="@color/secondary"
+            android:layout_marginHorizontal="4dp" />
+
+        <View
+            android:layout_width="16dp"
+            android:layout_height="3dp"
+            android:background="@color/secondary"
+            android:layout_marginHorizontal="4dp" />
+
+    </LinearLayout>
+
+    <!-- Stats Grid -->
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="3"
+        android:paddingHorizontal="16dp"
+        android:layout_marginBottom="12dp">
+
+        <!-- Vel Max -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="8dp"
+            android:background="@drawable/bg_card_surface"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:layout_columnWeight="1"
+            android:layout_margin="6dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="VEL. MÁX"
+                android:textSize="10sp"
+                android:textColor="@color/text_secondary"
+                android:letterSpacing="0.08" />
+
+            <TextView
+                android:id="@+id/text_vel_max"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="138"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="km/h"
+                android:textSize="10sp"
+                android:textColor="@color/text_secondary" />
+
+        </LinearLayout>
+
+        <!-- Distância -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="8dp"
+            android:background="@drawable/bg_card_surface"
+            android:layout_row="0"
+            android:layout_column="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="6dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DISTÂNCIA"
+                android:textSize="10sp"
+                android:textColor="@color/text_secondary"
+                android:letterSpacing="0.08" />
+
+            <TextView
+                android:id="@+id/text_distancia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="42.6"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="km"
+                android:textSize="10sp"
+                android:textColor="@color/text_secondary" />
+
+        </LinearLayout>
+
+        <!-- Tempo -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="8dp"
+            android:background="@drawable/bg_card_surface"
+            android:layout_row="0"
+            android:layout_column="2"
+            android:layout_columnWeight="1"
+            android:layout_margin="6dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TEMPO"
+                android:textSize="10sp"
+                android:textColor="@color/text_secondary"
+                android:letterSpacing="0.08" />
+
+            <TextView
+                android:id="@+id/text_tempo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="38:19"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginTop="4dp" />
+
+        </LinearLayout>
+
+        <!-- Altitude -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="8dp"
+            android:background="@drawable/bg_card_surface"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:layout_columnWeight="1"
+            android:layout_margin="6dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ALTITUDE"
+                android:textSize="10sp"
+                android:textColor="@color/text_secondary"
+                android:letterSpacing="0.08" />
+
+            <TextView
+                android:id="@+id/text_altitude"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="642"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="m"
+                android:textSize="10sp"
+                android:textColor="@color/text_secondary" />
+
+        </LinearLayout>
+
+        <!-- Compass -->
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_weight="1"
+            android:layout_row="1"
+            android:layout_column="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="6dp"
+            android:background="@drawable/bg_card_surface">
+
+            <ImageView
+                android:id="@+id/img_compass"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_map_modern"
+                android:tint="@color/secondary"
+                android:contentDescription="Bússola" />
+
+        </FrameLayout>
+
+        <!-- Inclinação -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="8dp"
+            android:background="@drawable/bg_card_surface"
+            android:layout_row="1"
+            android:layout_column="2"
+            android:layout_columnWeight="1"
+            android:layout_margin="6dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="INCLINAÇÃO"
+                android:textSize="9sp"
+                android:textColor="@color/text_secondary"
+                android:letterSpacing="0.05" />
+
+            <TextView
+                android:id="@+id/text_inclinacao"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="7"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="°"
+                android:textSize="10sp"
+                android:textColor="@color/text_secondary" />
+
+        </LinearLayout>
+
+    </GridLayout>
+
+    <!-- Coordinates -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="LAT -28.4512  LNG -49.3961"
+        android:textSize="10sp"
+        android:textColor="@color/text_secondary"
+        android:textAlignment="center"
+        android:paddingHorizontal="16dp"
+        android:layout_marginBottom="12dp"
+        android:letterSpacing="0.05" />
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        android:weightSum="2">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_pausar"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Pausar"
+            android:textSize="14sp"
+            android:layout_marginEnd="8dp"
+            app:cornerRadius="12dp"
+            app:strokeColor="@color/divider_strong"
+            app:strokeWidth="1dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_ver_mapa"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Ver Mapa"
+            android:textSize="14sp"
+            android:textColor="@android:color/white"
+            android:layout_marginStart="8dp"
+            app:cornerRadius="12dp"
+            app:backgroundTint="@color/primary"
+            app:icon="@drawable/ic_map_modern"
+            app:iconGravity="textStart" />
+
+    </LinearLayout>
+
+    <!-- Histórico Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_historico"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="Histórico de Rastreamento"
+        android:textSize="14sp"
+        android:textColor="@android:color/white"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        app:cornerRadius="12dp"
+        app:backgroundTint="@color/secondary"
+        app:icon="@drawable/ic_map_modern"
+        app:iconGravity="textStart" />
+
+</LinearLayout>
