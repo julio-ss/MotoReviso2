@@ -19,19 +19,29 @@
 
 ---
 
-## 🔍 ID Validator Script
+## 🔍 Validators
 
-### Purpose
+### Master Validator (Run This!)
+```bash
+bash scripts/validate_all.sh
+```
+Runs all checks in one command. Use before every build.
+
+---
+
+### 1. ID Validator Script
+
+#### Purpose
 Automatically checks that every `findViewById(R.id.xxx)` call in Java has a matching `android:id="@+id/xxx"` in the corresponding layout file.
 
-### Usage
+#### Usage
 
-#### Bash/Unix (macOS/Linux)
+Bash/Unix (macOS/Linux):
 ```bash
 bash scripts/validate_ids.sh
 ```
 
-#### Python (any platform)
+Python (any platform):
 ```bash
 python scripts/validate_ids.py
 # or python3 scripts/validate_ids.py
@@ -50,7 +60,7 @@ python scripts/validate_ids.py
 ❌ ManutencoesFragment (fragment_manutencoes.xml) - ID 'R.id.btn_adicionar_manutencao' NOT FOUND in layout
 ```
 
-### How It Works
+#### How It Works
 1. Scans all `*.xml` layout files → extracts all `android:id="@+id/..."` definitions
 2. Scans all `*.java` files → extracts all `findViewById(R.id....)` calls
 3. Infers the layout file name from the Java class name (e.g., `LoginActivity` → `activity_login`)
@@ -58,28 +68,80 @@ python scripts/validate_ids.py
 
 ---
 
+### 2. View Type Validator Script
+
+#### Purpose
+Checks that the Java type (e.g., `Button`, `FloatingActionButton`) matches the XML element type.
+
+#### Usage
+```bash
+bash scripts/validate_view_types.sh
+```
+
+#### Prevents
+- **ClassCastException**: "Button cannot be cast to FloatingActionButton"
+- Type mismatches between Java declarations and XML elements
+
+#### Example
+✅ **Correct:**
+```java
+private FloatingActionButton btnAdd;
+btnAdd = view.findViewById(R.id.btn_add);
+```
+```xml
+<com.google.android.material.floatingactionbutton.FloatingActionButton
+    android:id="@+id/btn_add" ... />
+```
+
+❌ **Wrong (will crash):**
+```java
+private Button btnAdd;  // WRONG TYPE!
+btnAdd = view.findViewById(R.id.btn_add);
+```
+```xml
+<com.google.android.material.floatingactionbutton.FloatingActionButton
+    android:id="@+id/btn_add" ... />
+```
+
+---
+
 ## ✅ Pre-Build Checklist
 
-Before committing code that references views, run:
-
+### Quick Version (Run This!)
 ```bash
-# 1. Validate all IDs
-bash scripts/validate_ids.sh
-
-# 2. Validate Material Design 2 compatibility
-grep -r "shapeAppearanceOverride\|itemActiveIndicatorColor\|itemStateLayerColor" app/src/main/res/layout/
-
-# 3. Validate that all referenced resources exist
-# Check for missing drawables
-grep -rho '@drawable/[a-z_]*' app/src/main/res/layout/ | sort -u > /tmp/used_drawables.txt
-ls app/src/main/res/drawable*.xml | xargs -I {} basename {} | sed 's/\.xml//' | sort -u > /tmp/defined_drawables.txt
-comm -23 /tmp/used_drawables.txt /tmp/defined_drawables.txt
-
-# Check for missing colors
-grep -rho '@color/[a-z_]*' app/src/main/res/layout/ | sort -u > /tmp/used_colors.txt
-grep -rho 'name="[a-z_]*"' app/src/main/res/values/colors.xml | sed 's/name="//' | sed 's/"//' | sort -u > /tmp/defined_colors.txt
-comm -23 /tmp/used_colors.txt /tmp/defined_colors.txt
+bash scripts/validate_all.sh
 ```
+
+### Detailed Checklist
+Before committing code that references views, verify:
+
+- [ ] IDs in Java match IDs in layouts
+  ```bash
+  bash scripts/validate_ids.sh
+  ```
+
+- [ ] Java types match XML element types
+  ```bash
+  bash scripts/validate_view_types.sh
+  ```
+
+- [ ] No M3-only attributes
+  ```bash
+  grep -r "shapeAppearanceOverride\|itemActiveIndicatorColor" app/src/main/res/layout/
+  ```
+
+- [ ] All referenced resources exist
+  ```bash
+  # Drawables
+  grep -rho '@drawable/[a-z_]*' app/src/main/res/layout/ | sort -u > /tmp/used.txt
+  ls app/src/main/res/drawable*.xml | xargs basename -a | sed 's/\.xml//' | sort -u > /tmp/defined.txt
+  comm -23 /tmp/used.txt /tmp/defined.txt
+  
+  # Colors
+  grep -rho '@color/[a-z_]*' app/src/main/res/layout/ | sort -u > /tmp/colors_used.txt
+  grep 'name="' app/src/main/res/values/colors.xml | sed 's/.*name="//' | sed 's/".*//' | sort -u > /tmp/colors_def.txt
+  comm -23 /tmp/colors_used.txt /tmp/colors_def.txt
+  ```
 
 ---
 
