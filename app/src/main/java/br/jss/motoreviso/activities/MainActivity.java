@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Listener do FAB para navegação ao Rastreamento
         fabRastreamento.setOnClickListener(v -> {
-            bottomNavigation.setSelectedItemId(R.id.nav_trajetos);
             carregarFragment(new TrajetosFragment());
         });
 
