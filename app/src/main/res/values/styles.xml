@@ -59,8 +59,13 @@
         <item name="hintTextColor">@color/text_secondary</item>
     </style>
 
+    <!-- Base TextAppearance (required as parent for dot-notation children) -->
+    <style name="TextAppearance.MotoReviso" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
     <!-- Section header text -->
-    <style name="TextAppearance.MotoReviso.SectionHeader">
+    <style name="TextAppearance.MotoReviso.SectionHeader" parent="TextAppearance.MotoReviso">
         <item name="android:textSize">11sp</item>
         <item name="android:textColor">@color/text_secondary</item>
         <item name="android:letterSpacing">0.08</item>
@@ -68,14 +73,14 @@
     </style>
 
     <!-- Display headline -->
-    <style name="TextAppearance.MotoReviso.Display">
+    <style name="TextAppearance.MotoReviso.Display" parent="TextAppearance.MotoReviso">
         <item name="android:textSize">28sp</item>
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <!-- Numeric / digit value -->
-    <style name="TextAppearance.MotoReviso.Digit">
+    <style name="TextAppearance.MotoReviso.Digit" parent="TextAppearance.MotoReviso">
         <item name="android:textSize">32sp</item>
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textStyle">bold</item>
