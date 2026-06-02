@@ -15,19 +15,9 @@
         android:icon="@drawable/ic_wrench_modern"
         android:title="Manutenção" />
 
-    <!-- Menu com submenu -->
     <item
         android:id="@+id/nav_mais"
         android:icon="@drawable/ic_settings_modern"
-        android:title="Mais">
-        <menu>
-            <item
-                android:id="@+id/nav_config"
-                android:title="@string/menu_config" />
-            <item
-                android:id="@+id/nav_galeria"
-                android:title="Galeria" />
-        </menu>
-    </item>
+        android:title="Mais" />
 
 </menu>

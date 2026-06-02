@@ -98,9 +98,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void abrirMenuCascata() {
+        // Encontrar a view do ícone "Mais" na navbar
+        android.view.View navMaisView = bottomNavigation.findViewById(R.id.nav_mais);
+        if (navMaisView == null) {
+            // Se não encontrar, mostrar PopupMenu no ponto central inferior
+            navMaisView = bottomNavigation;
+        }
+
         // Criar um PopupMenu com as opções adicionais
-        android.widget.PopupMenu popupMenu = new android.widget.PopupMenu(this,
-            bottomNavigation.findViewById(R.id.nav_mais));
+        android.widget.PopupMenu popupMenu = new android.widget.PopupMenu(this, navMaisView);
         popupMenu.inflate(R.menu.menu_mais);
 
         popupMenu.setOnMenuItemClickListener(menuItem -> {
