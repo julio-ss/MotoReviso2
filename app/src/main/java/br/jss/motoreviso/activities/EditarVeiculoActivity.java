@@ -181,65 +181,37 @@ public class EditarVeiculoActivity extends AppCompatActivity {
 
         veiculoAtual.setDescricao(edtDescricao.getText().toString());
 
-        // Se uma nova imagem foi selecionada, fazer upload para Firebase Storage
+        // Se uma nova imagem foi selecionada, salvar localmente no dispositivo
         if (imagemUri != null) {
-            Log.d(TAG, "imagemUri is not null, checking authentication...");
+            Log.d(TAG, "imagemUri is not null, saving image locally...");
 
-            // Verificar se usuário está autenticado
-            FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-            Log.d(TAG, "FirebaseAuth instance obtained");
-
-            FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-            Log.d(TAG, "Current user: " + (currentUser != null ? currentUser.getUid() : "NULL"));
-
-            if (currentUser == null) {
-                Log.w(TAG, "User is not authenticated!");
-                Toast.makeText(this, "Você precisa estar autenticado para fazer upload de imagem", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            Log.d(TAG, "User authenticated as: " + currentUser.getEmail());
             progressEditar.setVisibility(android.view.View.VISIBLE);
 
             // Gerar nome único para a imagem
             String nomeImagem = "veiculo_" + veiculoId + "_" + System.currentTimeMillis() + ".jpg";
-            Log.d(TAG, "Starting image upload: " + nomeImagem);
+            Log.d(TAG, "Salvando imagem localmente: " + nomeImagem);
 
-            // Upload para Firebase Storage e obter URL
-            firebaseManager.uploadImagemVeiculo(imagemUri, nomeImagem,
+            // Salvar imagem localmente no dispositivo
+            firebaseManager.salvarImagemLocalmente(this, imagemUri, nomeImagem,
                 new FirebaseManager.OnUploadCompleteListener() {
                     @Override
-                    public void onUploadComplete(String downloadUrl) {
-                        Log.d(TAG, "Image upload completed, URL: " + downloadUrl);
-                        // Salvar URL de download no veículo
-                        veiculoAtual.setUrlImagemPrincipal(downloadUrl);
+                    public void onUploadComplete(String caminhoLocal) {
+                        Log.d(TAG, "Imagem salva localmente em: " + caminhoLocal);
+                        // Salvar caminho da imagem no veículo
+                        veiculoAtual.setUrlImagemPrincipal(caminhoLocal);
                         atualizarVeiculoFirebase();
                     }
 
                     @Override
                     public void onUploadFailed(Exception exception) {
-                        Log.e(TAG, "Image upload failed", exception);
+                        Log.e(TAG, "Erro ao salvar imagem localmente", exception);
                         progressEditar.setVisibility(android.view.View.GONE);
-                        String mensagemErro = "Erro ao fazer upload da imagem";
-
-                        // Mensagens de erro mais descritivas
-                        if (exception.getMessage() != null) {
-                            if (exception.getMessage().contains("Permission denied")) {
-                                mensagemErro = "Permissão negada para acessar a imagem";
-                            } else if (exception.getMessage().contains("404")) {
-                                mensagemErro = "Firebase Storage não configurado corretamente";
-                            } else if (exception.getMessage().contains("SecurityException")) {
-                                mensagemErro = "Permissão de acesso à mídia foi negada";
-                            } else {
-                                mensagemErro += ": " + exception.getMessage();
-                            }
-                        }
-
+                        String mensagemErro = "Erro ao salvar imagem: " + exception.getMessage();
                         Toast.makeText(EditarVeiculoActivity.this, mensagemErro, Toast.LENGTH_LONG).show();
                     }
                 });
         } else {
-            Log.d(TAG, "No image selected, updating vehicle without image upload");
+            Log.d(TAG, "Nenhuma imagem selecionada, apenas atualizando dados");
             // Se nenhuma imagem foi selecionada, apenas atualizar os dados
             atualizarVeiculoFirebase();
         }

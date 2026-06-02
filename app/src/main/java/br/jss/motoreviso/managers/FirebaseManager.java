@@ -227,42 +227,64 @@ public class FirebaseManager {
 
     // ============ STORAGE ============
 
+    // Nota: Salvando imagens localmente no dispositivo, não em Firebase Storage
+    // O caminho é armazenado no Firestore para recuperação posterior
+
     public void uploadImagemVeiculo(Uri uri, String nomeArquivo,
                                     OnUploadCompleteListener callback) {
-        if (uri == null || nomeArquivo == null || nomeArquivo.isEmpty()) {
-            if (callback != null) {
-                callback.onUploadFailed(new IllegalArgumentException("URI ou nome de arquivo inválido"));
-            }
-            return;
+        // Este método não é mais usado - use salvarImagemLocalmente() em vez disso
+        if (callback != null) {
+            callback.onUploadFailed(new IllegalArgumentException("Use salvarImagemLocalmente() em vez disso"));
         }
+    }
 
-        // Usar caminho simples: vehicles/{filename}
-        // Isso evita problemas com pastas aninhadas e buckets não configurados
-        StorageReference reference = storage.getReference()
-                .child("vehicles")
-                .child(nomeArquivo);
+    // Novo método: Salvar imagem localmente no dispositivo
+    public void salvarImagemLocalmente(android.content.Context context, Uri imageUri,
+                                       String nomeArquivo, OnUploadCompleteListener callback) {
+        try {
+            Log.d(TAG, "Iniciando salvamento local de imagem: " + nomeArquivo);
 
-        Log.d(TAG, "Iniciando upload para: vehicles/" + nomeArquivo);
+            // Obter diretório de imagens do app
+            java.io.File imagensDir = new java.io.File(context.getExternalFilesDir(null), "imagens_veiculos");
 
-        reference.putFile(uri)
-                .addOnSuccessListener(taskSnapshot -> {
-                    Log.d(TAG, "Upload concluído, obtendo URL de download...");
-                    reference.getDownloadUrl()
-                            .addOnSuccessListener(downloadUri -> {
-                                Log.d(TAG, "URL de download obtida: " + downloadUri.toString());
-                                if (callback != null) {
-                                    callback.onUploadComplete(downloadUri.toString());
-                                }
-                            })
-                            .addOnFailureListener(e -> {
-                                Log.e(TAG, "Erro ao obter URL de download", e);
-                                if (callback != null) callback.onUploadFailed(e);
-                            });
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Erro no upload da imagem", e);
-                    if (callback != null) callback.onUploadFailed(e);
-                });
+            // Criar diretório se não existir
+            if (!imagensDir.exists()) {
+                imagensDir.mkdirs();
+                Log.d(TAG, "Diretório criado: " + imagensDir.getAbsolutePath());
+            }
+
+            // Arquivo de destino
+            java.io.File arquivoDestino = new java.io.File(imagensDir, nomeArquivo);
+
+            // Copiar arquivo
+            try (java.io.InputStream inputStream = context.getContentResolver().openInputStream(imageUri);
+                 java.io.FileOutputStream outputStream = new java.io.FileOutputStream(arquivoDestino)) {
+
+                if (inputStream == null) {
+                    throw new IllegalArgumentException("Não foi possível abrir o arquivo de imagem");
+                }
+
+                byte[] buffer = new byte[1024];
+                int bytesLidos;
+                while ((bytesLidos = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesLidos);
+                }
+
+                outputStream.flush();
+            }
+
+            String caminhoCompleto = arquivoDestino.getAbsolutePath();
+            Log.d(TAG, "Imagem salva com sucesso em: " + caminhoCompleto);
+
+            if (callback != null) {
+                callback.onUploadComplete(caminhoCompleto);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Erro ao salvar imagem localmente", e);
+            if (callback != null) {
+                callback.onUploadFailed(e);
+            }
+        }
     }
 
     public Task<Void> deletarImagemStorage(String urlImagem) {
