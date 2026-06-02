@@ -157,3 +157,4 @@ public class EditarVeiculoActivity extends AppCompatActivity {
                     Toast.makeText(EditarVeiculoActivity.this, "Erro ao atualizar: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+}

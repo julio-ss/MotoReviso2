@@ -14,6 +14,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import br.jss.motoreviso.models.ImagemVeiculo;
 import br.jss.motoreviso.models.Manutencao;
 import br.jss.motoreviso.models.Trajeto;
@@ -273,8 +276,76 @@ public class FirebaseManager {
         }
     }
 
+    // ============ CALLBACKS ============
+
     public interface OnUploadCompleteListener {
         void onUploadComplete(String downloadUrl);
         void onUploadFailed(Exception exception);
+    }
+
+    public interface VeiculoCallback {
+        void onSuccess(Veiculo veiculo);
+        void onError(String error);
+    }
+
+    public interface TrajetosCallback {
+        void onSuccess(List<DocumentSnapshot> trajetos);
+        void onError(String error);
+    }
+
+    // ============ CONVENIENCE METHODS WITH CALLBACKS ============
+
+    /**
+     * Carrega o primeiro veículo marcado como principal/ativo do usuário
+     */
+    public void carregarVeiculoPrincipal(VeiculoCallback callback) {
+        obterTodosVeiculos()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (querySnapshot != null && !querySnapshot.getDocuments().isEmpty()) {
+                        Veiculo veiculo = querySnapshot.getDocuments().get(0).toObject(Veiculo.class);
+                        if (callback != null) {
+                            callback.onSuccess(veiculo);
+                        }
+                    } else {
+                        if (callback != null) {
+                            callback.onSuccess(null);
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Erro ao carregar veículo principal", e);
+                    if (callback != null) {
+                        callback.onError(e.getMessage());
+                    }
+                });
+    }
+
+    /**
+     * Carrega todos os trajetos do usuário
+     */
+    public void carregarTrajetos(TrajetosCallback callback) {
+        String userId = FirebaseAuth.getInstance().getCurrentUser() != null
+                ? FirebaseAuth.getInstance().getCurrentUser().getUid()
+                : null;
+
+        if (userId == null) {
+            if (callback != null) {
+                callback.onError("Usuário não autenticado");
+            }
+            return;
+        }
+
+        obterTrajetosUsuario(userId)
+                .addOnSuccessListener(querySnapshot -> {
+                    if (callback != null) {
+                        callback.onSuccess(querySnapshot != null ? querySnapshot.getDocuments() : new ArrayList<>());
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Erro ao carregar trajetos", e);
+                    if (callback != null) {
+                        callback.onError(e.getMessage());
+                    }
+                });
     }
 }
