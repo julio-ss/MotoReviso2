@@ -105,7 +105,7 @@
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
                     app:iconTint="@color/text_primary"
-                    app:shapeAppearanceOverride="@style/ShapeAppearance.MotoReviso.Circle"
+                    app:cornerRadius="58dp"
                     app:backgroundTint="#0DFFFFFF"
                     app:strokeColor="#6600A8FF"
                     app:strokeWidth="2dp"
