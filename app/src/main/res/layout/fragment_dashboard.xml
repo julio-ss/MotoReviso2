@@ -407,46 +407,63 @@
                 android:gravity="center_vertical">
 
                 <!-- Progress Ring -->
-                <FrameLayout
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_marginEnd="14dp">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:layout_marginEnd="16dp">
 
-                    <ProgressBar
-                        android:id="@+id/progress_revisao"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:max="100"
-                        android:progress="35"
-                        android:indeterminate="false"
-                        android:progressDrawable="@drawable/bg_progress_circular"
-                        style="?android:attr/progressBarStyleHorizontal" />
+                    <FrameLayout
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:layout_marginBottom="6dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:gravity="center">
+                        <ProgressBar
+                            android:id="@+id/progress_revisao"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:max="100"
+                            android:progress="35"
+                            android:indeterminate="false"
+                            android:progressDrawable="@drawable/bg_progress_circular"
+                            style="?android:attr/progressBarStyleHorizontal" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="1.550"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/secondary" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="km"
-                            android:textSize="9sp"
-                            android:textColor="@color/text_secondary" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="1.550"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/secondary" />
 
-                    </LinearLayout>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="km"
+                                android:textSize="9sp"
+                                android:textColor="@color/text_secondary" />
 
-                </FrameLayout>
+                        </LinearLayout>
+
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/text_prox_revisao"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1.550 km"
+                        android:textSize="9sp"
+                        android:textColor="@color/text_secondary" />
+
+                </LinearLayout>
 
                 <!-- Info -->
                 <LinearLayout
@@ -471,15 +488,6 @@
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
                         android:layout_marginTop="4dp" />
-
-                    <TextView
-                        android:id="@+id/text_prox_revisao"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="1.550 km restantes"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_secondary"
-                        android:layout_marginTop="2dp" />
 
                     <com.google.android.material.button.MaterialButton
                         android:layout_width="wrap_content"
