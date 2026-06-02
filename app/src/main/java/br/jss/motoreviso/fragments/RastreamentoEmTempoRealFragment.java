@@ -427,13 +427,13 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
 
         if (rastreando) {
             // Verde com animação piscante
-            statusIndicator.setColorFilter(ContextCompat.getColor(getContext(), R.color.success));
+            statusIndicator.setBackgroundTint(ContextCompat.getColor(getContext(), R.color.success));
             statusIndicator.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
                     getContext(), R.anim.blink_animation));
         } else {
             // Vermelho estático
             statusIndicator.clearAnimation();
-            statusIndicator.setColorFilter(ContextCompat.getColor(getContext(), R.color.error));
+            statusIndicator.setBackgroundTint(ContextCompat.getColor(getContext(), R.color.error));
             statusIndicator.setAlpha(1.0f);
         }
     }
