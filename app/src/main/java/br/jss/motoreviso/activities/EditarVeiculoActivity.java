@@ -136,12 +136,34 @@ public class EditarVeiculoActivity extends AppCompatActivity {
 
         veiculoAtual.setDescricao(edtDescricao.getText().toString());
 
-        // Se uma nova imagem foi selecionada, salvar seu caminho local
+        // Se uma nova imagem foi selecionada, fazer upload para Firebase Storage
         if (imagemUri != null) {
-            veiculoAtual.setUrlImagemPrincipal(imagemUri.toString());
-        }
+            progressEditar.setVisibility(android.view.View.VISIBLE);
+            // Gerar nome único para a imagem
+            String nomeImagem = "veiculo_" + veiculoId + "_" + System.currentTimeMillis() + ".jpg";
 
-        atualizarVeiculoFirebase();
+            // Upload para Firebase Storage e obter URL
+            firebaseManager.uploadImagemVeiculo(imagemUri, nomeImagem,
+                new FirebaseManager.OnUploadCompleteListener() {
+                    @Override
+                    public void onUploadComplete(String downloadUrl) {
+                        // Salvar URL de download no veículo
+                        veiculoAtual.setUrlImagemPrincipal(downloadUrl);
+                        atualizarVeiculoFirebase();
+                    }
+
+                    @Override
+                    public void onUploadFailed(Exception exception) {
+                        progressEditar.setVisibility(android.view.View.GONE);
+                        Toast.makeText(EditarVeiculoActivity.this,
+                            "Erro ao fazer upload da imagem: " + exception.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                    }
+                });
+        } else {
+            // Se nenhuma imagem foi selecionada, apenas atualizar os dados
+            atualizarVeiculoFirebase();
+        }
     }
 
     private void atualizarVeiculoFirebase() {
