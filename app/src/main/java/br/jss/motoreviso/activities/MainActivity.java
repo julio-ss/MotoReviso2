@@ -53,16 +53,12 @@ public class MainActivity extends AppCompatActivity {
                 carregarFragment(new ManutencoesFragment());
                 fabRastreamento.setVisibility(android.view.View.VISIBLE);
                 return true;
-            } else if (itemId == R.id.nav_trajetos) {
-                carregarFragment(new TrajetosFragment());
-                fabRastreamento.setVisibility(android.view.View.VISIBLE);
-                return true;
             } else if (itemId == R.id.nav_config) {
                 carregarFragment(new ConfiguracoesFragment());
                 fabRastreamento.setVisibility(android.view.View.VISIBLE);
                 return true;
             } else if (itemId == R.id.nav_placeholder) {
-                // Item vazio - não fazer nada
+                // Item vazio no centro (substituído pelo FAB) - não fazer nada
                 return false;
             }
 
