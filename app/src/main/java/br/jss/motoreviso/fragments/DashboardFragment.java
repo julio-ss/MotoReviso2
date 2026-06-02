@@ -44,6 +44,7 @@ public class DashboardFragment extends Fragment {
     private TextView textGreeting, textVeiculoNome, textKmAtual, textProxRevisao;
     private TextView textCustoMes, textKmMes, textConsumo;
     private TextView textUltimoTrajeto, textUltimoData, textDist, textVelMax;
+    private TextView textProgressPercent;
     private ProgressBar progressRevision, progressLoading;
     private ProgressBar progressOleo, progressPneus, progressFreios, progressCorrente;
     private MaterialCardView cardVeiculo, cardRevision, cardTrajeto;
@@ -78,6 +79,7 @@ public class DashboardFragment extends Fragment {
 
         // Revision card
         textProxRevisao = view.findViewById(R.id.text_prox_revisao);
+        textProgressPercent = view.findViewById(R.id.text_progress_percent);
         progressRevision = view.findViewById(R.id.progress_revisao);
         cardRevision = view.findViewById(R.id.card_revisao);
 
@@ -181,9 +183,17 @@ public class DashboardFragment extends Fragment {
         Long kmRestante = veiculo.getKmParaProximaRevisao();
         Long kmTotal = veiculo.getIntervaloRevisao() != null ? veiculo.getIntervaloRevisao() : 5000L;
 
+        // Calculate progress percentage
         float progress = (kmTotal - kmRestante) / (float) kmTotal * 100;
-        progressRevision.setProgress((int) Math.max(0, progress));
+        int progressPercent = (int) Math.max(0, Math.min(100, progress));
 
+        // Update progress bar and percentage text
+        progressRevision.setProgress(progressPercent);
+        if (textProgressPercent != null) {
+            textProgressPercent.setText(String.valueOf(progressPercent));
+        }
+
+        // Show remaining KM below
         textProxRevisao.setText(formatKm(kmRestante) + " km restantes");
 
         // Navigate to Manutenções when clicking on revision card

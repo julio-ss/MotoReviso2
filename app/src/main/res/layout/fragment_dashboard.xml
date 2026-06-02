@@ -437,9 +437,10 @@
                             android:gravity="center">
 
                             <TextView
+                                android:id="@+id/text_progress_percent"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="1.550"
+                                android:text="35"
                                 android:textSize="20sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/secondary" />
@@ -447,7 +448,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="km"
+                                android:text="%"
                                 android:textSize="9sp"
                                 android:textColor="@color/text_secondary" />
 
