@@ -40,8 +40,9 @@ public class DashboardFragment extends Fragment {
     private TextView textCustoMes, textKmMes, textConsumo;
     private TextView textUltimoTrajeto, textUltimoData, textDist, textVelMax;
     private ProgressBar progressRevision, progressLoading;
+    private ProgressBar progressOleo, progressPneus, progressFreios, progressCorrente;
     private MaterialCardView cardVeiculo, cardRevision, cardTrajeto;
-    private ViewGroup cardStats;  // Changed from MaterialCardView to ViewGroup (it's a LinearLayout)
+    private ViewGroup cardStats;  // It's a LinearLayout in XML
     private View btnNotificacao;
 
     private FirebaseManager firebaseManager;
@@ -73,6 +74,12 @@ public class DashboardFragment extends Fragment {
         textProxRevisao = view.findViewById(R.id.text_prox_revisao);
         progressRevision = view.findViewById(R.id.progress_revisao);
         cardRevision = view.findViewById(R.id.card_revisao);
+
+        // Health indicators
+        progressOleo = view.findViewById(R.id.progress_oleo);
+        progressPneus = view.findViewById(R.id.progress_pneus);
+        progressFreios = view.findViewById(R.id.progress_freios);
+        progressCorrente = view.findViewById(R.id.progress_corrente);
 
         // Stats
         textKmMes = view.findViewById(R.id.text_km_mes);
@@ -129,11 +136,34 @@ public class DashboardFragment extends Fragment {
                     .into(imgVeiculo);
         }
 
+        // Update health indicators
+        updateHealthIndicators(veiculo);
+
         cardVeiculo.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), DetalheVeiculoActivity.class);
             intent.putExtra("veiculo_id", veiculo.getId());
             startActivity(intent);
         });
+    }
+
+    private void updateHealthIndicators(Veiculo veiculo) {
+        Long healthOleo = veiculo.getHealthOleo();
+        Long healthPneus = veiculo.getHealthPneus();
+        Long healthFreios = veiculo.getHealthFreios();
+        Long healthCorrente = veiculo.getHealthCorrente();
+
+        if (progressOleo != null) {
+            progressOleo.setProgress(Math.toIntExact(healthOleo));
+        }
+        if (progressPneus != null) {
+            progressPneus.setProgress(Math.toIntExact(healthPneus));
+        }
+        if (progressFreios != null) {
+            progressFreios.setProgress(Math.toIntExact(healthFreios));
+        }
+        if (progressCorrente != null) {
+            progressCorrente.setProgress(Math.toIntExact(healthCorrente));
+        }
     }
 
     private void updateRevisionCard(Veiculo veiculo) {
