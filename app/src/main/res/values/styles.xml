@@ -59,6 +59,12 @@
         <item name="hintTextColor">@color/text_secondary</item>
     </style>
 
+    <!-- Circular biometric button shape -->
+    <style name="ShapeAppearance.MotoReviso.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
     <!-- Base TextAppearance (required as parent for dot-notation children) -->
     <style name="TextAppearance.MotoReviso" parent="TextAppearance.MaterialComponents.Body1">
         <item name="android:textColor">@color/text_primary</item>
