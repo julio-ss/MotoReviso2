@@ -3,16 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardElevation="4dp"
-    app:cardCornerRadius="12dp"
-    app:cardBackgroundColor="@color/surface">
+    android:layout_marginBottom="10dp"
+    app:cardElevation="0dp"
+    app:cardCornerRadius="18dp"
+    app:cardBackgroundColor="@color/surface"
+    app:strokeColor="@color/divider_strong"
+    app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="14dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,7 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Data"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary" />
 
@@ -42,7 +44,7 @@
                     android:text="KM"
                     android:textSize="12sp"
                     android:textColor="@color/text_secondary"
-                    android:layout_marginTop="4dp" />
+                    android:layout_marginTop="3dp" />
 
                 <TextView
                     android:id="@+id/text_tipo"
@@ -50,29 +52,30 @@
                     android:layout_height="wrap_content"
                     android:text="Tipo"
                     android:textSize="12sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginTop="4dp" />
+                    android:textColor="@color/secondary"
+                    android:layout_marginTop="3dp" />
 
             </LinearLayout>
 
             <ImageButton
                 android:id="@+id/btn_menu"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:padding="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:contentDescription="@string/menu"
                 android:src="@drawable/ic_more_modern"
-                android:tint="@color/secondary" />
+                android:tint="@color/text_secondary" />
 
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/divider"
-            android:layout_marginVertical="12dp" />
+            android:background="@color/divider_strong"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -91,7 +94,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Custo"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
                     android:textColor="@color/warning" />
 
                 <TextView

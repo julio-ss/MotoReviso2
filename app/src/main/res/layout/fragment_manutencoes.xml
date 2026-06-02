@@ -5,55 +5,80 @@
     android:orientation="vertical"
     android:background="@color/background">
 
-    <LinearLayout
+    <!-- Filter chips -->
+    <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:scrollbars="none"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/manutencoes"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary" />
-
-        <Button
-            android:id="@+id/btn_adicionar_manutencao"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/nova_manutencao"
-            android:textSize="12sp"
-            android:padding="8dp"
-            android:backgroundTint="@color/secondary" />
+            android:orientation="horizontal">
 
-    </LinearLayout>
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_todas"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Todas"
+                android:layout_marginEnd="8dp"
+                style="@style/Widget.MaterialComponents.Chip.Choice" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_manutencoes"
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_pendentes"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Pendentes"
+                android:layout_marginEnd="8dp"
+                style="@style/Widget.MaterialComponents.Chip.Choice" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_concluidas"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Concluídas"
+                style="@style/Widget.MaterialComponents.Chip.Choice" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="8dp" />
+        android:layout_weight="1">
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone" />
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/secondary"
+            android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/text_vazio"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="@string/nenhuma_manutencao"
-        android:textSize="16sp"
-        android:textColor="@color/text_secondary"
-        android:visibility="gone" />
+        <TextView
+            android:id="@+id/text_vazio"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Nenhuma manutenção registrada"
+            android:textSize="14sp"
+            android:textColor="@color/text_secondary"
+            android:gravity="center"
+            android:padding="32dp"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_manutencoes"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="80dp"
+            android:clipToPadding="false" />
+
+    </FrameLayout>
 
 </LinearLayout>

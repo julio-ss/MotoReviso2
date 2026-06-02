@@ -1,213 +1,324 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="32dp"
-        android:gravity="center">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/ic_car_modern"
-            android:tint="?attr/colorSecondary"
-            android:layout_marginBottom="16dp"
-            android:contentDescription="Logo" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Moto Reviso"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:gravity="center"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Controle seus veículos"
-            android:textSize="14sp"
-            android:textColor="@color/text_secondary"
-            android:gravity="center"
-            android:layout_marginBottom="48dp" />
-
-        <!-- Tabs: Email / PIN / Biometria -->
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            app:tabSelectedTextColor="?attr/colorSecondary"
-            app:tabTextColor="@color/text_secondary"
-            app:tabIndicatorColor="?attr/colorSecondary" />
-
-        <!-- Email Login Section -->
         <LinearLayout
-            android:id="@+id/layout_email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:boxStrokeColor="?attr/colorSecondary"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="E-mail"
-                    android:inputType="textEmailAddress"
-                    android:textColor="@color/text_primary" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                app:passwordToggleEnabled="true"
-                app:boxStrokeColor="?attr/colorSecondary"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_senha"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Senha"
-                    android:inputType="textPassword"
-                    android:textColor="@color/text_primary" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_entrar"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="Entrar"
-                android:textSize="16sp"
-                app:cornerRadius="12dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_registrar"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="Criar conta"
-                android:textSize="16sp"
-                android:layout_marginTop="12dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                app:cornerRadius="12dp" />
-
-        </LinearLayout>
-
-        <!-- PIN Login Section -->
-        <LinearLayout
-            android:id="@+id/layout_pin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:paddingBottom="48dp">
 
-            <TextView
+            <!-- Logo area -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Digite seu PIN"
-                android:textSize="18sp"
-                android:textColor="@color/text_primary"
+                android:orientation="vertical"
                 android:gravity="center"
-                android:layout_marginBottom="16dp" />
+                android:paddingTop="72dp"
+                android:paddingBottom="16dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                app:passwordToggleEnabled="true"
-                app:boxStrokeColor="?attr/colorSecondary"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_pin"
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_width="74dp"
+                    android:layout_height="74dp"
+                    android:layout_marginBottom="16dp">
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_icon_logo" />
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_speed_modern"
+                        android:tint="#06121A"
+                        android:contentDescription="Logo" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="PIN (4-6 dígitos)"
-                    android:inputType="numberPassword"
-                    android:maxLength="6"
-                    android:textColor="@color/text_primary"
-                    android:gravity="center"
-                    android:textSize="24sp"
-                    android:letterSpacing="0.4" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="MOTO"
+                        android:textSize="32sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="REVISO"
+                        android:textSize="32sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/secondary" />
+                </LinearLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_entrar_pin"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="Entrar com PIN"
-                android:textSize="16sp"
-                app:cornerRadius="12dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PAINEL DO MOTOCICLISTA"
+                    android:textSize="11sp"
+                    android:textColor="@color/text_secondary"
+                    android:letterSpacing="0.12"
+                    android:layout_marginTop="4dp" />
 
-        </LinearLayout>
+            </LinearLayout>
 
-        <!-- Biometric Section -->
-        <LinearLayout
-            android:id="@+id/layout_biometria"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:visibility="gone">
-
-            <ImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:src="@drawable/ic_user_modern"
-                android:layout_marginBottom="16dp"
-                android:contentDescription="Biometria" />
-
-            <TextView
+            <!-- Tab selector (hidden, kept for code compatibility) -->
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Use sua digital ou rosto para entrar"
-                android:textSize="16sp"
-                android:textColor="@color/text_primary"
-                android:gravity="center"
-                android:layout_marginBottom="32dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_biometria"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="Autenticar com biometria"
-                android:textSize="16sp"
-                app:cornerRadius="12dp" />
-
-            <TextView
-                android:id="@+id/text_biometria_nao_disponivel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Biometria não disponível neste dispositivo"
-                android:textSize="14sp"
-                android:textColor="@color/red"
-                android:gravity="center"
                 android:visibility="gone"
-                android:layout_marginTop="16dp" />
+                app:tabSelectedTextColor="@color/secondary"
+                app:tabTextColor="@color/text_secondary"
+                app:tabIndicatorColor="@color/secondary" />
+
+            <!-- Biometric section -->
+            <LinearLayout
+                android:id="@+id/layout_biometria"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingTop="32dp"
+                android:paddingLeft="32dp"
+                android:paddingRight="32dp">
+
+                <FrameLayout
+                    android:id="@+id/btn_biometria"
+                    android:layout_width="116dp"
+                    android:layout_height="116dp"
+                    android:background="@drawable/bg_biometric_button"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <ImageView
+                        android:layout_width="58dp"
+                        android:layout_height="58dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_user_modern"
+                        android:tint="@color/text_primary"
+                        android:contentDescription="Biometria" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Toque para entrar"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginTop="18dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Desbloqueio por biometria"
+                    android:textSize="13sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginTop="4dp" />
+
+                <TextView
+                    android:id="@+id/text_biometria_nao_disponivel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Biometria não disponível neste dispositivo"
+                    android:textSize="13sp"
+                    android:textColor="@color/error"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:layout_marginTop="16dp" />
+
+                <TextView
+                    android:id="@+id/btn_usar_pin_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Usar PIN"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/secondary"
+                    android:padding="8dp"
+                    android:layout_marginTop="12dp"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+            </LinearLayout>
+
+            <!-- PIN Section -->
+            <LinearLayout
+                android:id="@+id/layout_pin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingTop="24dp"
+                android:paddingLeft="32dp"
+                android:paddingRight="32dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Digite seu PIN"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="20dp" />
+
+                <!-- 4-dot indicator -->
+                <LinearLayout
+                    android:id="@+id/pin_dots_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginBottom="28dp">
+
+                    <View android:id="@+id/pin_dot_1"
+                        android:layout_width="15dp" android:layout_height="15dp"
+                        android:layout_marginLeft="8dp" android:layout_marginRight="8dp"
+                        android:background="@drawable/bg_pin_dot_empty" />
+                    <View android:id="@+id/pin_dot_2"
+                        android:layout_width="15dp" android:layout_height="15dp"
+                        android:layout_marginLeft="8dp" android:layout_marginRight="8dp"
+                        android:background="@drawable/bg_pin_dot_empty" />
+                    <View android:id="@+id/pin_dot_3"
+                        android:layout_width="15dp" android:layout_height="15dp"
+                        android:layout_marginLeft="8dp" android:layout_marginRight="8dp"
+                        android:background="@drawable/bg_pin_dot_empty" />
+                    <View android:id="@+id/pin_dot_4"
+                        android:layout_width="15dp" android:layout_height="15dp"
+                        android:layout_marginLeft="8dp" android:layout_marginRight="8dp"
+                        android:background="@drawable/bg_pin_dot_empty" />
+                </LinearLayout>
+
+                <!-- Hidden PIN input (used by existing code) -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_pin"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="PIN (4-6 dígitos)"
+                        android:inputType="numberPassword"
+                        android:maxLength="6"
+                        android:textColor="@color/text_primary" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Custom keypad: 3x4 grid -->
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:columnCount="3"
+                    android:rowCount="4">
+
+                    <TextView android:id="@+id/key_1" android:layout_width="0dp" android:layout_height="60dp" android:layout_columnWeight="1" android:layout_margin="6dp" android:background="@drawable/bg_pin_key" android:text="1" android:textSize="24sp" android:textStyle="bold" android:textColor="@color/text_primary" android:gravity="center" android:clickable="true" android:focusable="true" />
+                    <TextView android:id="@+id/key_2" android:layout_width="0dp" android:layout_height="60dp" android:layout_columnWeight="1" android:layout_margin="6dp" android:background="@drawable/bg_pin_key" android:text="2" android:textSize="24sp" android:textStyle="bold" android:textColor="@color/text_primary" android:gravity="center" android:clickable="true" android:focusable="true" />
+                    <TextView android:id="@+id/key_3" android:layout_width="0dp" android:layout_height="60dp" android:layout_columnWeight="1" android:layout_margin="6dp" android:background="@drawable/bg_pin_key" android:text="3" android:textSize="24sp" android:textStyle="bold" android:textColor="@color/text_primary" android:gravity="center" android:clickable="true" android:focusable="true" />
+                    <TextView android:id="@+id/key_4" android:layout_width="0dp" android:layout_height="60dp" android:layout_columnWeight="1" android:layout_margin="6dp" android:background="@drawable/bg_pin_key" android:text="4" android:textSize="24sp" android:textStyle="bold" android:textColor="@color/text_primary" android:gravity="center" android:clickable="true" android:focusable="true" />
+                    <TextView android:id="@+id/key_5" android:layout_width="0dp" android:layout_height="60dp" android:layout_columnWeight="1" android:layout_margin="6dp" android:background="@drawable/bg_pin_key" android:text="5" android:textSize="24sp" android:textStyle="bold" android:textColor="@color/text_primary" android:gravity="center" android:clickable="true" android:focusable="true" />
+                    <TextView android:id="@+id/key_6" android:layout_width="0dp" android:layout_height="60dp" android:layout_columnWeight="1" android:layout_margin="6dp" android:background="@drawable/bg_pin_key" android:text="6" android:textSize="24sp" android:textStyle="bold" android:textColor="@color/text_primary" android:gravity="center" android:clickable="true" android:focusable="true" />
+                    <TextView android:id="@+id/key_7" android:layout_width="0dp" android:layout_height="60dp" android:layout_columnWeight="1" android:layout_margin="6dp" android:background="@drawable/bg_pin_key" android:text="7" android:textSize="24sp" android:textStyle="bold" android:textColor="@color/text_primary" android:gravity="center" android:clickable="true" android:focusable="true" />
+                    <TextView android:id="@+id/key_8" android:layout_width="0dp" android:layout_height="60dp" android:layout_columnWeight="1" android:layout_margin="6dp" android:background="@drawable/bg_pin_key" android:text="8" android:textSize="24sp" android:textStyle="bold" android:textColor="@color/text_primary" android:gravity="center" android:clickable="true" android:focusable="true" />
+                    <TextView android:id="@+id/key_9" android:layout_width="0dp" android:layout_height="60dp" android:layout_columnWeight="1" android:layout_margin="6dp" android:background="@drawable/bg_pin_key" android:text="9" android:textSize="24sp" android:textStyle="bold" android:textColor="@color/text_primary" android:gravity="center" android:clickable="true" android:focusable="true" />
+                    <TextView android:id="@+id/key_bio" android:layout_width="0dp" android:layout_height="60dp" android:layout_columnWeight="1" android:layout_margin="6dp" android:background="@color/transparent" android:text="⬤" android:textSize="18sp" android:textColor="@color/secondary" android:gravity="center" android:clickable="true" android:focusable="true" />
+                    <TextView android:id="@+id/key_0" android:layout_width="0dp" android:layout_height="60dp" android:layout_columnWeight="1" android:layout_margin="6dp" android:background="@drawable/bg_pin_key" android:text="0" android:textSize="24sp" android:textStyle="bold" android:textColor="@color/text_primary" android:gravity="center" android:clickable="true" android:focusable="true" />
+                    <TextView android:id="@+id/key_del" android:layout_width="0dp" android:layout_height="60dp" android:layout_columnWeight="1" android:layout_margin="6dp" android:background="@color/transparent" android:text="&#8592;" android:textSize="22sp" android:textColor="@color/text_secondary" android:gravity="center" android:clickable="true" android:focusable="true" />
+
+                </GridLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_entrar_pin"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:text="Entrar com PIN"
+                    android:textSize="15sp"
+                    android:layout_marginTop="16dp"
+                    app:cornerRadius="14dp" />
+
+            </LinearLayout>
+
+            <!-- Email section (kept for code compatibility but hidden by default) -->
+            <LinearLayout
+                android:id="@+id/layout_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
+                android:paddingTop="16dp"
+                android:visibility="gone">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    style="@style/Widget.MotoReviso.EditText">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="E-mail"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/text_primary" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    app:passwordToggleEnabled="true"
+                    style="@style/Widget.MotoReviso.EditText">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_senha"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Senha"
+                        android:inputType="textPassword"
+                        android:textColor="@color/text_primary" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_entrar"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:text="Entrar"
+                    android:textSize="15sp"
+                    app:cornerRadius="14dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_registrar"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:text="Criar conta"
+                    android:textSize="15sp"
+                    android:layout_marginTop="12dp"
+                    style="@style/Widget.MotoReviso.Button.Outlined"
+                    app:cornerRadius="14dp" />
+
+            </LinearLayout>
+
+            <!-- Progress -->
+            <ProgressBar
+                android:id="@+id/progress_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:indeterminateTint="@color/secondary"
+                android:visibility="gone" />
 
         </LinearLayout>
+    </ScrollView>
 
-        <!-- Progress -->
-        <ProgressBar
-            android:id="@+id/progress_login"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="16dp" />
-
-    </LinearLayout>
-
-</ScrollView>
+</FrameLayout>

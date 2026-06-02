@@ -6,175 +6,182 @@
     android:orientation="vertical"
     android:background="@color/background">
 
-    <!-- Statistics Section -->
+    <!-- Stats row -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
-
-        <!-- Stats Cards -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:spacing="8dp">
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_margin="4dp"
-                app:cardElevation="2dp"
-                app:cardCornerRadius="8dp"
-                app:cardBackgroundColor="@color/surface">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <TextView
-                        android:id="@+id/text_custo_total"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Total: R$ 0,00"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/secondary" />
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_margin="4dp"
-                app:cardElevation="2dp"
-                app:cardCornerRadius="8dp"
-                app:cardBackgroundColor="@color/surface">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <TextView
-                        android:id="@+id/text_quantidade"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Total: 0"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/secondary" />
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-        </LinearLayout>
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp">
 
         <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:cardElevation="2dp"
-            app:cardCornerRadius="8dp"
-            app:cardBackgroundColor="@color/surface">
+            android:layout_weight="1"
+            android:layout_marginEnd="6dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/warning_dim"
+            app:strokeColor="#33FFB020"
+            app:strokeWidth="1dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="12dp">
+                android:padding="14dp">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_clock_modern"
+                    android:tint="@color/warning"
+                    android:background="@color/warning_dim"
+                    android:padding="6dp"
+                    android:contentDescription="Pendentes" />
 
                 <TextView
-                    android:id="@+id/text_ultima_manutencao"
+                    android:id="@+id/text_quantidade"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Última: -"
-                    android:textSize="14sp"
+                    android:text="0"
+                    android:textSize="32sp"
                     android:textStyle="bold"
-                    android:textColor="@color/secondary" />
+                    android:textColor="@color/warning"
+                    android:layout_marginTop="8dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Revisões pendentes"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary" />
 
             </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="6dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/surface"
+            app:strokeColor="@color/divider_strong"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_calendar_modern"
+                    android:tint="@color/secondary"
+                    android:background="@drawable/bg_icon_accent"
+                    android:padding="6dp"
+                    android:contentDescription="Total" />
+
+                <TextView
+                    android:id="@+id/text_custo_total"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="R$ 0,00"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/secondary"
+                    android:layout_marginTop="8dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Custo total"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary" />
+
+            </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 
-    <!-- Controls Section -->
+    <!-- Last maintenance info -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="8dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/surface"
+        app:strokeColor="@color/divider_strong"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <TextView
+                android:id="@+id/text_ultima_manutencao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Última: -"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Filter/sort controls -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
-        android:spacing="8dp">
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="8dp"
+        android:gravity="center_vertical">
 
-        <!-- Filter Spinner -->
-        <LinearLayout
+        <Spinner
+            android:id="@+id/spinner_filtro"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:background="@drawable/bg_card_surface"
+            android:padding="8dp"
+            android:layout_marginEnd="8dp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Filtro"
-                android:textSize="12sp"
-                android:textColor="@color/text_secondary"
-                android:layout_marginBottom="4dp" />
-
-            <Spinner
-                android:id="@+id/spinner_filtro"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:background="@color/surface" />
-
-        </LinearLayout>
-
-        <!-- Sort Spinner -->
-        <LinearLayout
+        <Spinner
+            android:id="@+id/spinner_ordenacao"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:background="@drawable/bg_card_surface"
+            android:padding="8dp"
+            android:layout_marginEnd="8dp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Ordenação"
-                android:textSize="12sp"
-                android:textColor="@color/text_secondary"
-                android:layout_marginBottom="4dp" />
-
-            <Spinner
-                android:id="@+id/spinner_ordenacao"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:background="@color/surface" />
-
-        </LinearLayout>
-
-        <!-- Add Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_adicionar_manutencao"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:layout_gravity="bottom"
-            android:layout_marginStart="8dp"
-            android:text="Adicionar"
-            android:textSize="12sp"
-            app:cornerRadius="8dp" />
+            android:text="+"
+            android:textSize="20sp"
+            android:paddingLeft="14dp"
+            android:paddingRight="14dp"
+            app:cornerRadius="12dp" />
 
     </LinearLayout>
 
-    <!-- RecyclerView Section -->
+    <!-- List -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -185,6 +192,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:indeterminateTint="@color/secondary"
             android:visibility="gone" />
 
         <TextView
@@ -192,18 +200,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Nenhuma manutenção registrada"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textColor="@color/text_secondary"
             android:gravity="center"
-            android:padding="16dp"
             android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_manutencoes"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:paddingBottom="8dp"
             android:clipToPadding="false" />
 

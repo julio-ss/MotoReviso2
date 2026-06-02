@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
     android:background="@color/background">
 
-    <TextView
+    <!-- Header -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/cadastro_manutencao"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@color/text_primary"
-        android:layout_marginBottom="16dp" />
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/cadastro_manutencao"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary" />
+
+    </LinearLayout>
 
     <!-- Shown only when no vehicle is pre-selected -->
     <LinearLayout
@@ -21,6 +32,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:layout_marginBottom="12dp"
         android:visibility="gone">
 
@@ -28,15 +41,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Selecionar Veículo *"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textColor="@color/text_secondary"
-            android:layout_marginBottom="4dp" />
+            android:letterSpacing="0.06"
+            android:textAllCaps="true"
+            android:layout_marginBottom="6dp" />
 
         <Spinner
             android:id="@+id/spinner_veiculo"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="@color/surface"
+            android:background="@drawable/bg_card_surface"
             android:padding="8dp" />
 
         <ProgressBar
@@ -44,6 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:indeterminateTint="@color/secondary"
             android:visibility="gone" />
 
     </LinearLayout>
@@ -56,91 +72,107 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp">
-                <EditText
+                android:layout_marginBottom="12dp"
+                style="@style/Widget.MotoReviso.EditText">
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_data_manutencao"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Data (DD/MM/YYYY)"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    android:textColor="@color/text_primary" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp">
-                <EditText
+                android:layout_marginBottom="12dp"
+                style="@style/Widget.MotoReviso.EditText">
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_km_manutencao"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="KM da Revisão"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:textColor="@color/text_primary" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp">
-                <EditText
+                android:layout_marginBottom="12dp"
+                style="@style/Widget.MotoReviso.EditText">
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_tipo_manutencao"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Tipo (Revisão/Reparo)"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    android:textColor="@color/text_primary" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp">
-                <EditText
+                android:layout_marginBottom="12dp"
+                style="@style/Widget.MotoReviso.EditText">
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_custo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Custo (R$)"
-                    android:inputType="numberDecimal" />
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/text_primary" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp">
-                <EditText
+                android:layout_marginBottom="12dp"
+                style="@style/Widget.MotoReviso.EditText">
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_mecanico"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Mecânico"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    android:textColor="@color/text_primary" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp">
-                <EditText
+                android:layout_marginBottom="12dp"
+                style="@style/Widget.MotoReviso.EditText">
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_pecas"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Peças Trocadas (separadas por vírgula)"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    android:textColor="@color/text_primary" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp">
-                <EditText
+                android:layout_marginBottom="12dp"
+                style="@style/Widget.MotoReviso.EditText">
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_notas"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Notas Adicionais"
                     android:inputType="textMultiLine"
-                    android:minLines="3" />
+                    android:minLines="3"
+                    android:textColor="@color/text_primary" />
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
@@ -151,26 +183,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="16dp"
         android:gravity="center">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_salvar_manutencao"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
             android:layout_weight="1"
             android:text="@string/salvar_manutencao"
             android:layout_marginEnd="8dp"
-            android:backgroundTint="@color/green" />
+            app:cornerRadius="14dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_cancelar_manutencao"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
             android:layout_weight="1"
             android:text="@string/cancelar"
             android:layout_marginStart="8dp"
-            android:backgroundTint="@color/red" />
+            app:cornerRadius="14dp"
+            app:backgroundTint="@color/surface_variant"
+            android:textColor="@color/text_secondary" />
 
     </LinearLayout>
 
