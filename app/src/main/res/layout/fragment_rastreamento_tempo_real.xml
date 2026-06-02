@@ -60,7 +60,7 @@
                 android:max="200"
                 android:progress="96"
                 android:indeterminate="false"
-                android:progressDrawable="@drawable/bg_progress_circular_large"
+                android:progressDrawable="@drawable/bg_progress_circular"
                 style="?android:attr/progressBarStyleHorizontal" />
 
             <!-- Speed Value -->
