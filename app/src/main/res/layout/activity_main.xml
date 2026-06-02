@@ -19,7 +19,6 @@
         android:background="@drawable/bg_bottom_nav"
         app:itemIconTint="@color/nav_item_color"
         app:itemTextColor="@color/nav_item_color"
-        app:itemActiveIndicatorColor="#1A00A8FF"
         app:menu="@menu/menu_navigation" />
 
 </LinearLayout>
