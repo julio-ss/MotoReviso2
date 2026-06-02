@@ -1,51 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary Colors -->
-    <color name="primary">#1F1F2E</color>
-    <color name="primary_dark">#0F0F1E</color>
-    <color name="primary_light">#2A2A3E</color>
+    <!-- Base -->
+    <color name="background">#0B0C0E</color>
+    <color name="surface">#15171A</color>
+    <color name="surface_variant">#1C1F23</color>
+    <color name="surface3">#232730</color>
 
-    <!-- Secondary Colors -->
-    <color name="secondary">#00D4FF</color>
-    <color name="secondary_dark">#00A8CC</color>
-    <color name="secondary_light">#4DE6FF</color>
+    <!-- Brand -->
+    <color name="primary">#15171A</color>
+    <color name="primary_dark">#0B0C0E</color>
+    <color name="primary_light">#1C1F23</color>
+    <color name="secondary">#00A8FF</color>
+    <color name="secondary_dark">#0066CC</color>
+    <color name="secondary_light">#33BBFF</color>
+    <color name="accent">#00A8FF</color>
+    <color name="accent_dark">#0066CC</color>
+    <color name="accent_light">#33BBFF</color>
 
-    <!-- Accent Colors -->
-    <color name="accent">#FF6B6B</color>
-    <color name="accent_dark">#E63946</color>
-    <color name="accent_light">#FF8A8A</color>
+    <!-- Text -->
+    <color name="text_primary">#F2F5F7</color>
+    <color name="text_secondary">#98A0A8</color>
+    <color name="text_tertiary">#5A626B</color>
 
-    <!-- Background Colors -->
-    <color name="background">#0F0F1E</color>
-    <color name="surface">#1A1A2E</color>
-    <color name="surface_variant">#2A2A3E</color>
+    <!-- Status -->
+    <color name="success">#1FD68B</color>
+    <color name="warning">#FFB020</color>
+    <color name="error">#FF4D4D</color>
+    <color name="info">#00A8FF</color>
 
-    <!-- Text Colors -->
-    <color name="text_primary">#FFFFFF</color>
-    <color name="text_secondary">#A0A0B0</color>
-    <color name="text_tertiary">#707080</color>
+    <!-- Backgrounds dim -->
+    <color name="success_dim">#0A2318</color>
+    <color name="warning_dim">#2A1F05</color>
+    <color name="error_dim">#2A0A0A</color>
 
-    <!-- Status Colors -->
-    <color name="success">#00E676</color>
-    <color name="warning">#FFB300</color>
-    <color name="error">#FF5252</color>
-    <color name="info">#00D4FF</color>
+    <!-- Dividers -->
+    <color name="divider">#12131A</color>
+    <color name="divider_strong">#1F2025</color>
+    <color name="ripple">#1A00A8FF</color>
 
-    <!-- Utility Colors -->
+    <!-- Utility -->
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="transparent">#00000000</color>
-    <color name="semi_transparent">#80000000</color>
+    <color name="semi_transparent">#99000000</color>
+    <color name="overlay_dark">#CC0B0C0E</color>
 
-    <!-- Divider -->
-    <color name="divider">#2A2A3E</color>
-    <color name="ripple">#4DE6FF</color>
-
-    <!-- CORES FALTANTES (adicionar) -->
-    <color name="gray">#A0A0B0</color>
-    <color name="light_gray">#2A2A3E</color>
-    <color name="green">#00E676</color>
-    <color name="red">#FF5252</color>
-    <color name="orange">#FFB300</color>
-    <color name="blue">#00D4FF</color>
+    <!-- Legacy aliases (keep for backward compat) -->
+    <color name="gray">#98A0A8</color>
+    <color name="light_gray">#1C1F23</color>
+    <color name="green">#1FD68B</color>
+    <color name="red">#FF4D4D</color>
+    <color name="orange">#FFB020</color>
+    <color name="blue">#00A8FF</color>
 </resources>
