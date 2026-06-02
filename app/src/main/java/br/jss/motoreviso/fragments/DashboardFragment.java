@@ -157,22 +157,23 @@ public class DashboardFragment extends Fragment {
     }
 
     private void updateHealthIndicators(Veiculo veiculo) {
-        Long healthOleo = veiculo.getHealthOleo();
-        Long healthPneus = veiculo.getHealthPneus();
-        Long healthFreios = veiculo.getHealthFreios();
-        Long healthCorrente = veiculo.getHealthCorrente();
+        // Get health values, use defaults if not set
+        Long healthOleo = veiculo.getHealthOleo() > 0 ? veiculo.getHealthOleo() : 72L;
+        Long healthPneus = veiculo.getHealthPneus() > 0 ? veiculo.getHealthPneus() : 59L;
+        Long healthFreios = veiculo.getHealthFreios() > 0 ? veiculo.getHealthFreios() : 89L;
+        Long healthCorrente = veiculo.getHealthCorrente() > 0 ? veiculo.getHealthCorrente() : 41L;
 
-        if (progressOleo != null) {
-            progressOleo.setProgress(Math.toIntExact(healthOleo));
-        }
-        if (progressPneus != null) {
-            progressPneus.setProgress(Math.toIntExact(healthPneus));
-        }
-        if (progressFreios != null) {
-            progressFreios.setProgress(Math.toIntExact(healthFreios));
-        }
-        if (progressCorrente != null) {
-            progressCorrente.setProgress(Math.toIntExact(healthCorrente));
+        // Update progress bars and text values
+        updateHealthIndicator(progressOleo, healthOleo);
+        updateHealthIndicator(progressPneus, healthPneus);
+        updateHealthIndicator(progressFreios, healthFreios);
+        updateHealthIndicator(progressCorrente, healthCorrente);
+    }
+
+    private void updateHealthIndicator(ProgressBar progressBar, Long value) {
+        if (progressBar != null) {
+            int progressValue = Math.toIntExact(value);
+            progressBar.setProgress(progressValue);
         }
     }
 
