@@ -10,15 +10,16 @@
         android:icon="@drawable/ic_car_modern"
         android:title="@string/menu_veiculos" />
 
+    <!-- Item vazio no meio (substituído pelo FAB) -->
+    <item
+        android:id="@+id/nav_placeholder"
+        android:icon="@android:drawable/ic_menu_info_details"
+        android:title="" />
+
     <item
         android:id="@+id/nav_manutencoes"
         android:icon="@drawable/ic_wrench_modern"
         android:title="@string/menu_manutencoes" />
-
-    <item
-        android:id="@+id/nav_trajetos"
-        android:icon="@drawable/ic_map_modern"
-        android:title="@string/menu_trajetos" />
 
     <item
         android:id="@+id/nav_config"
