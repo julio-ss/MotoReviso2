@@ -14,11 +14,11 @@
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottom_app_bar"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="64dp"
         android:layout_gravity="bottom"
         android:background="@drawable/bg_bottom_nav"
-        app:fabCradleMargin="8dp"
-        app:fabCradleRoundedCornerRadius="14dp"
+        app:fabCradleMargin="12dp"
+        app:fabCradleRoundedCornerRadius="16dp"
         app:hideOnScroll="false">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -26,7 +26,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
-            app:itemIconSize="20dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            app:itemIconSize="24dp"
             app:itemIconTint="@color/nav_item_color"
             app:itemTextColor="@color/nav_item_color"
             app:labelVisibilityMode="labeled"
