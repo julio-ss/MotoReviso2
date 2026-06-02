@@ -54,51 +54,51 @@
 
             <ProgressBar
                 android:id="@+id/progress_speedometer"
+                style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
+                android:indeterminate="false"
                 android:max="200"
                 android:progress="96"
-                android:indeterminate="false"
-                android:progressDrawable="@drawable/bg_progress_circular"
-                style="?android:attr/progressBarStyleHorizontal" />
+                android:progressDrawable="@drawable/bg_progress_circular" />
 
             <!-- Speed Value -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/text_velocidade"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="96"
+                    android:textColor="@android:color/white"
                     android:textSize="64sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/white" />
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="12dp"
                         android:text="km/h"
-                        android:textSize="14sp"
                         android:textColor="@color/text_secondary"
-                        android:layout_marginEnd="12dp" />
+                        android:textSize="14sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="marcha 4  6800 rpm"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_secondary" />
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
 
                 </LinearLayout>
 

@@ -1,8 +1,16 @@
 package br.jss.motoreviso.fragments;
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,24 +21,28 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import br.jss.motoreviso.R;
 import br.jss.motoreviso.activities.MapTrajetoActivity;
 import br.jss.motoreviso.managers.FirebaseManager;
+import br.jss.motoreviso.models.Trajeto;
+import br.jss.motoreviso.services.RastreamentoService;
 
 public class RastreamentoEmTempoRealFragment extends Fragment {
     private static final String TAG = "RastreamentoEmTempoReal";
+    private static final int PERMISSION_CODE = 100;
 
     // Views
     private ProgressBar progressSpeedometer;
@@ -48,15 +60,20 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
     private MaterialButton btnVerMapa;
     private MaterialButton btnHistorico;
 
-    // Rastreamento
-    private boolean rastreandoAtivo = false;
-    private boolean rastreamentoPausado = false;
-    private long tempoInicio = 0;
-    private int velocidadeAtual = 0;
-    private int distanciaTotal = 0;
-    private Handler handler = new Handler(Looper.getMainLooper());
-    private Runnable rastreamentoRunnable;
-    private String trajetoId;
+    // Rastreamento com Serviço Real
+    private RastreamentoService rastreamentoService;
+    private boolean servicoBound = false;
+    private String veiculoId;
+    private Long kmInicial;
+
+    // Timer para atualizar cronômetro
+    private final Handler timerHandler = new Handler(Looper.getMainLooper());
+    private Runnable timerRunnable;
+
+    // Receiver para broadcast de rastreamento
+    private BroadcastReceiver trackingReceiver;
+
+    // Firebase
     private FirebaseManager firebaseManager;
 
     @Override
@@ -65,8 +82,34 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_rastreamento_tempo_real, container, false);
 
         firebaseManager = FirebaseManager.getInstance();
+
+        // Inicializar receiver de rastreamento
+        if (trackingReceiver == null) {
+            trackingReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    double vel = intent.getDoubleExtra(RastreamentoService.EXTRA_VELOCIDADE, 0);
+                    double velMax = intent.getDoubleExtra(RastreamentoService.EXTRA_VELOCIDADE_MAX, 0);
+                    double dist = intent.getDoubleExtra(RastreamentoService.EXTRA_DISTANCIA, 0);
+                    long tempo = intent.getLongExtra(RastreamentoService.EXTRA_TEMPO, 0);
+
+                    textVelocidade.setText(String.format(Locale.getDefault(), "%.0f", vel));
+                    textVelMax.setText(String.format(Locale.getDefault(), "%.1f", velMax));
+                    textDistancia.setText(String.format(Locale.getDefault(), "%.1f", dist));
+                    textTempo.setText(formatarTempo(tempo));
+
+                    int progress = (int) Math.min(vel, 200);
+                    progressSpeedometer.setProgress(progress);
+
+                    textAltitude.setText(String.valueOf(600 + (int)(Math.random() * 100)));
+                    textInclinacao.setText(String.valueOf((int)(Math.random() * 15)));
+                }
+            };
+        }
+
         inicializarViews(view);
         configurarListeners();
+        verificarPermissoes();
         atualizarHora();
 
         return view;
@@ -98,128 +141,139 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
     }
 
     private void iniciarRastreamento() {
-        if (!rastreandoAtivo) {
-            rastreandoAtivo = true;
-            rastreamentoPausado = false;
-            tempoInicio = System.currentTimeMillis();
-            velocidadeAtual = 0;
-            distanciaTotal = 0;
-
-            // Criar novo trajeto no Firebase
-            criarTrajeto();
-
-            // Atualizar estados dos botões
-            btnIniciar.setEnabled(false);
-            btnPausar.setEnabled(true);
-            btnParar.setEnabled(true);
-
-            // Iniciar simulação de rastreamento
-            iniciarRastreamentoSimulado();
-
-            Toast.makeText(getContext(), "Rastreamento iniciado", Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "Rastreamento iniciado");
+        // Verificar permissão de localização
+        if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            verificarPermissoes();
+            return;
         }
+
+        // Garantir que qualquer instância anterior foi parada
+        if (servicoBound) {
+            getContext().unbindService(serviceConnection);
+            servicoBound = false;
+        }
+
+        Intent intent = new Intent(getContext(), RastreamentoService.class);
+        intent.putExtra("VEICULO_ID", veiculoId != null ? veiculoId : "veiculo_demo");
+        intent.putExtra("KM_INICIAL", kmInicial != null ? kmInicial : 0L);
+        ContextCompat.startForegroundService(getContext(), intent);
+
+        getContext().bindService(new Intent(getContext(), RastreamentoService.class),
+                serviceConnection, Context.BIND_AUTO_CREATE);
+
+        // Iniciar timer para atualizar cronômetro
+        iniciarTimer();
+
+        // Atualizar estados dos botões
+        btnIniciar.setEnabled(false);
+        btnPausar.setEnabled(true);
+        btnParar.setEnabled(true);
+
+        Toast.makeText(getContext(), "Rastreamento iniciado", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "Rastreamento iniciado com serviço real");
     }
 
     private void pausarRastreamento() {
-        if (rastreandoAtivo) {
-            rastreamentoPausado = !rastreamentoPausado;
+        if (!servicoBound || rastreamentoService == null) return;
 
-            if (rastreamentoPausado) {
-                handler.removeCallbacks(rastreamentoRunnable);
-                btnPausar.setText("Retomar");
-                Toast.makeText(getContext(), "Rastreamento pausado", Toast.LENGTH_SHORT).show();
-            } else {
-                iniciarRastreamentoSimulado();
-                btnPausar.setText("Pausar");
-                Toast.makeText(getContext(), "Rastreamento retomado", Toast.LENGTH_SHORT).show();
-            }
+        Intent intent = new Intent(getContext(), RastreamentoService.class);
+        if (rastreamentoService.isPausado()) {
+            intent.setAction(RastreamentoService.ACTION_RESUME);
+            btnPausar.setText("Pausar");
+            timerHandler.post(timerRunnable);
+            Toast.makeText(getContext(), "Rastreamento retomado", Toast.LENGTH_SHORT).show();
+        } else {
+            intent.setAction(RastreamentoService.ACTION_PAUSE);
+            btnPausar.setText("Retomar");
+            timerHandler.removeCallbacks(timerRunnable);
+            Toast.makeText(getContext(), "Rastreamento pausado", Toast.LENGTH_SHORT).show();
         }
+        getContext().startService(intent);
     }
 
     private void pararRastreamento() {
-        if (rastreandoAtivo) {
-            rastreandoAtivo = false;
-            rastreamentoPausado = false;
-            handler.removeCallbacks(rastreamentoRunnable);
+        if (!servicoBound || rastreamentoService == null) return;
 
-            // Salvar trajeto no Firebase
-            salvarTrajeto();
+        timerHandler.removeCallbacks(timerRunnable);
 
-            // Atualizar estados dos botões
-            btnIniciar.setEnabled(true);
-            btnPausar.setEnabled(false);
-            btnParar.setEnabled(false);
-            btnPausar.setText("Pausar");
+        // Obter dados finais do trajeto
+        Trajeto trajeto = rastreamentoService.finalizarETrajeto();
+        Log.d(TAG, String.format("Encerrando: %.3f km, %d pontos",
+                trajeto.getKmRodados() != null ? trajeto.getKmRodados() : 0.0,
+                trajeto.getPontos() != null ? trajeto.getPontos().size() : 0));
 
-            // Resetar dados
-            velocidadeAtual = 0;
-            distanciaTotal = 0;
-            textVelocidade.setText("0");
-            textDistancia.setText("0");
-            textTempo.setText("00:00");
-            progressSpeedometer.setProgress(0);
+        // Resetar UI imediatamente
+        resetarTela();
+        atualizarBotoes(false);
 
-            Toast.makeText(getContext(), "Rastreamento parado e salvo", Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "Rastreamento parado");
+        // Parar o serviço
+        Intent stopIntent = new Intent(getContext(), RastreamentoService.class);
+        stopIntent.setAction(RastreamentoService.ACTION_STOP);
+        getContext().startService(stopIntent);
+
+        if (servicoBound) {
+            getContext().unbindService(serviceConnection);
+            servicoBound = false;
+        }
+        rastreamentoService = null;
+
+        // Salvar trajeto se tem pontos
+        boolean temPontos = trajeto.getPontos() != null && !trajeto.getPontos().isEmpty();
+        if (veiculoId != null && temPontos) {
+            salvarTrajeto(trajeto);
+        } else if (!temPontos) {
+            Toast.makeText(getContext(), "Nenhum ponto GPS registrado. Trajeto não salvo.", Toast.LENGTH_LONG).show();
         }
     }
 
-    private void iniciarRastreamentoSimulado() {
-        rastreamentoRunnable = new Runnable() {
+    private void iniciarTimer() {
+        timerRunnable = new Runnable() {
             @Override
             public void run() {
-                if (rastreandoAtivo && !rastreamentoPausado) {
-                    // Simular dados de rastreamento
-                    velocidadeAtual = (int) (Math.random() * 150);
-                    distanciaTotal += (velocidadeAtual / 3.6); // Converter km/h para m/s
-
-                    // Atualizar UI
-                    long tempoDecorrido = System.currentTimeMillis() - tempoInicio;
-                    int segundos = (int) (tempoDecorrido / 1000) % 60;
-                    int minutos = (int) (tempoDecorrido / 60000) % 60;
-
-                    textVelocidade.setText(String.valueOf(velocidadeAtual));
-                    progressSpeedometer.setProgress(velocidadeAtual);
-                    textDistancia.setText(String.format(Locale.US, "%.1f", distanciaTotal / 1000.0));
-                    textTempo.setText(String.format("%02d:%02d", minutos, segundos));
-
-                    // Simular variação em outros dados
-                    textAltitude.setText(String.valueOf(600 + (int)(Math.random() * 100)));
-                    textInclinacao.setText(String.valueOf((int)(Math.random() * 15)));
-
-                    // Atualizar velocidade máxima
-                    int velMaxAtual = Integer.parseInt(textVelMax.getText().toString());
-                    if (velocidadeAtual > velMaxAtual) {
-                        textVelMax.setText(String.valueOf(velocidadeAtual));
-                    }
-
-                    handler.postDelayed(this, 1000); // Atualizar a cada segundo
+                if (servicoBound && rastreamentoService != null
+                        && rastreamentoService.isRastreando()
+                        && !rastreamentoService.isPausado()) {
+                    long ms = rastreamentoService.getTempoDecorrido();
+                    textTempo.setText(formatarTempo(ms));
                 }
+                timerHandler.postDelayed(this, 1000);
             }
         };
-
-        handler.post(rastreamentoRunnable);
     }
 
-    private void criarTrajeto() {
-        // Criar um novo trajeto no Firebase
-        Map<String, Object> novoTrajeto = new HashMap<>();
-        novoTrajeto.put("dataHora", new Date());
-        novoTrajeto.put("userId", FirebaseAuth.getInstance().getCurrentUser() != null ?
-                FirebaseAuth.getInstance().getCurrentUser().getUid() : "unknown");
-        novoTrajeto.put("status", "em_progresso");
-        novoTrajeto.put("velocidadeMedia", 0);
-        novoTrajeto.put("distancia", 0);
-        novoTrajeto.put("tempo", 0);
+    private void salvarTrajeto(Trajeto trajeto) {
+        com.google.firebase.auth.FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            trajeto.setUserId(user.getUid());
+        }
 
-        // Salvar no Firebase (simples, ID será gerado automaticamente)
-        Log.d(TAG, "Novo trajeto criado para rastreamento");
+        firebaseManager.adicionarTrajeto(trajeto)
+                .addOnSuccessListener(ref -> {
+                    Log.d(TAG, "Trajeto salvo: " + ref.getId());
+                    Toast.makeText(getContext(), "Trajeto salvo com sucesso!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Erro ao salvar trajeto", e);
+                    Toast.makeText(getContext(), "Erro ao salvar trajeto: " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                });
     }
 
-    private void salvarTrajeto() {
-        // Salvar dados finais do trajeto
-        Log.d(TAG, "Trajeto salvo - Distância: " + String.format("%.1f", distanciaTotal / 1000) + "km");
+    private void resetarTela() {
+        textTempo.setText("00:00");
+        textDistancia.setText("0.0");
+        textVelocidade.setText("0");
+        textVelMax.setText("0");
+        textAltitude.setText("0");
+        textInclinacao.setText("0");
+        progressSpeedometer.setProgress(0);
+    }
+
+    private void atualizarBotoes(boolean rastreando) {
+        btnIniciar.setEnabled(!rastreando);
+        btnPausar.setEnabled(rastreando);
+        btnParar.setEnabled(rastreando);
     }
 
     private void abrirMapa() {
@@ -238,19 +292,114 @@ public class RastreamentoEmTempoRealFragment extends Fragment {
     }
 
     private void atualizarHora() {
-        handler.postDelayed(() -> {
+        timerHandler.postDelayed(() -> {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
             textHora.setText(sdf.format(new Date()));
             atualizarHora(); // Repetir a cada minuto
         }, 60000);
     }
 
+    private void verificarPermissoes() {
+        if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_CODE);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, PERMISSION_CODE + 1);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(getContext(), "Permissão de localização necessária para rastreamento.",
+                        Toast.LENGTH_LONG).show();
+                btnIniciar.setEnabled(false);
+            }
+        }
+    }
+
+    private String formatarTempo(long ms) {
+        long seg = TimeUnit.MILLISECONDS.toSeconds(ms);
+        long horas = seg / 3600;
+        long min = (seg % 3600) / 60;
+        long s = seg % 60;
+        if (horas > 0) {
+            return String.format(Locale.getDefault(), "%d:%02d:%02d", horas, min, s);
+        }
+        return String.format(Locale.getDefault(), "%02d:%02d", min, s);
+    }
+
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            RastreamentoService.LocalBinder lb = (RastreamentoService.LocalBinder) binder;
+            rastreamentoService = lb.getService();
+            servicoBound = true;
+
+            sincronizarUiComServico();
+            if (timerRunnable != null) {
+                timerHandler.post(timerRunnable);
+            }
+            Log.d(TAG, "Serviço de rastreamento conectado");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            servicoBound = false;
+            rastreamentoService = null;
+            timerHandler.removeCallbacks(timerRunnable);
+            Log.d(TAG, "Serviço de rastreamento desconectado");
+        }
+    };
+
+    private void sincronizarUiComServico() {
+        if (rastreamentoService == null) return;
+        double dist = rastreamentoService.getDistanciaTotal();
+        double vel = rastreamentoService.getVelocidadeAtual();
+        double velMax = rastreamentoService.getVelocidadeMaxima();
+        long tempo = rastreamentoService.getTempoDecorrido();
+
+        textDistancia.setText(String.format(Locale.getDefault(), "%.1f", dist));
+        textVelocidade.setText(String.format(Locale.getDefault(), "%.0f", vel));
+        textVelMax.setText(String.format(Locale.getDefault(), "%.1f", velMax));
+        textTempo.setText(formatarTempo(tempo));
+
+        int progress = (int) Math.min(vel, 200);
+        progressSpeedometer.setProgress(progress);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (trackingReceiver != null) {
+            LocalBroadcastManager.getInstance(getContext()).registerReceiver(
+                    trackingReceiver, new IntentFilter(RastreamentoService.BROADCAST_UPDATE));
+        }
+    }
+
+    @Override
+    public void onPause() {
+        if (trackingReceiver != null) {
+            LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(trackingReceiver);
+        }
+        super.onPause();
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (rastreandoAtivo) {
-            pararRastreamento();
+        timerHandler.removeCallbacksAndMessages(null);
+        if (servicoBound) {
+            getContext().unbindService(serviceConnection);
+            servicoBound = false;
         }
-        handler.removeCallbacksAndMessages(null);
     }
 }
