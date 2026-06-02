@@ -2,6 +2,7 @@ package br.jss.motoreviso.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.text.SimpleDateFormat;
@@ -101,9 +104,9 @@ public class DashboardFragment extends Fragment {
 
         firebaseManager = FirebaseManager.getInstance();
 
-        // Set greeting
-        String hora = getHora();
-        textGreeting.setText(hora);
+        // Set greeting with time of day and pilot name
+        String greeting = getGreetingWithPilot();
+        textGreeting.setText(greeting);
     }
 
     private void setupData() {
@@ -209,8 +212,13 @@ public class DashboardFragment extends Fragment {
             @Override
             public void onSuccess(List<DocumentSnapshot> trajetos) {
                 if (trajetos != null && !trajetos.isEmpty()) {
-                    Trajeto ultimo = trajetos.get(0).toObject(Trajeto.class);
+                    DocumentSnapshot doc = trajetos.get(0);
+                    Trajeto ultimo = doc.toObject(Trajeto.class);
                     if (ultimo != null) {
+                        // Ensure we have the document ID (important for navigation)
+                        if (ultimo.getId() == null || ultimo.getId().isEmpty()) {
+                            ultimo.setId(doc.getId());
+                        }
                         updateTrajetoCard(ultimo);
                     }
                 }
@@ -218,7 +226,7 @@ public class DashboardFragment extends Fragment {
 
             @Override
             public void onError(String error) {
-                // Silent error, just hide the card
+                Log.e(TAG, "Erro ao carregar trajetos: " + error);
             }
         });
     }
@@ -245,24 +253,38 @@ public class DashboardFragment extends Fragment {
         // Navigate to map trajectory when clicked
         cardTrajeto.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), MapTrajetoActivity.class);
-            intent.putExtra("trajeto_id", ultimoTrajeto.getId());
+            intent.putExtra("TRAJETO_ID", ultimoTrajeto.getId());
             startActivity(intent);
         });
     }
 
-    private String getHora() {
-        // Use Calendar.getInstance() for API 24 compatibility instead of Calendar.Builder (requires API 26)
+    private String getGreetingWithPilot() {
+        // Get time of day
         java.util.Calendar calendar = java.util.Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         int hora = calendar.get(java.util.Calendar.HOUR_OF_DAY);
 
+        String periodGreeting;
         if (hora >= 5 && hora < 12) {
-            return "Bom dia";
+            periodGreeting = "Bom dia";
         } else if (hora >= 12 && hora < 18) {
-            return "Boa tarde";
+            periodGreeting = "Boa tarde";
         } else {
-            return "Boa noite";
+            periodGreeting = "Boa noite";
         }
+
+        // Get pilot name from Firebase Auth
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String pilotName = "Piloto";
+        if (user != null) {
+            if (user.getDisplayName() != null && !user.getDisplayName().isEmpty()) {
+                pilotName = user.getDisplayName().split(" ")[0];  // Get first name only
+            } else if (user.getEmail() != null) {
+                pilotName = user.getEmail().split("@")[0];  // Use email prefix as fallback
+            }
+        }
+
+        return periodGreeting + ", " + pilotName;
     }
 
     private String formatKm(Long km) {
