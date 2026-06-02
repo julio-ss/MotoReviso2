@@ -34,36 +34,12 @@ public class MainActivity extends AppCompatActivity {
 
         SystemBarHelper.applySystemBarPadding(this, findViewById(R.id.frame_layout));
 
-        bottomNavigation = findViewById(R.id.bottom_navigation);
         fabRastreamento = findViewById(R.id.fab_rastreamento);
         frameLayout = findViewById(R.id.frame_layout);
         fragmentManager = getSupportFragmentManager();
 
-        bottomNavigation.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-
-            if (itemId == R.id.nav_inicio) {
-                carregarFragment(new DashboardFragment());
-                return true;
-            } else if (itemId == R.id.nav_veiculos) {
-                carregarFragment(new VeiculosFragment());
-                return true;
-            } else if (itemId == R.id.nav_manutencoes) {
-                carregarFragment(new ManutencoesFragment());
-                return true;
-            } else if (itemId == R.id.nav_mais) {
-                abrirMenuCascata();
-                return true;
-            } else if (itemId == R.id.nav_config) {
-                carregarFragment(new ConfiguracoesFragment());
-                return true;
-            } else if (itemId == R.id.nav_galeria) {
-                // Abrir galeria (atividade separada se necessário)
-                return true;
-            }
-
-            return false;
-        });
+        // Setup custom navigation items
+        setupCustomNavigation();
 
         // Listener do FAB para navegação ao Rastreamento em Tempo Real
         fabRastreamento.setOnClickListener(v -> {
@@ -72,9 +48,15 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             // Set Dashboard as the initial screen
-            bottomNavigation.setSelectedItemId(R.id.nav_inicio);
             carregarFragment(new DashboardFragment());
         }
+    }
+
+    private void setupCustomNavigation() {
+        findViewById(R.id.nav_item_inicio).setOnClickListener(v -> carregarFragment(new DashboardFragment()));
+        findViewById(R.id.nav_item_garagem).setOnClickListener(v -> carregarFragment(new VeiculosFragment()));
+        findViewById(R.id.nav_item_manutencao).setOnClickListener(v -> carregarFragment(new ManutencoesFragment()));
+        findViewById(R.id.nav_item_mais).setOnClickListener(v -> abrirMenuCascata());
     }
 
     public void carregarFragment(Fragment fragment) {
