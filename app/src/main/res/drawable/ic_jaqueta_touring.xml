@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+    <!-- Jaqueta touring (com proteções) - preta com cinzento -->
+    <!-- Corpo principal (mais coberto) -->
+    <path
+        android:fillColor="#1A1A1F"
+        android:pathData="M10,12 L38,12 L42,22 L42,40 L36,42 L12,42 L6,40 L6,22 Z"/>
+
+    <!-- Painéis laterais de proteção -->
+    <path
+        android:fillColor="#2A2A2F"
+        android:pathData="M8,20 L10,18 L10,38 L8,36 Z"/>
+
+    <path
+        android:fillColor="#2A2A2F"
+        android:pathData="M40,20 L38,18 L38,38 L40,36 Z"/>
+
+    <!-- Proteção nas costas (listras) -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M20,14 L28,14 L28,38 L20,38 Z"/>
+
+    <!-- Detalhe central amarelo -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M23,16 L25,16 L25,36 L23,36 Z"/>
+
+    <!-- Proteção de ombro esquerda -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M8,14 L14,12 L14,20 L8,18 Z"/>
+
+    <!-- Proteção de ombro direita -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M40,14 L34,12 L34,20 L40,18 Z"/>
+
+    <!-- Proteção de cotovelo esquerda -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M8,28 L12,26 L12,32 L8,30 Z"/>
+
+    <!-- Proteção de cotovelo direita -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M40,28 L36,26 L36,32 L40,30 Z"/>
+
+    <!-- Cintura de ajuste -->
+    <path
+        android:strokeColor="#FFD700"
+        android:strokeWidth="1.5"
+        android:fillColor="#00000000"
+        android:pathData="M8,38 L40,38"/>
+
+</vector>

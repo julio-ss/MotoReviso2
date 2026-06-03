@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import br.jss.motoreviso.R;
@@ -22,7 +21,6 @@ import br.jss.motoreviso.utils.SystemBarHelper;
 import br.jss.motoreviso.activities.GaleriaVeiculoActivity;
 
 public class MainActivity extends AppCompatActivity {
-    private BottomNavigationView bottomNavigation;
     private FloatingActionButton fabRastreamento;
     private FrameLayout frameLayout;
     private FragmentManager fragmentManager;
@@ -80,12 +78,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void abrirMenuCascata() {
-        // Encontrar a view do ícone "Mais" na navbar
-        android.view.View navMaisView = bottomNavigation.findViewById(R.id.nav_mais);
-        if (navMaisView == null) {
-            // Se não encontrar, mostrar PopupMenu no ponto central inferior
-            navMaisView = bottomNavigation;
-        }
+        // Encontrar a view do ícone "Mais" no navbar customizado
+        android.view.View navMaisView = findViewById(R.id.nav_item_mais);
 
         // Criar um PopupMenu com as opções adicionais
         android.widget.PopupMenu popupMenu = new android.widget.PopupMenu(this, navMaisView);
@@ -99,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
             } else if (id == R.id.nav_galeria) {
                 Intent intent = new Intent(MainActivity.this, GaleriaVeiculoActivity.class);
                 startActivity(intent);
+                return true;
+            } else if (id == R.id.nav_pilotos) {
+                carregarFragment(new br.jss.motoreviso.fragments.PilotosFragment());
                 return true;
             }
             return false;

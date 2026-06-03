@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+
+    <!-- Sombra base -->
+    <path
+        android:fillColor="#08080F"
+        android:fillAlpha="0.3"
+        android:pathData="M8,52 Q32,56 56,52 L56,60 Q32,62 8,60 Z"/>
+
+    <!-- Pala/Peak superior (proteção solar) -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M14,10 L50,10 L52,16 L12,16 Z"/>
+
+    <!-- Faixa amarela na pala -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M14,12 L50,12 L50,14 L14,14 Z"/>
+
+    <!-- Casco preto principal (menor que integral) -->
+    <path
+        android:fillColor="#1A1A1F"
+        android:pathData="M16,20 C16,12 20,8 32,6 C44,8 48,12 48,20 L48,40 C48,44 44,48 40,50 L24,50 C20,48 16,44 16,40 Z"/>
+
+    <!-- Faixa amarela lateral esquerda -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M18,22 L20,28 L22,36 L20,40 L18,38 Z"/>
+
+    <!-- Faixa amarela lateral direita -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M46,22 L46,28 L46,36 L48,40 L46,38 Z"/>
+
+    <!-- Goggle grande (off-road) -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M18,24 C18,20 20,18 24,17 C28,16 36,16 40,17 C44,18 46,20 46,24 C46,30 44,34 42,36 L22,36 C20,34 18,30 18,24 Z"/>
+
+    <!-- Moldura do goggle (amarelo) -->
+    <path
+        android:strokeColor="#FFD700"
+        android:strokeWidth="2"
+        android:fillColor="#00000000"
+        android:pathData="M20,24 C20,20 22,18 26,17 C30,16 34,16 38,17 C42,18 44,20 44,24 C44,30 42,34 40,36 L24,36 C22,34 20,30 20,24 Z"/>
+
+    <!-- Reflexo goggle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.25"
+        android:pathData="M22,20 C24,18 28,17 32,17 C36,17 40,18 42,20 L40,24 C38,22 34,21 32,21 C30,21 26,22 24,24 Z"/>
+
+    <!-- Respiradouro esquerdo (off-road) -->
+    <path
+        android:fillColor="#0A0A0F"
+        android:pathData="M20,32 L22,34 L20,36 Z"/>
+
+    <!-- Respiradouro direito (off-road) -->
+    <path
+        android:fillColor="#0A0A0F"
+        android:pathData="M42,32 L44,34 L42,36 Z"/>
+
+    <!-- Queixo frontal -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M22,42 C24,44 40,44 42,42 L44,50 C42,52 24,52 20,50 Z"/>
+
+    <!-- Detalhes de ventilação -->
+    <path
+        android:strokeColor="#FFD700"
+        android:strokeWidth="1"
+        android:fillColor="#00000000"
+        android:pathData="M24,44 L40,44"/>
+
+    <!-- Número/logo placeholder -->
+    <path
+        android:fillColor="#FFD700"
+        android:fillAlpha="0.1"
+        android:pathData="M32,25 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0"/>
+
+</vector>

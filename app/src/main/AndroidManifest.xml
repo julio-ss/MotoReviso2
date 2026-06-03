@@ -32,7 +32,8 @@
         <!-- Login Activity (launcher) -->
         <activity
             android:name=".activities.LoginActivity"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -43,40 +44,53 @@
         <activity
             android:name=".activities.SetupPinActivity"
             android:exported="false"
-            android:label="Configurar PIN" />
+            android:label="Configurar PIN"
+            android:windowSoftInputMode="adjustResize" />
 
-        <!-- Main Activity -->
+        <!-- Register Activity -->
+        <activity
+            android:name=".activities.RegisterActivity"
+            android:exported="false"
+            android:label="Criar Conta"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Main Activity (fragments com formulários — usa adjustPan + stateHidden para melhor controle) -->
         <activity
             android:name=".activities.MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
 
         <!-- Detalhe Manutenção -->
         <activity
             android:name=".activities.DetalheManutencaoActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
         <!-- Cadastro Veículo -->
         <activity
             android:name=".activities.CadastroVeiculoActivity"
             android:exported="false"
             android:parentActivityName=".activities.MainActivity"
-            android:label="@string/cadastro_veiculo" />
+            android:label="@string/cadastro_veiculo"
+            android:windowSoftInputMode="adjustResize" />
 
         <!-- Detalhe Veículo -->
         <activity
             android:name=".activities.DetalheVeiculoActivity"
             android:exported="false"
             android:parentActivityName=".activities.MainActivity"
-            android:label="@string/detalhe_veiculo" />
+            android:label="@string/detalhe_veiculo"
+            android:windowSoftInputMode="adjustResize" />
 
         <!-- Editar Veículo -->
         <activity
             android:name=".activities.EditarVeiculoActivity"
             android:exported="false"
             android:parentActivityName=".activities.DetalheVeiculoActivity"
-            android:label="@string/editar_veiculo" />
+            android:label="@string/editar_veiculo"
+            android:windowSoftInputMode="adjustResize" />
 
-        <!-- Rastreamento -->
+        <!-- Rastreamento (sem formulário, sem softInput especial) -->
         <activity
             android:name=".activities.RastreamentoActivity"
             android:exported="false"
@@ -89,7 +103,8 @@
             android:name=".activities.CadastroManutencaoActivity"
             android:exported="false"
             android:parentActivityName=".activities.DetalheVeiculoActivity"
-            android:label="@string/cadastro_manutencao" />
+            android:label="@string/cadastro_manutencao"
+            android:windowSoftInputMode="adjustResize" />
 
         <!-- Galeria Veículo -->
         <activity
@@ -103,6 +118,31 @@
             android:name=".activities.MapTrajetoActivity"
             android:exported="false"
             android:label="Mapa do Trajeto" />
+
+        <!-- Pilotos -->
+        <activity
+            android:name=".activities.CadastroPilotoActivity"
+            android:exported="false"
+            android:label="@string/cadastro_piloto"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".activities.PilotProfileActivity"
+            android:exported="false"
+            android:label="@string/perfil_piloto"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".activities.CadastroEquipamentoActivity"
+            android:exported="false"
+            android:label="@string/cadastro_equipamento"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".activities.AvatarPilotoActivity"
+            android:exported="false"
+            android:label="Avatar do Piloto"
+            android:screenOrientation="portrait" />
 
         <!-- Foreground Service de Rastreamento -->
         <service

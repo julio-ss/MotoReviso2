@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="80dp"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="16dp">
+
+            <!-- ─── Header Card ─── -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="12dp"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/divider_strong"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    android:gravity="center_horizontal">
+
+                    <!-- Preview do avatar salvo (bitmap gerado) -->
+                    <ImageView
+                        android:id="@+id/img_avatar_preview"
+                        android:layout_width="180dp"
+                        android:layout_height="280dp"
+                        android:scaleType="fitCenter"
+                        android:visibility="gone"
+                        android:contentDescription="Preview do Avatar" />
+
+                    <!-- Avatar grande com overlays (fallback quando sem preview) -->
+                    <FrameLayout
+                        android:id="@+id/frame_avatar_perfil_fallback"
+                        android:layout_width="180dp"
+                        android:layout_height="280dp">
+
+                        <br.jss.motoreviso.views.AvatarView
+                            android:id="@+id/avatar_view_perfil"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+
+                        <!-- Capacete overlay -->
+                        <ImageView
+                            android:id="@+id/img_perfil_capacete_overlay"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_gravity="top|center_horizontal"
+                            android:visibility="gone"
+                            android:scaleType="fitCenter"
+                            android:contentDescription="Capacete" />
+
+                        <!-- Jaqueta overlay -->
+                        <ImageView
+                            android:id="@+id/img_perfil_jaqueta_overlay"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="-20dp"
+                            android:visibility="gone"
+                            android:scaleType="fitCenter"
+                            android:contentDescription="Jaqueta" />
+
+                        <!-- Calça overlay -->
+                        <ImageView
+                            android:id="@+id/img_perfil_calca_overlay"
+                            android:layout_width="120dp"
+                            android:layout_height="130dp"
+                            android:layout_gravity="bottom|center_horizontal"
+                            android:layout_marginBottom="50dp"
+                            android:visibility="gone"
+                            android:scaleType="fitXY"
+                            android:contentDescription="Calça" />
+
+                        <!-- Botas overlay -->
+                        <ImageView
+                            android:id="@+id/img_perfil_botas_overlay"
+                            android:layout_width="80dp"
+                            android:layout_height="60dp"
+                            android:layout_gravity="bottom|center_horizontal"
+                            android:visibility="gone"
+                            android:scaleType="fitCenter"
+                            android:contentDescription="Botas" />
+
+                    </FrameLayout>
+
+                    <!-- Nome -->
+                    <TextView
+                        android:id="@+id/tv_nome_perfil"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Nome do Piloto"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:gravity="center"
+                        android:layout_marginTop="12dp" />
+
+                    <!-- Apelido -->
+                    <TextView
+                        android:id="@+id/tv_apelido_perfil"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Apelido"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:gravity="center"
+                        android:layout_marginTop="2dp"
+                        android:visibility="gone" />
+
+                    <!-- Categoria + Idade -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/tv_categoria_perfil"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Rua"
+                            android:textSize="12sp"
+                            android:textColor="@color/secondary"
+                            android:background="@drawable/bg_pill_accent_dim"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="4dp" />
+
+                        <TextView
+                            android:id="@+id/tv_idade_perfil"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="• 25 anos"
+                            android:textSize="13sp"
+                            android:textColor="@color/text_secondary"
+                            android:layout_marginStart="10dp"
+                            android:visibility="gone" />
+
+                    </LinearLayout>
+
+                    <!-- Botões de ação -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="14dp">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_avatar_piloto"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:text="Avatar"
+                            android:textSize="13sp"
+                            android:layout_marginEnd="8dp"
+                            app:cornerRadius="10dp"
+                            app:backgroundTint="@color/secondary"
+                            android:textColor="@color/white"
+                            android:paddingHorizontal="16dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_editar_piloto"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:text="Editar"
+                            android:textSize="13sp"
+                            app:cornerRadius="10dp"
+                            app:backgroundTint="@color/surface_variant"
+                            android:textColor="@color/text_primary"
+                            android:paddingHorizontal="16dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ─── Stats Card ─── -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="12dp"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/divider_strong"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="ESTATÍSTICAS"
+                        style="@style/TextAppearance.MotoReviso.SectionHeader"
+                        android:layout_marginBottom="12dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <!-- Corridas -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+                            <TextView
+                                android:id="@+id/tv_corridas_stat"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="—"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_primary" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Corridas"
+                                android:textSize="11sp"
+                                android:textColor="@color/text_secondary" />
+                        </LinearLayout>
+
+                        <!-- Vitórias -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+                            <TextView
+                                android:id="@+id/tv_vitorias_stat"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="—"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/success" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Vitórias"
+                                android:textSize="11sp"
+                                android:textColor="@color/text_secondary" />
+                        </LinearLayout>
+
+                        <!-- Quedas -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+                            <TextView
+                                android:id="@+id/tv_quedas_stat"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="—"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/warning" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Quedas"
+                                android:textSize="11sp"
+                                android:textColor="@color/text_secondary" />
+                        </LinearLayout>
+
+                        <!-- Melhor Tempo -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+                            <TextView
+                                android:id="@+id/tv_melhor_tempo_stat"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="—"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/secondary" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Melhor Volta"
+                                android:textSize="11sp"
+                                android:textColor="@color/text_secondary" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ─── Equipamentos ─── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="10dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="EQUIPAMENTOS"
+                    style="@style/TextAppearance.MotoReviso.SectionHeader" />
+
+                <TextView
+                    android:id="@+id/tv_qtd_equipamentos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary" />
+
+            </LinearLayout>
+
+            <!-- Lista de equipamentos (nested) -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_equipamentos_perfil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <!-- Empty state equipamentos -->
+            <LinearLayout
+                android:id="@+id/layout_sem_equipamentos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingVertical="20dp"
+                android:paddingHorizontal="40dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Nenhum equipamento cadastrado"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_secondary"
+                    android:gravity="center" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Toque em + para adicionar"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_tertiary"
+                    android:gravity="center"
+                    android:layout_marginTop="4dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- FAB para adicionar equipamento -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add_equipamento"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add_modern"
+        app:backgroundTint="@color/secondary"
+        app:tint="@color/white" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
