@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+    <!-- Botas touring (com proteções completas) -->
+    <!-- Bota esquerda -->
+    <path
+        android:fillColor="#1A1A1F"
+        android:pathData="M8,18 L14,16 L14,42 L8,44 Z"/>
+
+    <!-- Bota direita -->
+    <path
+        android:fillColor="#1A1A1F"
+        android:pathData="M34,18 L40,16 L40,44 L34,42 Z"/>
+
+    <!-- Proteção lateral esquerda -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M6,20 L8,20 L8,40 L6,38 Z"/>
+
+    <!-- Proteção lateral direita -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M40,20 L42,20 L42,38 L40,40 Z"/>
+
+    <!-- Faixa central esquerda (amarelo) -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M10,20 L11,20 L11,38 L10,38 Z"/>
+
+    <!-- Faixa central direita (amarelo) -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M37,20 L38,20 L38,38 L37,38 Z"/>
+
+    <!-- Proteção tornozelo esquerda -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M8,16 L12,15 L12,24 L8,23 Z"/>
+
+    <!-- Proteção tornozelo direita -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M36,16 L40,15 L40,24 L36,23 Z"/>
+
+    <!-- Proteção sola esquerda -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M6,40 L14,40 L14,42 L6,42 Z"/>
+
+    <!-- Proteção sola direita -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M34,40 L42,40 L42,42 L34,42 Z"/>
+
+    <!-- Sola esquerda -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M8,42 L14,42 L14,44 L8,44 Z"/>
+
+    <!-- Sola direita -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M34,42 L40,42 L40,44 L34,44 Z"/>
+
+</vector>

@@ -23,10 +23,17 @@ public class Veiculo {
     private Long kmTroca;
     private Long dataCadastro;
     private Long dataUltimaRevisao;
+    private Long dataProximaRevisao;  // Data agendada para próxima revisão
     private String urlImagemPrincipal;
     private Long intervaloRevisao; // padrão 5000 km
     private String descricao;
     private Boolean ativo;
+
+    // Health indicators (0-100%)
+    private Long healthOleo;      // Oil health
+    private Long healthPneus;     // Tire health
+    private Long healthFreios;    // Brake health
+    private Long healthCorrente;  // Chain health (motorcycle specific)
 
     public Veiculo() {
     }
@@ -220,6 +227,14 @@ public class Veiculo {
         this.dataUltimaRevisao = dataUltimaRevisao;
     }
 
+    public Long getDataProximaRevisao() {
+        return dataProximaRevisao;
+    }
+
+    public void setDataProximaRevisao(Long dataProximaRevisao) {
+        this.dataProximaRevisao = dataProximaRevisao;
+    }
+
     public String getUrlImagemPrincipal() {
         return urlImagemPrincipal;
     }
@@ -250,5 +265,38 @@ public class Veiculo {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    // Health Indicators
+    public Long getHealthOleo() {
+        return healthOleo != null ? healthOleo : 0L;
+    }
+
+    public void setHealthOleo(Long healthOleo) {
+        this.healthOleo = healthOleo;
+    }
+
+    public Long getHealthPneus() {
+        return healthPneus != null ? healthPneus : 0L;
+    }
+
+    public void setHealthPneus(Long healthPneus) {
+        this.healthPneus = healthPneus;
+    }
+
+    public Long getHealthFreios() {
+        return healthFreios != null ? healthFreios : 0L;
+    }
+
+    public void setHealthFreios(Long healthFreios) {
+        this.healthFreios = healthFreios;
+    }
+
+    public Long getHealthCorrente() {
+        return healthCorrente != null ? healthCorrente : 0L;
+    }
+
+    public void setHealthCorrente(Long healthCorrente) {
+        this.healthCorrente = healthCorrente;
     }
 }

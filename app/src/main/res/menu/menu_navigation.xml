@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/nav_inicio"
+        android:icon="@drawable/ic_car_modern"
+        android:title="Início" />
+
+    <item
         android:id="@+id/nav_veiculos"
         android:icon="@drawable/ic_car_modern"
-        android:title="@string/menu_veiculos" />
+        android:title="Garagem" />
 
     <item
         android:id="@+id/nav_manutencoes"
         android:icon="@drawable/ic_wrench_modern"
-        android:title="@string/menu_manutencoes" />
+        android:title="Manutenção" />
 
     <item
-        android:id="@+id/nav_trajetos"
-        android:icon="@drawable/ic_map_modern"
-        android:title="@string/menu_trajetos" />
-
-    <item
-        android:id="@+id/nav_config"
+        android:id="@+id/nav_mais"
         android:icon="@drawable/ic_settings_modern"
-        android:title="@string/menu_config" />
+        android:title="Mais" />
 
 </menu>

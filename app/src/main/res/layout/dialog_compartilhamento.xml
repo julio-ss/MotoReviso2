@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="24dp"
+    android:background="@color/surface">
 
     <TextView
         android:layout_width="match_parent"
@@ -20,9 +21,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
-        app:cardElevation="2dp"
-        app:cardCornerRadius="8dp"
-        app:cardBackgroundColor="@color/surface">
+        app:cardElevation="0dp"
+        app:cardCornerRadius="14dp"
+        app:cardBackgroundColor="@color/surface_variant"
+        app:strokeColor="@color/divider_strong"
+        app:strokeWidth="1dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -33,18 +36,20 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Veículo"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
-                android:layout_marginBottom="8dp" />
+                android:text="VEÍCULO"
+                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:letterSpacing="0.08"
+                android:textAllCaps="true"
+                android:layout_marginBottom="6dp" />
 
             <TextView
                 android:id="@+id/text_veiculo_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Carregando..."
-                android:textSize="12sp"
-                android:textColor="@color/text_secondary" />
+                android:textSize="13sp"
+                android:textColor="@color/text_primary" />
 
         </LinearLayout>
 
@@ -55,9 +60,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
-        app:cardElevation="2dp"
-        app:cardCornerRadius="8dp"
-        app:cardBackgroundColor="@color/surface">
+        app:cardElevation="0dp"
+        app:cardCornerRadius="14dp"
+        app:cardBackgroundColor="@color/surface_variant"
+        app:strokeColor="@color/divider_strong"
+        app:strokeWidth="1dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -68,18 +75,20 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Trajeto"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
-                android:layout_marginBottom="8dp" />
+                android:text="TRAJETO"
+                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:letterSpacing="0.08"
+                android:textAllCaps="true"
+                android:layout_marginBottom="6dp" />
 
             <TextView
                 android:id="@+id/text_trajeto_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Carregando..."
-                android:textSize="12sp"
-                android:textColor="@color/text_secondary" />
+                android:textSize="13sp"
+                android:textColor="@color/text_primary" />
 
         </LinearLayout>
 
@@ -99,44 +108,48 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center"
-        android:spacing="8dp">
+        android:gravity="center">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_whatsapp"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="44dp"
             android:layout_weight="1"
             android:text="WhatsApp"
+            android:textSize="12sp"
             android:layout_margin="4dp"
-            android:backgroundTint="@color/secondary" />
+            app:cornerRadius="12dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_instagram"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="44dp"
             android:layout_weight="1"
             android:text="Instagram"
+            android:textSize="12sp"
             android:layout_margin="4dp"
-            android:backgroundTint="@color/secondary" />
+            app:cornerRadius="12dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_email"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="44dp"
             android:layout_weight="1"
             android:text="Email"
+            android:textSize="12sp"
             android:layout_margin="4dp"
-            android:backgroundTint="@color/secondary" />
+            app:cornerRadius="12dp" />
 
     </LinearLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_fechar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:text="Fechar"
         android:layout_marginTop="16dp"
-        android:backgroundTint="@color/text_secondary" />
+        app:cornerRadius="14dp"
+        app:backgroundTint="@color/surface_variant"
+        android:textColor="@color/text_secondary" />
 
 </LinearLayout>

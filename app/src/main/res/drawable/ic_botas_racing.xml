@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+    <!-- Botas racing (esportivas apertadas) -->
+    <!-- Bota esquerda -->
+    <path
+        android:fillColor="#1A1A1F"
+        android:pathData="M8,20 L14,18 L14,42 L8,44 Z"/>
+
+    <!-- Bota direita -->
+    <path
+        android:fillColor="#1A1A1F"
+        android:pathData="M34,20 L40,18 L40,44 L34,42 Z"/>
+
+    <!-- Faixa lateral esquerda (amarelo) -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M9,22 L10,22 L10,40 L9,40 Z"/>
+
+    <!-- Faixa lateral direita (amarelo) -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M38,22 L39,22 L39,40 L38,40 Z"/>
+
+    <!-- Sola esquerda -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M8,42 L14,42 L14,44 L8,44 Z"/>
+
+    <!-- Sola direita -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M34,42 L40,42 L40,44 L34,44 Z"/>
+
+    <!-- Proteção tornozelo esquerdo -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M8,20 L12,19 L12,26 L8,25 Z"/>
+
+    <!-- Proteção tornozelo direito -->
+    <path
+        android:fillColor="#0D0D12"
+        android:pathData="M36,20 L40,19 L40,26 L36,25 Z"/>
+
+</vector>

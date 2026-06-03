@@ -6,13 +6,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 
@@ -31,7 +32,7 @@ public class ManutencoesFragment extends Fragment {
     private RecyclerView recyclerView;
     private ManutencaoAdapter adapter;
     private List<Manutencao> manutencoes;
-    private Button btnAdicionarManutencao;
+    private FloatingActionButton btnAdicionarManutencao;
     private ProgressBar progressBar;
     private TextView textVazioMensagem;
     private FirebaseManager firebaseManager;

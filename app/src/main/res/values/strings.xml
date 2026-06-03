@@ -105,7 +105,37 @@
     <string name="permissao_localizacao">Permissão de localização necessária</string>
     <string name="permissao_concedida">Permissão concedida</string>
 
+    <!-- Cadastro expandido -->
+    <string name="tipo_veiculo">Tipo de Veículo *</string>
+    <string name="tipo_alimentacao">Tipo de Alimentação</string>
+    <string name="capacidade_bateria">Capacidade da Bateria (kWh)</string>
+    <string name="autonomia">Autonomia (km)</string>
+    <string name="tempo_recarga">Tempo de Recarga</string>
+    <string name="secao_motor">MOTOR</string>
+    <string name="secao_alimentacao">ALIMENTAÇÃO</string>
+    <string name="secao_eletrico">DADOS ELÉTRICOS</string>
+    <string name="secao_basico">INFORMAÇÕES BÁSICAS</string>
+    <string name="secao_fisico">DIMENSÕES E PESO</string>
+    <string name="secao_uso">USO E MANUTENÇÃO</string>
+
     <!-- Arrays for Spinners -->
+    <string-array name="tipos_manutencao">
+        <item>Revisão Geral</item>
+        <item>Troca de Óleo + Filtro</item>
+        <item>Troca de Pneu Dianteiro</item>
+        <item>Troca de Pneu Traseiro</item>
+        <item>Corrente / Relação</item>
+        <item>Freios Dianteiros</item>
+        <item>Freios Traseiros</item>
+        <item>Filtro de Ar</item>
+        <item>Velas / Ignição</item>
+        <item>Bateria</item>
+        <item>Suspensão</item>
+        <item>Troca de Fluido de Freio</item>
+        <item>Reparo Elétrico</item>
+        <item>Outro</item>
+    </string-array>
+
     <string-array name="filtro_manutencao">
         <item>Todas</item>
         <item>Revisão</item>
@@ -131,4 +161,52 @@
     <string name="biometria">Biometria</string>
 
     <string name="google_maps_key" translatable="false">AIzaSyB9BS4uVJyBOqAjB19B-znmkTfOsmBniiA</string>
+
+    <!-- Pilotos -->
+    <string name="pilotos">Pilotos</string>
+    <string name="cadastro_piloto">Cadastrar Piloto</string>
+    <string name="editar_piloto">Editar Piloto</string>
+    <string name="perfil_piloto">Perfil do Piloto</string>
+    <string name="nenhum_piloto">Nenhum piloto cadastrado</string>
+    <string name="piloto_salvo">Piloto salvo com sucesso!</string>
+    <string name="cadastro_equipamento">Cadastrar Equipamento</string>
+    <string name="equipamento_salvo">Equipamento salvo com sucesso!</string>
+    <string name="nenhum_equipamento">Nenhum equipamento cadastrado</string>
+
+    <string-array name="categorias_piloto">
+        <item>Rua</item>
+        <item>Esportiva</item>
+        <item>Off-road</item>
+        <item>Motocross</item>
+        <item>Track Day</item>
+        <item>Endurance</item>
+        <item>Personalizada</item>
+    </string-array>
+
+    <string-array name="tipos_sanguineos">
+        <item>A+</item>
+        <item>A-</item>
+        <item>B+</item>
+        <item>B-</item>
+        <item>AB+</item>
+        <item>AB-</item>
+        <item>O+</item>
+        <item>O-</item>
+    </string-array>
+
+    <string-array name="tipos_equipamento">
+        <item>Capacete</item>
+        <item>Macacão</item>
+        <item>Jaqueta</item>
+        <item>Calça</item>
+        <item>Bota</item>
+        <item>Luva</item>
+        <item>Protetor de Coluna</item>
+        <item>Protetor de Joelho</item>
+        <item>Colete Protetor</item>
+        <item>Airbag</item>
+        <item>Óculos / Viseira</item>
+        <item>Outro</item>
+    </string-array>
+
 </resources>

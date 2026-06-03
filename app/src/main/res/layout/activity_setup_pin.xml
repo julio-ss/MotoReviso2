@@ -4,7 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="32dp"
+    android:paddingLeft="32dp"
+    android:paddingRight="32dp"
+    android:paddingTop="48dp"
+    android:paddingBottom="32dp"
     android:gravity="center"
     android:background="@color/background">
 
@@ -12,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Configurar PIN"
-        android:textSize="24sp"
+        android:textSize="26sp"
         android:textStyle="bold"
         android:textColor="@color/text_primary"
         android:gravity="center"
@@ -32,8 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         app:passwordToggleEnabled="true"
-        app:boxStrokeColor="?attr/colorSecondary"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        style="@style/Widget.MotoReviso.EditText">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_novo_pin"
             android:layout_width="match_parent"
@@ -52,8 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
         app:passwordToggleEnabled="true"
-        app:boxStrokeColor="?attr/colorSecondary"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        style="@style/Widget.MotoReviso.EditText">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_confirmar_pin"
             android:layout_width="match_parent"
@@ -73,23 +74,25 @@
         android:layout_height="wrap_content"
         android:text="Habilitar biometria (digital/rosto)"
         android:textColor="@color/text_primary"
+        android:buttonTint="@color/secondary"
         android:layout_marginBottom="32dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_salvar_pin"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="52dp"
         android:text="Salvar PIN"
-        android:textSize="16sp"
-        app:cornerRadius="12dp" />
+        android:textSize="15sp"
+        app:cornerRadius="14dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_pular"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="52dp"
         android:text="Pular"
-        android:textSize="16sp"
+        android:textSize="15sp"
         android:layout_marginTop="12dp"
+        android:textColor="@color/text_secondary"
         style="@style/Widget.MaterialComponents.Button.TextButton" />
 
 </LinearLayout>

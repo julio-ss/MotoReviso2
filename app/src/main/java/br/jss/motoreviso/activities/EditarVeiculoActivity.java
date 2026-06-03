@@ -1,8 +1,12 @@
 package br.jss.motoreviso.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -12,6 +16,11 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -22,6 +31,8 @@ import br.jss.motoreviso.utils.ImagemLoader;
 import br.jss.motoreviso.utils.SystemBarHelper;
 
 public class EditarVeiculoActivity extends AppCompatActivity {
+    private static final String TAG = "EditarVeiculoActivity";
+
     private String veiculoId;
     private EditText edtMarca, edtModelo, edtPlaca, edtKmAtual, edtDescricao;
     private Button btnSalvar, btnCancelar;
@@ -36,17 +47,24 @@ public class EditarVeiculoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate() called");
         setContentView(R.layout.activity_editar_veiculo);
 
         SystemBarHelper.applySystemBarPadding(this, findViewById(android.R.id.content));
 
         veiculoId = getIntent().getStringExtra("VEICULO_ID");
+        Log.d(TAG, "Veiculo ID: " + veiculoId);
+
         if (veiculoId == null) {
+            Log.w(TAG, "Veiculo ID is null, finishing activity");
             finish();
             return;
         }
 
         firebaseManager = FirebaseManager.getInstance();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        Log.d(TAG, "Current user on onCreate: " + (currentUser != null ? currentUser.getEmail() : "NULL"));
+
         inicializarViews();
         setupImagemLauncher();
         carregarVeiculo();
@@ -85,8 +103,33 @@ public class EditarVeiculoActivity extends AppCompatActivity {
     }
 
     private void selecionarImagem() {
-        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        imagemLauncher.launch(intent);
+        // Check if permission is granted
+        String permissao = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+            ? Manifest.permission.READ_MEDIA_IMAGES
+            : Manifest.permission.READ_EXTERNAL_STORAGE;
+
+        if (ContextCompat.checkSelfPermission(this, permissao) != PackageManager.PERMISSION_GRANTED) {
+            // Request permission
+            ActivityCompat.requestPermissions(this, new String[]{permissao}, 101);
+        } else {
+            // Permission already granted, open gallery
+            Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            imagemLauncher.launch(intent);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 101) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, open gallery
+                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                imagemLauncher.launch(intent);
+            } else {
+                Toast.makeText(this, "Permissão de acesso à galeria foi negada", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void carregarVeiculo() {
@@ -115,6 +158,8 @@ public class EditarVeiculoActivity extends AppCompatActivity {
     }
 
     private void salvarAlteracoes() {
+        Log.d(TAG, "salvarAlteracoes() called");
+
         String marca = edtMarca.getText().toString().trim();
         String modelo = edtModelo.getText().toString().trim();
         String placa = edtPlaca.getText().toString().trim();
@@ -136,12 +181,40 @@ public class EditarVeiculoActivity extends AppCompatActivity {
 
         veiculoAtual.setDescricao(edtDescricao.getText().toString());
 
-        // Se uma nova imagem foi selecionada, salvar seu caminho local
+        // Se uma nova imagem foi selecionada, salvar localmente no dispositivo
         if (imagemUri != null) {
-            veiculoAtual.setUrlImagemPrincipal(imagemUri.toString());
-        }
+            Log.d(TAG, "imagemUri is not null, saving image locally...");
 
-        atualizarVeiculoFirebase();
+            progressEditar.setVisibility(android.view.View.VISIBLE);
+
+            // Gerar nome único para a imagem
+            String nomeImagem = "veiculo_" + veiculoId + "_" + System.currentTimeMillis() + ".jpg";
+            Log.d(TAG, "Salvando imagem localmente: " + nomeImagem);
+
+            // Salvar imagem localmente no dispositivo
+            firebaseManager.salvarImagemLocalmente(this, imagemUri, nomeImagem,
+                new FirebaseManager.OnUploadCompleteListener() {
+                    @Override
+                    public void onUploadComplete(String caminhoLocal) {
+                        Log.d(TAG, "Imagem salva localmente em: " + caminhoLocal);
+                        // Salvar caminho da imagem no veículo
+                        veiculoAtual.setUrlImagemPrincipal(caminhoLocal);
+                        atualizarVeiculoFirebase();
+                    }
+
+                    @Override
+                    public void onUploadFailed(Exception exception) {
+                        Log.e(TAG, "Erro ao salvar imagem localmente", exception);
+                        progressEditar.setVisibility(android.view.View.GONE);
+                        String mensagemErro = "Erro ao salvar imagem: " + exception.getMessage();
+                        Toast.makeText(EditarVeiculoActivity.this, mensagemErro, Toast.LENGTH_LONG).show();
+                    }
+                });
+        } else {
+            Log.d(TAG, "Nenhuma imagem selecionada, apenas atualizando dados");
+            // Se nenhuma imagem foi selecionada, apenas atualizar os dados
+            atualizarVeiculoFirebase();
+        }
     }
 
     private void atualizarVeiculoFirebase() {
@@ -157,3 +230,4 @@ public class EditarVeiculoActivity extends AppCompatActivity {
                     Toast.makeText(EditarVeiculoActivity.this, "Erro ao atualizar: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+}

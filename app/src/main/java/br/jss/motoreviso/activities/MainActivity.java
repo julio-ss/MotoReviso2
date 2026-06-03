@@ -9,17 +9,19 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import br.jss.motoreviso.R;
 import br.jss.motoreviso.fragments.ConfiguracoesFragment;
+import br.jss.motoreviso.fragments.DashboardFragment;
 import br.jss.motoreviso.fragments.ManutencoesFragment;
-import br.jss.motoreviso.fragments.TrajetosFragment;
+import br.jss.motoreviso.fragments.RastreamentoEmTempoRealFragment;
 import br.jss.motoreviso.fragments.VeiculosFragment;
 import br.jss.motoreviso.utils.SystemBarHelper;
+import br.jss.motoreviso.activities.GaleriaVeiculoActivity;
 
 public class MainActivity extends AppCompatActivity {
-    private BottomNavigationView bottomNavigation;
+    private FloatingActionButton fabRastreamento;
     private FrameLayout frameLayout;
     private FragmentManager fragmentManager;
 
@@ -30,37 +32,32 @@ public class MainActivity extends AppCompatActivity {
 
         SystemBarHelper.applySystemBarPadding(this, findViewById(R.id.frame_layout));
 
-        bottomNavigation = findViewById(R.id.bottom_navigation);
+        fabRastreamento = findViewById(R.id.fab_rastreamento);
         frameLayout = findViewById(R.id.frame_layout);
         fragmentManager = getSupportFragmentManager();
 
-        bottomNavigation.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
+        // Setup custom navigation items
+        setupCustomNavigation();
 
-            if (itemId == R.id.nav_veiculos) {
-                carregarFragment(new VeiculosFragment());
-                return true;
-            } else if (itemId == R.id.nav_manutencoes) {
-                carregarFragment(new ManutencoesFragment());
-                return true;
-            } else if (itemId == R.id.nav_trajetos) {
-                carregarFragment(new TrajetosFragment());
-                return true;
-            } else if (itemId == R.id.nav_config) {
-                carregarFragment(new ConfiguracoesFragment());
-                return true;
-            }
-
-            return false;
+        // Listener do FAB para navegação ao Rastreamento em Tempo Real
+        fabRastreamento.setOnClickListener(v -> {
+            carregarFragment(new RastreamentoEmTempoRealFragment());
         });
 
         if (savedInstanceState == null) {
-            bottomNavigation.setSelectedItemId(R.id.nav_veiculos);
-            carregarFragment(new VeiculosFragment());
+            // Set Dashboard as the initial screen
+            carregarFragment(new DashboardFragment());
         }
     }
 
-    private void carregarFragment(Fragment fragment) {
+    private void setupCustomNavigation() {
+        findViewById(R.id.nav_item_inicio).setOnClickListener(v -> carregarFragment(new DashboardFragment()));
+        findViewById(R.id.nav_item_garagem).setOnClickListener(v -> carregarFragment(new VeiculosFragment()));
+        findViewById(R.id.nav_item_manutencao).setOnClickListener(v -> carregarFragment(new ManutencoesFragment()));
+        findViewById(R.id.nav_item_mais).setOnClickListener(v -> abrirMenuCascata());
+    }
+
+    public void carregarFragment(Fragment fragment) {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setCustomAnimations(
                 R.anim.anim_slide_in,
@@ -78,5 +75,32 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("VEICULO_ID", veiculoId);
         startActivity(intent);
         overridePendingTransition(R.anim.anim_fade_in, R.anim.anim_fade_out);
+    }
+
+    private void abrirMenuCascata() {
+        // Encontrar a view do ícone "Mais" no navbar customizado
+        android.view.View navMaisView = findViewById(R.id.nav_item_mais);
+
+        // Criar um PopupMenu com as opções adicionais
+        android.widget.PopupMenu popupMenu = new android.widget.PopupMenu(this, navMaisView);
+        popupMenu.inflate(R.menu.menu_mais);
+
+        popupMenu.setOnMenuItemClickListener(menuItem -> {
+            int id = menuItem.getItemId();
+            if (id == R.id.nav_config) {
+                carregarFragment(new ConfiguracoesFragment());
+                return true;
+            } else if (id == R.id.nav_galeria) {
+                Intent intent = new Intent(MainActivity.this, GaleriaVeiculoActivity.class);
+                startActivity(intent);
+                return true;
+            } else if (id == R.id.nav_pilotos) {
+                carregarFragment(new br.jss.motoreviso.fragments.PilotosFragment());
+                return true;
+            }
+            return false;
+        });
+
+        popupMenu.show();
     }
 }
