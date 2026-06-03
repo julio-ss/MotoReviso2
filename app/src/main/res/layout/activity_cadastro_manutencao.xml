@@ -26,7 +26,7 @@
 
     </LinearLayout>
 
-    <!-- Shown only when no vehicle is pre-selected -->
+    <!-- Seleção de veículo (exibida quando não há veículo pré-selecionado) -->
     <LinearLayout
         android:id="@+id/layout_selecionar_veiculo"
         android:layout_width="match_parent"
@@ -65,6 +65,7 @@
     </LinearLayout>
 
     <ScrollView
+        android:id="@+id/scroll_view_manutencao"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
@@ -74,8 +75,29 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:paddingRight="16dp"
+            android:paddingBottom="16dp">
 
+            <!-- Tipo de manutenção (dropdown) -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_tipo_manutencao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                style="@style/Widget.MotoReviso.Dropdown"
+                android:hint="Tipo de Manutenção *">
+
+                <AutoCompleteTextView
+                    android:id="@+id/acv_tipo_manutencao"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:textColor="@color/text_primary"
+                    android:completionThreshold="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Data da manutenção -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -85,39 +107,52 @@
                     android:id="@+id/edt_data_manutencao"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Data (DD/MM/YYYY)"
-                    android:inputType="text"
+                    android:hint="Data da Manutenção *"
+                    android:inputType="none"
+                    android:focusable="false"
                     android:textColor="@color/text_primary" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <!-- KM na revisão + Próxima troca em KM (lado a lado) -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                style="@style/Widget.MotoReviso.EditText">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_km_manutencao"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="KM da Revisão"
-                    android:inputType="number"
-                    android:textColor="@color/text_primary" />
-            </com.google.android.material.textfield.TextInputLayout>
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                style="@style/Widget.MotoReviso.EditText">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_tipo_manutencao"
-                    android:layout_width="match_parent"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:hint="Tipo (Revisão/Reparo)"
-                    android:inputType="text"
-                    android:textColor="@color/text_primary" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    style="@style/Widget.MotoReviso.EditText">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_km_manutencao"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="KM atual *"
+                        android:inputType="number"
+                        android:textColor="@color/text_primary" />
+                </com.google.android.material.textfield.TextInputLayout>
 
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    style="@style/Widget.MotoReviso.EditText">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_proxima_revisao_km"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Próxima troca (KM)"
+                        android:inputType="number"
+                        android:textColor="@color/text_primary" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <!-- Custo -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -132,6 +167,7 @@
                     android:textColor="@color/text_primary" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Mecânico -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -141,11 +177,12 @@
                     android:id="@+id/edt_mecanico"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Mecânico"
+                    android:hint="Mecânico / Oficina"
                     android:inputType="text"
                     android:textColor="@color/text_primary" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Peças trocadas -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -160,6 +197,7 @@
                     android:textColor="@color/text_primary" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Notas -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -1,14 +1,13 @@
 package br.jss.motoreviso.activities;
 
-import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -18,26 +17,50 @@ import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import br.jss.motoreviso.R;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.Manutencao;
 import br.jss.motoreviso.models.Veiculo;
+import br.jss.motoreviso.utils.KeyboardScrollHelper;
 import br.jss.motoreviso.utils.SystemBarHelper;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 public class CadastroManutencaoActivity extends AppCompatActivity {
     private static final String TAG = "CadastroManutencaoActivity";
 
+    // Intervalos padrão sugeridos por tipo (em km)
+    private static final Map<String, Long> INTERVALO_PADRAO = new HashMap<String, Long>() {{
+        put("Troca de Óleo + Filtro",     5000L);
+        put("Revisão Geral",              10000L);
+        put("Corrente / Relação",         5000L);
+        put("Troca de Pneu Dianteiro",    20000L);
+        put("Troca de Pneu Traseiro",     15000L);
+        put("Freios Dianteiros",          15000L);
+        put("Freios Traseiros",           15000L);
+        put("Filtro de Ar",               10000L);
+        put("Velas / Ignição",            12000L);
+        put("Bateria",                    30000L);
+        put("Suspensão",                  20000L);
+        put("Troca de Fluido de Freio",   20000L);
+    }};
+
     private String veiculoId;
     private String manutencaoId;
-    private EditText edtData, edtKm, edtTipo, edtCusto, edtMecanico, edtPecas, edtNotas;
-    private Button btnSalvar, btnCancelar;
+
+    private AutoCompleteTextView acvTipo;
+    private TextInputEditText edtData, edtKm, edtProximaKm, edtCusto, edtMecanico, edtPecas, edtNotas;
     private LinearLayout layoutSelecionarVeiculo;
     private Spinner spinnerVeiculo;
     private ProgressBar progressCarregandoVeiculos;
+
     private FirebaseManager firebaseManager;
     private Calendar calendar = Calendar.getInstance();
 
@@ -48,7 +71,6 @@ public class CadastroManutencaoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_manutencao);
-
         SystemBarHelper.applySystemBarPadding(this, findViewById(android.R.id.content));
 
         veiculoId = getIntent().getStringExtra("VEICULO_ID");
@@ -56,6 +78,11 @@ public class CadastroManutencaoActivity extends AppCompatActivity {
 
         firebaseManager = FirebaseManager.getInstance();
         inicializarViews();
+        setupDropdownTipo();
+
+        // Configurar scroll automático para campos quando o teclado abre
+        ScrollView scrollView = findViewById(R.id.scroll_view_manutencao);
+        KeyboardScrollHelper.setupKeyboardScrollForScrollView(scrollView);
 
         if (veiculoId == null) {
             layoutSelecionarVeiculo.setVisibility(View.VISIBLE);
@@ -66,44 +93,79 @@ public class CadastroManutencaoActivity extends AppCompatActivity {
             carregarManutencaoExistente();
         }
 
-        btnSalvar.setOnClickListener(v -> salvarManutencao());
-        btnCancelar.setOnClickListener(v -> finish());
+        findViewById(R.id.btn_salvar_manutencao).setOnClickListener(v -> salvarManutencao());
+        findViewById(R.id.btn_cancelar_manutencao).setOnClickListener(v -> finish());
     }
 
     private void inicializarViews() {
+        acvTipo = findViewById(R.id.acv_tipo_manutencao);
         edtData = findViewById(R.id.edt_data_manutencao);
         edtKm = findViewById(R.id.edt_km_manutencao);
-        edtTipo = findViewById(R.id.edt_tipo_manutencao);
+        edtProximaKm = findViewById(R.id.edt_proxima_revisao_km);
         edtCusto = findViewById(R.id.edt_custo);
         edtMecanico = findViewById(R.id.edt_mecanico);
         edtPecas = findViewById(R.id.edt_pecas);
         edtNotas = findViewById(R.id.edt_notas);
-        btnSalvar = findViewById(R.id.btn_salvar_manutencao);
-        btnCancelar = findViewById(R.id.btn_cancelar_manutencao);
         layoutSelecionarVeiculo = findViewById(R.id.layout_selecionar_veiculo);
         spinnerVeiculo = findViewById(R.id.spinner_veiculo);
         progressCarregandoVeiculos = findViewById(R.id.progress_carregando_veiculos);
 
         edtData.setOnClickListener(v -> mostrarDatePicker());
-        edtData.setFocusable(false);
+    }
+
+    private void setupDropdownTipo() {
+        String[] tipos = getResources().getStringArray(R.array.tipos_manutencao);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, tipos);
+        acvTipo.setAdapter(adapter);
+
+        // Ao selecionar tipo, sugere automaticamente a próxima troca em km
+        acvTipo.setOnItemClickListener((parent, view, position, id) -> {
+            String tipo = (String) parent.getItemAtPosition(position);
+            sugerirProximaKm(tipo);
+        });
+    }
+
+    private void sugerirProximaKm(String tipo) {
+        // Só sugere se o campo ainda estiver vazio
+        if (edtProximaKm.getText() != null && !edtProximaKm.getText().toString().isEmpty()) return;
+
+        Long interval = INTERVALO_PADRAO.get(tipo);
+        if (interval == null) return;
+
+        String kmStr = edtKm.getText() != null ? edtKm.getText().toString().trim() : "";
+        if (!kmStr.isEmpty()) {
+            try {
+                long kmAtual = Long.parseLong(kmStr);
+                edtProximaKm.setText(String.valueOf(kmAtual + interval));
+            } catch (NumberFormatException ignored) {}
+        }
     }
 
     private void mostrarDatePicker() {
-        DatePickerDialog dialog = new DatePickerDialog(this,
-                (view, year, month, day) -> {
-                    calendar.set(year, month, day);
+        // Usa AlertDialog com DatePicker view para melhor controle de espaço e visibilidade dos botões
+        android.widget.DatePicker datePicker = new android.widget.DatePicker(this);
+        datePicker.init(calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH),
+                        null);
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Data da Manutenção")
+                .setView(datePicker)
+                .setPositiveButton("OK", (dialog, which) -> {
+                    calendar.set(datePicker.getYear(),
+                                datePicker.getMonth(),
+                                datePicker.getDayOfMonth());
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("pt", "BR"));
                     edtData.setText(sdf.format(calendar.getTime()));
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH));
-        dialog.show();
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 
     private void carregarVeiculos() {
         progressCarregandoVeiculos.setVisibility(View.VISIBLE);
-        Log.d(TAG, "Carregando veículos para seleção");
 
         firebaseManager.obterTodosVeiculos().addOnCompleteListener(task -> {
             progressCarregandoVeiculos.setVisibility(View.GONE);
@@ -119,12 +181,12 @@ public class CadastroManutencaoActivity extends AppCompatActivity {
                         v.setId(doc.getId());
                         veiculos.add(v);
                         veiculoIds.add(doc.getId());
-                        nomes.add(v.getMarca() + " " + v.getModelo() + " - " + v.getPlaca());
+                        nomes.add(v.getMarca() + " " + v.getModelo() + " — " + v.getPlaca());
                     }
                 }
 
                 if (veiculos.isEmpty()) {
-                    Toast.makeText(this, "Nenhum veículo cadastrado. Cadastre um veículo primeiro.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Cadastre um veículo antes de registrar manutenção.", Toast.LENGTH_LONG).show();
                     finish();
                     return;
                 }
@@ -134,7 +196,6 @@ public class CadastroManutencaoActivity extends AppCompatActivity {
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinnerVeiculo.setAdapter(adapter);
             } else {
-                Log.e(TAG, "Erro ao carregar veículos", task.getException());
                 Toast.makeText(this, "Erro ao carregar veículos", Toast.LENGTH_SHORT).show();
                 finish();
             }
@@ -142,13 +203,10 @@ public class CadastroManutencaoActivity extends AppCompatActivity {
     }
 
     private void carregarManutencaoExistente() {
-        Log.d(TAG, "Carregando manutenção existente: " + manutencaoId);
         firebaseManager.obterManutencao(manutencaoId).addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult() != null) {
                 Manutencao m = task.getResult().toObject(Manutencao.class);
-                if (m != null) {
-                    preencherFormulario(m);
-                }
+                if (m != null) preencherFormulario(m);
             } else {
                 Log.e(TAG, "Erro ao carregar manutenção", task.getException());
             }
@@ -162,7 +220,8 @@ public class CadastroManutencaoActivity extends AppCompatActivity {
             calendar.setTimeInMillis(m.getDataRevisao());
         }
         if (m.getKmRevisao() != null) edtKm.setText(String.valueOf(m.getKmRevisao()));
-        if (m.getTipo() != null) edtTipo.setText(m.getTipo());
+        if (m.getTipo() != null) acvTipo.setText(m.getTipo(), false);
+        if (m.getProximaRevisaoKm() != null) edtProximaKm.setText(String.valueOf(m.getProximaRevisaoKm()));
         if (m.getCusto() != null) edtCusto.setText(String.valueOf(m.getCusto()));
         if (m.getMecanico() != null) edtMecanico.setText(m.getMecanico());
         if (m.getNotas() != null) edtNotas.setText(m.getNotas());
@@ -172,11 +231,11 @@ public class CadastroManutencaoActivity extends AppCompatActivity {
     }
 
     private void salvarManutencao() {
+        String tipo = acvTipo.getText().toString().trim();
         String dataStr = edtData.getText().toString().trim();
         String kmStr = edtKm.getText().toString().trim();
-        String tipo = edtTipo.getText().toString().trim();
 
-        if (dataStr.isEmpty() || kmStr.isEmpty() || tipo.isEmpty()) {
+        if (tipo.isEmpty() || dataStr.isEmpty() || kmStr.isEmpty()) {
             Toast.makeText(this, getString(R.string.preencha_obrigatorios), Toast.LENGTH_SHORT).show();
             return;
         }
@@ -191,19 +250,34 @@ public class CadastroManutencaoActivity extends AppCompatActivity {
             idVeiculo = veiculoIds.get(pos);
         }
 
-        Manutencao manutencao = new Manutencao(idVeiculo);
-
+        long kmRevisao;
         try {
-            manutencao.setDataRevisao(calendar.getTimeInMillis());
-            manutencao.setKmRevisao(Long.parseLong(kmStr));
+            kmRevisao = Long.parseLong(kmStr);
         } catch (NumberFormatException e) {
             Toast.makeText(this, "Formato de KM inválido", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        Manutencao manutencao = new Manutencao(idVeiculo);
+        manutencao.setDataRevisao(calendar.getTimeInMillis());
+        manutencao.setKmRevisao(kmRevisao);
         manutencao.setTipo(tipo);
 
-        String custoStr = edtCusto.getText().toString().trim();
+        // Próxima troca em KM
+        String proximaKmStr = edtProximaKm.getText() != null ? edtProximaKm.getText().toString().trim() : "";
+        if (!proximaKmStr.isEmpty()) {
+            try {
+                manutencao.setProximaRevisaoKm(Long.parseLong(proximaKmStr));
+            } catch (NumberFormatException ignored) {}
+        } else {
+            // Calcula automaticamente se houver intervalo padrão
+            Long interval = INTERVALO_PADRAO.get(tipo);
+            if (interval != null) {
+                manutencao.setProximaRevisaoKm(kmRevisao + interval);
+            }
+        }
+
+        String custoStr = edtCusto.getText() != null ? edtCusto.getText().toString().trim() : "";
         if (!custoStr.isEmpty()) {
             try {
                 manutencao.setCusto(Double.parseDouble(custoStr.replace(",", ".")));
@@ -212,49 +286,81 @@ public class CadastroManutencaoActivity extends AppCompatActivity {
             }
         }
 
-        manutencao.setMecanico(edtMecanico.getText().toString().trim());
-        manutencao.setNotas(edtNotas.getText().toString().trim());
+        manutencao.setMecanico(edtMecanico.getText() != null ? edtMecanico.getText().toString().trim() : "");
+        manutencao.setNotas(edtNotas.getText() != null ? edtNotas.getText().toString().trim() : "");
 
-        String pecasStr = edtPecas.getText().toString().trim();
+        String pecasStr = edtPecas.getText() != null ? edtPecas.getText().toString().trim() : "";
         if (!pecasStr.isEmpty()) {
             List<String> pecas = new ArrayList<>();
             for (String p : pecasStr.split(",")) {
-                String trimmed = p.trim();
-                if (!trimmed.isEmpty()) pecas.add(trimmed);
+                String t = p.trim();
+                if (!t.isEmpty()) pecas.add(t);
             }
             manutencao.setPecasTrocadas(pecas);
         }
 
-        btnSalvar.setEnabled(false);
+        findViewById(R.id.btn_salvar_manutencao).setEnabled(false);
+
+        final String finalVeiculoId = idVeiculo;
 
         if (manutencaoId != null) {
             manutencao.setId(manutencaoId);
-            // Update existing
             firebaseManager.atualizarManutencao(manutencaoId, manutencao)
                     .addOnSuccessListener(v -> {
-                        Log.d(TAG, "Manutenção atualizada: " + manutencaoId);
-                        Toast.makeText(this, "Manutenção atualizada com sucesso!", Toast.LENGTH_SHORT).show();
+                        atualizarKmVeiculo(finalVeiculoId, kmRevisao);
+                        Toast.makeText(this, "Manutenção atualizada!", Toast.LENGTH_SHORT).show();
                         setResult(RESULT_OK);
                         finish();
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "Erro ao atualizar manutenção", e);
-                        btnSalvar.setEnabled(true);
+                        findViewById(R.id.btn_salvar_manutencao).setEnabled(true);
                         Toast.makeText(this, "Erro ao salvar: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
         } else {
             firebaseManager.adicionarManutencao(manutencao)
                     .addOnSuccessListener(ref -> {
-                        Log.d(TAG, "Manutenção criada: " + ref.getId());
+                        atualizarKmVeiculo(finalVeiculoId, kmRevisao);
                         Toast.makeText(this, getString(R.string.manutencao_salva), Toast.LENGTH_SHORT).show();
                         setResult(RESULT_OK);
                         finish();
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "Erro ao salvar manutenção", e);
-                        btnSalvar.setEnabled(true);
+                        findViewById(R.id.btn_salvar_manutencao).setEnabled(true);
                         Toast.makeText(this, "Erro ao salvar: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
         }
+    }
+
+    /**
+     * Atualiza o kmAtual do veículo se o KM da manutenção for maior que o atual.
+     * Também atualiza kmTroca para recalcular corretamente as revisões pendentes.
+     */
+    private void atualizarKmVeiculo(String idVeiculo, long kmManutencao) {
+        firebaseManager.obterVeiculo(idVeiculo).addOnSuccessListener(doc -> {
+            if (doc == null || !doc.exists()) return;
+            Veiculo v = doc.toObject(Veiculo.class);
+            if (v == null) return;
+            v.setId(doc.getId());
+
+            boolean atualizado = false;
+
+            // Atualiza kmAtual se a manutenção registrou um KM maior
+            if (v.getKmAtual() == null || kmManutencao > v.getKmAtual()) {
+                v.setKmAtual(kmManutencao);
+                atualizado = true;
+            }
+
+            // Atualiza kmTroca (referência para cálculo de próxima revisão geral)
+            String tipo = acvTipo.getText().toString().trim();
+            if (tipo.contains("Óleo") || tipo.contains("Revisão Geral")) {
+                v.setKmTroca(kmManutencao);
+                atualizado = true;
+            }
+
+            if (atualizado) {
+                firebaseManager.atualizarVeiculo(v)
+                        .addOnFailureListener(e -> Log.e(TAG, "Erro ao atualizar KM do veículo", e));
+            }
+        });
     }
 }

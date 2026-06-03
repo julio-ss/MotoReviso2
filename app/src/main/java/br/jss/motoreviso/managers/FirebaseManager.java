@@ -11,6 +11,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -115,6 +116,33 @@ public class FirebaseManager {
     }
 
     /**
+     * Define um veículo como principal e desmarca todos os outros atomicamente.
+     * Usa WriteBatch para garantir consistência: todos os updates vão juntos ou nenhum vai.
+     * @param veiculoIdPrincipal ID do veículo que será o novo principal
+     * @param todosOsVeiculos lista local com todos os veículos do usuário (precisam ter ID)
+     */
+    public Task<Void> definirVeiculoPrincipal(String veiculoIdPrincipal, List<br.jss.motoreviso.models.Veiculo> todosOsVeiculos) {
+        try {
+            String uid = getUsuarioUid();
+            WriteBatch batch = db.batch();
+
+            for (br.jss.motoreviso.models.Veiculo v : todosOsVeiculos) {
+                if (v.getId() == null || v.getId().isEmpty()) continue;
+                DocumentReference ref = db.collection(COLLECTION_USERS)
+                        .document(uid)
+                        .collection(COLLECTION_VEICULOS)
+                        .document(v.getId());
+                boolean isPrincipal = v.getId().equals(veiculoIdPrincipal);
+                batch.update(ref, "principal", isPrincipal);
+            }
+
+            return batch.commit();
+        } catch (IllegalStateException e) {
+            return Tasks.forException(e);
+        }
+    }
+
+    /**
      * Atualiza um veículo existente (usando o ID separado)
      */
     public Task<Void> atualizarVeiculo(String veiculoId, Veiculo veiculo) {
@@ -167,11 +195,12 @@ public class FirebaseManager {
         try {
             String uid = getUsuarioUid();
 
+            // Source.SERVER garante que sempre busca do Firestore, ignorando cache local
             return db.collection(COLLECTION_USERS)
                     .document(uid)
                     .collection(COLLECTION_VEICULOS)
                     .whereEqualTo("ativo", true)
-                    .get();
+                    .get(com.google.firebase.firestore.Source.SERVER);
         } catch (IllegalStateException e) {
             return Tasks.forException(e);
         }

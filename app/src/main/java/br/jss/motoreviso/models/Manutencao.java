@@ -6,6 +6,7 @@ import java.util.List;
 
 public class Manutencao {
     private String id;
+    private String userId; // UID do proprietário da manutenção
     private String veiculoId;
     private Long dataRevisao;
     private Long kmRevisao;
@@ -35,6 +36,14 @@ public class Manutencao {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getVeiculoId() {

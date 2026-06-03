@@ -13,8 +13,12 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="materialButtonStyle">@style/Widget.MotoReviso.Button</item>
         <item name="materialCardViewStyle">@style/Widget.MotoReviso.Card</item>
-        <!-- Dialog button colors -->
+        <!-- Diálogos: AlertDialog, DatePickerDialog, confirmações -->
         <item name="android:buttonBarButtonStyle">@style/Widget.MotoReviso.Button.Dialog</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.MotoReviso.Dialog</item>
+        <item name="android:alertDialogTheme">@style/ThemeOverlay.MotoReviso.Dialog</item>
+        <item name="android:datePickerDialogTheme">@style/ThemeOverlay.MotoReviso.Dialog</item>
+        <item name="android:timePickerDialogTheme">@style/ThemeOverlay.MotoReviso.Dialog</item>
     </style>
 
     <style name="Widget.MotoReviso.Button" parent="Widget.MaterialComponents.Button">
@@ -34,11 +38,37 @@
         <item name="android:minHeight">52dp</item>
     </style>
 
-    <!-- Dialog Button Style with White Text -->
+    <!-- Dialog Button Style with White Text (legacy fallback) -->
     <style name="Widget.MotoReviso.Button.Dialog" parent="android:Widget.Button">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">15sp</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Theme overlay aplicado a TODOS os AlertDialog / DatePickerDialog / confirmações -->
+    <style name="ThemeOverlay.MotoReviso.Dialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <!-- Fundo do diálogo -->
+        <item name="android:background">@color/surface</item>
+        <!-- Título e mensagem -->
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <!-- Botão positivo (OK / Salvar / Confirmar) — branco e negrito -->
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.MotoReviso.Dialog.ButtonPositive</item>
+        <!-- Botão negativo (Cancelar) — cinza -->
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.MotoReviso.Dialog.ButtonNegative</item>
+        <!-- Botão neutro -->
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.MotoReviso.Dialog.ButtonNegative</item>
+    </style>
+
+    <style name="Widget.MotoReviso.Dialog.ButtonPositive" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Widget.MotoReviso.Dialog.ButtonNegative" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="Widget.MotoReviso.Card" parent="Widget.MaterialComponents.CardView">
@@ -55,6 +85,17 @@
         <item name="cardBackgroundColor">@color/surface</item>
         <item name="strokeColor">@color/divider_strong</item>
         <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="Widget.MotoReviso.Dropdown" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="boxBackgroundColor">@color/surface_variant</item>
+        <item name="boxStrokeColor">@color/secondary</item>
+        <item name="boxCornerRadiusTopStart">14dp</item>
+        <item name="boxCornerRadiusTopEnd">14dp</item>
+        <item name="boxCornerRadiusBottomStart">14dp</item>
+        <item name="boxCornerRadiusBottomEnd">14dp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="hintTextColor">@color/text_secondary</item>
     </style>
 
     <style name="Widget.MotoReviso.EditText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">

@@ -32,38 +32,36 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
+        <!-- content_layout é o alvo das animações TransitionManager -->
         <LinearLayout
+            android:id="@+id/content_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:paddingRight="16dp"
+            android:paddingBottom="16dp">
 
-            <RadioGroup
-                android:id="@+id/radio_group_tipo"
+            <!-- Tipo de Veículo (dropdown pesquisável) -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_tipo_veiculo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
-                <RadioButton
-                    android:id="@+id/radio_moto"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/moto"
-                    android:textColor="@color/text_primary"
-                    android:buttonTint="@color/secondary"
-                    android:checked="true" />
-                <RadioButton
-                    android:id="@+id/radio_carro"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/carro"
-                    android:textColor="@color/text_primary"
-                    android:buttonTint="@color/secondary" />
-            </RadioGroup>
+                android:layout_marginBottom="16dp"
+                style="@style/Widget.MotoReviso.Dropdown"
+                android:hint="@string/tipo_veiculo">
 
+                <AutoCompleteTextView
+                    android:id="@+id/acv_tipo_veiculo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:textColor="@color/text_primary"
+                    android:completionThreshold="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Imagem do Veículo -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
@@ -78,8 +76,7 @@
                     android:id="@+id/img_veiculo"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="centerInside"
-                    android:tint="@color/text_secondary" />
+                    android:scaleType="centerCrop" />
 
             </com.google.android.material.card.MaterialCardView>
 
@@ -88,9 +85,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:text="@string/selecionar_imagem"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="20dp"
                 style="@style/Widget.MotoReviso.Button.Outlined"
                 app:cornerRadius="14dp" />
+
+            <!-- INFORMAÇÕES BÁSICAS -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/secao_basico"
+                android:layout_marginBottom="12dp"
+                style="@style/TextAppearance.MotoReviso.SectionHeader" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -162,131 +167,281 @@
                     android:textColor="@color/text_primary" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <!-- SEÇÃO MOTOR (visível quando possui motor convencional) -->
+            <LinearLayout
+                android:id="@+id/section_motor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                style="@style/Widget.MotoReviso.EditText">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_motor"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/motor"
-                    android:inputType="text"
-                    android:textColor="@color/text_primary" />
-            </com.google.android.material.textfield.TextInputLayout>
+                android:orientation="vertical"
+                android:visibility="gone">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                style="@style/Widget.MotoReviso.EditText">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_combustivel"
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/combustivel"
-                    android:inputType="text"
-                    android:textColor="@color/text_primary" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:text="@string/secao_motor"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="12dp"
+                    style="@style/TextAppearance.MotoReviso.SectionHeader" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                style="@style/Widget.MotoReviso.EditText">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_cambio"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/cambio"
-                    android:inputType="text"
-                    android:textColor="@color/text_primary" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_marginBottom="12dp"
+                    style="@style/Widget.MotoReviso.EditText">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_motor"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/motor"
+                        android:inputType="text"
+                        android:textColor="@color/text_primary" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                style="@style/Widget.MotoReviso.EditText">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_potencia"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/potencia"
-                    android:inputType="number"
-                    android:textColor="@color/text_primary" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_marginBottom="12dp"
+                    style="@style/Widget.MotoReviso.EditText">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_cambio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/cambio"
+                        android:inputType="text"
+                        android:textColor="@color/text_primary" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                style="@style/Widget.MotoReviso.EditText">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_torque"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/torque"
-                    android:inputType="text"
-                    android:textColor="@color/text_primary" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                style="@style/Widget.MotoReviso.EditText">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_cilindrada"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/cilindrada"
-                    android:inputType="number"
-                    android:textColor="@color/text_primary" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="6dp"
+                        style="@style/Widget.MotoReviso.EditText">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_potencia"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/potencia"
+                            android:inputType="number"
+                            android:textColor="@color/text_primary" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                style="@style/Widget.MotoReviso.EditText">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_peso"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/peso"
-                    android:inputType="number"
-                    android:textColor="@color/text_primary" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="6dp"
+                        style="@style/Widget.MotoReviso.EditText">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_torque"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/torque"
+                            android:inputType="text"
+                            android:textColor="@color/text_primary" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                style="@style/Widget.MotoReviso.EditText">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_dimensoes"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/dimensoes"
-                    android:inputType="text"
-                    android:textColor="@color/text_primary" />
-            </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                style="@style/Widget.MotoReviso.EditText">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_tanque"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/tanque"
-                    android:inputType="number"
-                    android:textColor="@color/text_primary" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_marginBottom="12dp"
+                    style="@style/Widget.MotoReviso.EditText">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_cilindrada"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/cilindrada"
+                        android:inputType="number"
+                        android:textColor="@color/text_primary" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <!-- SEÇÃO ALIMENTAÇÃO (visível para todos com motor, inclusive elétrico) -->
+            <LinearLayout
+                android:id="@+id/section_alimentacao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/secao_alimentacao"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="12dp"
+                    style="@style/TextAppearance.MotoReviso.SectionHeader" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_alimentacao"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    style="@style/Widget.MotoReviso.Dropdown"
+                    android:hint="@string/tipo_alimentacao">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/acv_alimentacao"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:textColor="@color/text_primary" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Tanque só para motores convencionais -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_tanque"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:visibility="gone"
+                    style="@style/Widget.MotoReviso.EditText">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_tanque"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/tanque"
+                        android:inputType="number"
+                        android:textColor="@color/text_primary" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <!-- SEÇÃO ELÉTRICO (visível apenas para veículos elétricos) -->
+            <LinearLayout
+                android:id="@+id/section_eletrico"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/secao_eletrico"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="12dp"
+                    style="@style/TextAppearance.MotoReviso.SectionHeader" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="6dp"
+                        style="@style/Widget.MotoReviso.EditText">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_bateria"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/capacidade_bateria"
+                            android:inputType="number"
+                            android:textColor="@color/text_primary" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="6dp"
+                        style="@style/Widget.MotoReviso.EditText">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_autonomia"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/autonomia"
+                            android:inputType="number"
+                            android:textColor="@color/text_primary" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    style="@style/Widget.MotoReviso.EditText">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_tempo_recarga"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/tempo_recarga"
+                        android:inputType="text"
+                        android:textColor="@color/text_primary" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <!-- DIMENSÕES E PESO -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/secao_fisico"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"
+                style="@style/TextAppearance.MotoReviso.SectionHeader" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    style="@style/Widget.MotoReviso.EditText">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_peso"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/peso"
+                        android:inputType="number"
+                        android:textColor="@color/text_primary" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    style="@style/Widget.MotoReviso.EditText">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_dimensoes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/dimensoes"
+                        android:inputType="text"
+                        android:textColor="@color/text_primary" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <!-- USO E MANUTENÇÃO -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/secao_uso"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"
+                style="@style/TextAppearance.MotoReviso.SectionHeader" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -335,6 +490,7 @@
 
     </ScrollView>
 
+    <!-- Botões de ação -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

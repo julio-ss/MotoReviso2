@@ -2,6 +2,7 @@ package br.jss.motoreviso.models;
 
 public class ImagemVeiculo {
     private String id;
+    private String userId; // UID do proprietário da imagem
     private String veiculoId;
     private String urlImagem;
     private String descricao;
@@ -26,6 +27,14 @@ public class ImagemVeiculo {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getVeiculoId() {
