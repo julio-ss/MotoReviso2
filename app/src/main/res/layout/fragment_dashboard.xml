@@ -45,15 +45,16 @@
                 android:layout_height="44dp"
                 android:background="@drawable/bg_card_surface"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                android:visibility="invisible">
 
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_gravity="center"
+                    android:contentDescription="Notificações"
                     android:src="@drawable/ic_more_modern"
-                    android:tint="@color/text_primary"
-                    android:contentDescription="Notificações" />
+                    android:tint="@color/text_primary" />
 
                 <View
                     android:layout_width="7dp"
@@ -129,9 +130,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Principal"
+                            android:textColor="@color/white"
                             android:textSize="10sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/secondary" />
+                            android:textStyle="bold" />
 
                     </LinearLayout>
 
@@ -151,10 +152,10 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:letterSpacing="0.08"
                                 android:text="Modelo"
-                                android:textSize="11sp"
-                                android:textColor="@color/text_secondary"
-                                android:letterSpacing="0.08" />
+                                android:textColor="@color/white"
+                                android:textSize="11sp" />
 
                             <TextView
                                 android:id="@+id/text_veiculo_nome"
@@ -177,8 +178,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="KM"
-                                android:textSize="11sp"
-                                android:textColor="@color/text_secondary" />
+                                android:textColor="@color/white"
+                                android:textSize="11sp" />
 
                             <TextView
                                 android:id="@+id/text_km_atual"

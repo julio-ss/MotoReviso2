@@ -185,35 +185,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void realizarRegistro() {
-        String email = edtEmail.getText() != null ? edtEmail.getText().toString().trim() : "";
-        String senha = edtSenha.getText() != null ? edtSenha.getText().toString() : "";
-
-        if (email.isEmpty() || senha.isEmpty()) {
-            Toast.makeText(this, "Preencha e-mail e senha", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (senha.length() < 6) {
-            Toast.makeText(this, "Senha deve ter ao menos 6 caracteres", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        setCarregando(true);
-        Log.d(TAG, "Registrando: " + email);
-
-        auth.createUserWithEmailAndPassword(email, senha)
-                .addOnSuccessListener(authResult -> {
-                    setCarregando(false);
-                    Log.d(TAG, "Registro bem-sucedido: " + email);
-                    securePrefs.salvarEmail(email);
-                    Toast.makeText(this, "Conta criada com sucesso!", Toast.LENGTH_SHORT).show();
-                    perguntarSobrePin();
-                })
-                .addOnFailureListener(e -> {
-                    setCarregando(false);
-                    Log.e(TAG, "Falha no registro", e);
-                    Toast.makeText(this, "Erro ao criar conta: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                });
+        Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
     }
 
     private void realizarLoginPin() {

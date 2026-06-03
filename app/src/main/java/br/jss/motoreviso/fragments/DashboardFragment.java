@@ -1,13 +1,14 @@
 package br.jss.motoreviso.fragments;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.app.DatePickerDialog;
 import android.widget.DatePicker;
+import androidx.appcompat.app.AlertDialog;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -39,6 +40,8 @@ import br.jss.motoreviso.adapters.TrajetoAdapter;
 import br.jss.motoreviso.managers.FirebaseManager;
 import br.jss.motoreviso.models.Trajeto;
 import br.jss.motoreviso.models.Veiculo;
+import br.jss.motoreviso.models.UserProfile;
+import br.jss.motoreviso.repositories.UserRepository;
 
 public class DashboardFragment extends Fragment {
     private static final String TAG = "DashboardFragment";
@@ -123,14 +126,17 @@ public class DashboardFragment extends Fragment {
         // Set greeting with time of day and pilot name
         String greeting = getGreetingWithPilot();
         textGreeting.setText(greeting);
+
+        // Carregar saudação atualizada com nome/apelido
+        loadAndDisplayGreeting();
     }
 
     private void setupData() {
         Log.d(TAG, "setupData: Starting to load vehicle data");
         progressLoading.setVisibility(View.VISIBLE);
 
-        Log.d(TAG, "setupData: Calling carregarVeiculoPrincipal");
-        firebaseManager.carregarVeiculoPrincipal(new FirebaseManager.VeiculoCallback() {
+        Log.d(TAG, "setupData: Calling carregarVeiculoPrincipalMarcado");
+        firebaseManager.carregarVeiculoPrincipalMarcado(new FirebaseManager.VeiculoCallback() {
             @Override
             public void onSuccess(Veiculo veiculo) {
                 if (veiculo != null) {
@@ -258,40 +264,44 @@ public class DashboardFragment extends Fragment {
             calendar.add(java.util.Calendar.DAY_OF_MONTH, 7);
         }
 
-        int year = calendar.get(java.util.Calendar.YEAR);
-        int month = calendar.get(java.util.Calendar.MONTH);
-        int day = calendar.get(java.util.Calendar.DAY_OF_MONTH);
+        // Usa AlertDialog com DatePicker view para melhor controle de espaço e visibilidade dos botões
+        android.widget.DatePicker datePicker = new android.widget.DatePicker(getContext());
+        datePicker.init(calendar.get(java.util.Calendar.YEAR),
+                        calendar.get(java.util.Calendar.MONTH),
+                        calendar.get(java.util.Calendar.DAY_OF_MONTH),
+                        null);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-            getContext(),
-            (view, selectedYear, selectedMonth, selectedDay) -> {
-                // Create calendar with selected date
-                java.util.Calendar selectedCalendar = java.util.Calendar.getInstance();
-                selectedCalendar.set(selectedYear, selectedMonth, selectedDay);
-                long selectedDateMillis = selectedCalendar.getTimeInMillis();
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Data da Próxima Revisão")
+                .setView(datePicker)
+                .setPositiveButton("OK", (dialog, which) -> {
+                    // Create calendar with selected date
+                    java.util.Calendar selectedCalendar = java.util.Calendar.getInstance();
+                    selectedCalendar.set(datePicker.getYear(),
+                                        datePicker.getMonth(),
+                                        datePicker.getDayOfMonth());
+                    long selectedDateMillis = selectedCalendar.getTimeInMillis();
 
-                // Update vehicle with scheduled date
-                veiculo.setDataProximaRevisao(selectedDateMillis);
+                    // Update vehicle with scheduled date
+                    veiculo.setDataProximaRevisao(selectedDateMillis);
 
-                // Save to Firebase
-                firebaseManager.atualizarVeiculo(veiculo.getId(), veiculo)
-                    .addOnSuccessListener(unused -> {
-                        // Update display with new date
-                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                        String dataFormatada = sdf.format(new Date(selectedDateMillis));
-                        textDataProximaRevisao.setText("Agendada: " + dataFormatada);
+                    // Save to Firebase
+                    firebaseManager.atualizarVeiculo(veiculo.getId(), veiculo)
+                        .addOnSuccessListener(unused -> {
+                            // Update display with new date
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                            String dataFormatada = sdf.format(new Date(selectedDateMillis));
+                            textDataProximaRevisao.setText("Agendada: " + dataFormatada);
 
-                        // Show confirmation
-                        Log.d(TAG, "Revisão agendada para: " + dataFormatada);
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e(TAG, "Erro ao agendar revisão: " + e.getMessage());
-                    });
-            },
-            year, month, day
-        );
-
-        datePickerDialog.show();
+                            // Show confirmation
+                            Log.d(TAG, "Revisão agendada para: " + dataFormatada);
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e(TAG, "Erro ao agendar revisão: " + e.getMessage());
+                        });
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 
     private void loadStats(String veiculoId) {
@@ -358,8 +368,8 @@ public class DashboardFragment extends Fragment {
         });
     }
 
-    private String getGreetingWithPilot() {
-        // Get time of day
+    private void loadAndDisplayGreeting() {
+        // Determinar período do dia
         java.util.Calendar calendar = java.util.Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         int hora = calendar.get(java.util.Calendar.HOUR_OF_DAY);
@@ -373,18 +383,61 @@ public class DashboardFragment extends Fragment {
             periodGreeting = "Boa noite";
         }
 
-        // Get pilot name from Firebase Auth
+        // Obter preferência de exibição
+        SharedPreferences prefs = requireContext().getSharedPreferences("app_prefs", 0);
+        String exibicao = prefs.getString("exibicao_saudacao", "nome");
+
+        // Carregar perfil do usuário
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String pilotName = "Piloto";
         if (user != null) {
-            if (user.getDisplayName() != null && !user.getDisplayName().isEmpty()) {
-                pilotName = user.getDisplayName().split(" ")[0];  // Get first name only
-            } else if (user.getEmail() != null) {
-                pilotName = user.getEmail().split("@")[0];  // Use email prefix as fallback
+            UserRepository userRepo = new UserRepository();
+            userRepo.carregarPerfil(user.getUid(), new UserRepository.UserCallback() {
+                @Override
+                public void onSuccess(UserProfile profile) {
+                    String pilotName = "Piloto";
+
+                    if ("apelido".equals(exibicao) && profile.getApelido() != null) {
+                        pilotName = profile.getApelido();
+                    } else if (profile.getNome() != null) {
+                        pilotName = profile.getNome().split(" ")[0];
+                    }
+
+                    if (textGreeting != null) {
+                        textGreeting.setText(periodGreeting + ", " + capitalizeFirstLetter(pilotName) + ".");
+                    }
+                }
+
+                @Override
+                public void onError(String error) {
+                    if (textGreeting != null) {
+                        textGreeting.setText(periodGreeting + ", Piloto.");
+                    }
+                }
+            });
+        } else {
+            if (textGreeting != null) {
+                textGreeting.setText(periodGreeting + ", Piloto.");
             }
         }
+    }
 
-        return periodGreeting + ", " + pilotName;
+    private String capitalizeFirstLetter(String str) {
+        if (str == null || str.isEmpty()) return "";
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+    }
+
+    private String getGreetingWithPilot() {
+        // Retorna saudação padrão enquanto carrega o perfil
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        int hora = calendar.get(java.util.Calendar.HOUR_OF_DAY);
+
+        if (hora >= 5 && hora < 12) {
+            return "Bom dia, Piloto.";
+        } else if (hora >= 12 && hora < 18) {
+            return "Boa tarde, Piloto.";
+        } else {
+            return "Boa noite, Piloto.";
+        }
     }
 
     private String formatKm(Long km) {

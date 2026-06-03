@@ -28,17 +28,19 @@
                     android:layout_width="74dp"
                     android:layout_height="74dp"
                     android:layout_marginBottom="16dp">
+
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/bg_icon_logo" />
+
                     <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:layout_gravity="center"
-                        android:src="@drawable/ic_speed_modern"
-                        android:tint="#06121A"
-                        android:contentDescription="Logo" />
+                        android:contentDescription="Logo"
+                        android:padding="5dp"
+                        android:src="@drawable/icon" />
                 </FrameLayout>
 
                 <LinearLayout
@@ -64,11 +66,11 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="PAINEL DO MOTOCICLISTA"
-                    android:textSize="11sp"
-                    android:textColor="@color/text_secondary"
+                    android:layout_marginTop="4dp"
                     android:letterSpacing="0.12"
-                    android:layout_marginTop="4dp" />
+                    android:text="PAINEL DO PILOTO"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp" />
 
             </LinearLayout>
 

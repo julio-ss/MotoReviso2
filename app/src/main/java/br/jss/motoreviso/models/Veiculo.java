@@ -4,7 +4,8 @@ import com.google.firebase.firestore.Exclude;
 
 public class Veiculo {
     private String id;
-    private String tipo; // moto ou carro
+    private String userId; // UID do proprietário do veículo
+    private String tipo; // Tipo de veículo: Moto ou Carro
     private String marca;
     private String modelo;
     private Long ano;
@@ -28,6 +29,14 @@ public class Veiculo {
     private Long intervaloRevisao; // padrão 5000 km
     private String descricao;
     private Boolean ativo;
+    private Boolean principal; // Indica se é o veículo principal
+
+    // Campos de motorização (expansão de tipos)
+    private Boolean possuiMotorizacao;
+    private String tipoAlimentacao;    // Gasolina, Etanol, Flex, Diesel, GNV, Elétrico, Híbrido, Outro
+    private Long capacidadeBateria;    // kWh (apenas veículos elétricos)
+    private Long autonomia;            // km (apenas veículos elétricos)
+    private String tempoRecarga;       // ex: "4h" (apenas veículos elétricos)
 
     // Health indicators (0-100%)
     private Long healthOleo;      // Oil health
@@ -73,6 +82,14 @@ public class Veiculo {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getTipo() {
@@ -298,5 +315,53 @@ public class Veiculo {
 
     public void setHealthCorrente(Long healthCorrente) {
         this.healthCorrente = healthCorrente;
+    }
+
+    public Boolean isPrincipal() {
+        return principal != null && principal;
+    }
+
+    public void setPrincipal(Boolean principal) {
+        this.principal = principal;
+    }
+
+    public Boolean getPossuiMotorizacao() {
+        return possuiMotorizacao;
+    }
+
+    public void setPossuiMotorizacao(Boolean possuiMotorizacao) {
+        this.possuiMotorizacao = possuiMotorizacao;
+    }
+
+    public String getTipoAlimentacao() {
+        return tipoAlimentacao;
+    }
+
+    public void setTipoAlimentacao(String tipoAlimentacao) {
+        this.tipoAlimentacao = tipoAlimentacao;
+    }
+
+    public Long getCapacidadeBateria() {
+        return capacidadeBateria;
+    }
+
+    public void setCapacidadeBateria(Long capacidadeBateria) {
+        this.capacidadeBateria = capacidadeBateria;
+    }
+
+    public Long getAutonomia() {
+        return autonomia;
+    }
+
+    public void setAutonomia(Long autonomia) {
+        this.autonomia = autonomia;
+    }
+
+    public String getTempoRecarga() {
+        return tempoRecarga;
+    }
+
+    public void setTempoRecarga(String tempoRecarga) {
+        this.tempoRecarga = tempoRecarga;
     }
 }

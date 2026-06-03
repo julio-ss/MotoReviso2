@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@color/background"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,119 +13,554 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="20dp"
-        android:paddingBottom="80dp">
+        android:paddingBottom="100dp">
 
+        <!-- ── Título ── -->
         <TextView
-            android:id="@+id/text_configuracao"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/configuracoes"
+            android:text="Perfil"
             android:textSize="26sp"
             android:textStyle="bold"
-            android:textColor="@color/text_primary"
+            android:textColor="@color/text_primary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Configurações &amp; conta"
+            android:textSize="13sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginTop="2dp"
             android:layout_marginBottom="20dp" />
 
-        <!-- About card -->
+        <!-- ── Card de Perfil ── -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_perfil"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:foreground="?attr/selectableItemBackground"
+            app:cardBackgroundColor="@color/surface"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/secondary"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical">
+
+                <!-- Avatar -->
+                <FrameLayout
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:background="@drawable/bg_avatar_circle">
+                    <TextView
+                        android:id="@+id/tv_avatar_inicial"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"
+                        android:text="?" />
+                </FrameLayout>
+
+                <!-- Info -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="14dp">
+
+                    <TextView
+                        android:id="@+id/tv_nome_usuario"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Usuário"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                    <TextView
+                        android:id="@+id/tv_email_usuario"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="email@exemplo.com"
+                        android:textSize="13sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginTop="2dp" />
+
+                    <TextView
+                        android:id="@+id/tv_membro_desde"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Membro desde 2024"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_tertiary"
+                        android:layout_marginTop="3dp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android:tint="@color/text_tertiary" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- SEÇÃO SEGURANÇA                        -->
+        <!-- ══════════════════════════════════════ -->
+        <TextView
+            style="@style/TextAppearance.MotoReviso.SectionHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="SEGURANÇA"
+            android:layout_marginBottom="8dp" />
+
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="13dp"
+            android:layout_marginBottom="20dp"
+            app:cardBackgroundColor="@color/surface"
             app:cardCornerRadius="18dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/surface"
             app:strokeColor="@color/divider_strong"
             app:strokeWidth="1dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:orientation="vertical">
 
-                <TextView
+                <!-- Biometria -->
+                <LinearLayout
+                    android:id="@+id/row_biometria"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="SOBRE O APP"
-                    android:textSize="11sp"
-                    android:textColor="@color/text_secondary"
-                    android:letterSpacing="0.08"
-                    android:textAllCaps="true"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_height="64dp"
+                    android:orientation="horizontal"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:gravity="center_vertical"
+                    android:foreground="?attr/selectableItemBackground">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/sobre_o_app"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:textColor="@color/text_primary" />
+                    <FrameLayout
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_icon_container">
+                        <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_user_modern"
+                            android:tint="@color/secondary" />
+                    </FrameLayout>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/versao"
-                    android:textSize="13sp"
-                    android:layout_marginTop="6dp"
-                    android:textColor="@color/secondary" />
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical"
+                        android:layout_marginStart="12dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Biometria" android:textSize="15sp" android:textStyle="bold"
+                            android:textColor="@color/text_primary" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Desbloqueio por digital" android:textSize="12sp"
+                            android:textColor="@color/text_secondary" android:layout_marginTop="2dp" />
+                    </LinearLayout>
 
-                <TextView
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switch_biometria"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:focusable="false" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                    android:layout_marginStart="68dp" android:background="@color/divider_strong" />
+
+                <!-- Alterar PIN -->
+                <LinearLayout
+                    android:id="@+id/row_alterar_pin"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/descricao_app"
-                    android:textSize="12sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginTop="8dp"
-                    android:lineSpacingMultiplier="1.4" />
+                    android:layout_height="64dp"
+                    android:orientation="horizontal"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:gravity="center_vertical"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <FrameLayout android:layout_width="40dp" android:layout_height="40dp"
+                        android:background="@drawable/bg_icon_container">
+                        <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_lock_modern"
+                            android:tint="@color/secondary" />
+                    </FrameLayout>
+
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical"
+                        android:layout_marginStart="12dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Alterar PIN" android:textSize="15sp" android:textStyle="bold"
+                            android:textColor="@color/text_primary" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="PIN de 4 dígitos" android:textSize="12sp"
+                            android:textColor="@color/text_secondary" android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                        android:src="@drawable/ic_chevron_right" android:tint="@color/text_tertiary" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                    android:layout_marginStart="68dp" android:background="@color/divider_strong" />
+
+                <!-- Bloqueio automático -->
+                <LinearLayout
+                    android:id="@+id/row_bloqueio"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:orientation="horizontal"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:gravity="center_vertical"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <FrameLayout android:layout_width="40dp" android:layout_height="40dp"
+                        android:background="@drawable/bg_icon_container">
+                        <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_clock_modern"
+                            android:tint="@color/secondary" />
+                    </FrameLayout>
+
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical"
+                        android:layout_marginStart="12dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Bloqueio automático" android:textSize="15sp" android:textStyle="bold"
+                            android:textColor="@color/text_primary" />
+                        <TextView
+                            android:id="@+id/tv_bloqueio_valor"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Após 5 min" android:textSize="12sp"
+                            android:textColor="@color/text_secondary" android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                        android:src="@drawable/ic_chevron_right" android:tint="@color/text_tertiary" />
+                </LinearLayout>
 
             </LinearLayout>
-
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Security section -->
+        <!-- ══════════════════════════════════════ -->
+        <!-- SEÇÃO APLICATIVO                       -->
+        <!-- ══════════════════════════════════════ -->
         <TextView
+            style="@style/TextAppearance.MotoReviso.SectionHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="SEGURANÇA"
-            android:textSize="11sp"
-            android:textColor="@color/text_secondary"
-            android:letterSpacing="0.08"
-            android:textAllCaps="true"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="4dp" />
+            android:text="APLICATIVO"
+            android:layout_marginBottom="8dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_configurar_pin"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="Configurar PIN / Biometria"
-            android:layout_marginBottom="13dp"
-            style="@style/Widget.MotoReviso.Button.Outlined"
-            app:cornerRadius="14dp" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            app:cardBackgroundColor="@color/surface"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/divider_strong"
+            app:strokeWidth="1dp">
 
-        <!-- Account section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Notificações -->
+                <LinearLayout
+                    android:id="@+id/row_notificacoes"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:orientation="horizontal"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:gravity="center_vertical"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <FrameLayout android:layout_width="40dp" android:layout_height="40dp"
+                        android:background="@drawable/bg_icon_container">
+                        <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_notification_modern"
+                            android:tint="@color/secondary" />
+                    </FrameLayout>
+
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical"
+                        android:layout_marginStart="12dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Notificações" android:textSize="15sp" android:textStyle="bold"
+                            android:textColor="@color/text_primary" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Alertas de revisão e trajeto" android:textSize="12sp"
+                            android:textColor="@color/text_secondary" android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switch_notificacoes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:focusable="false" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                    android:layout_marginStart="68dp" android:background="@color/divider_strong" />
+
+                <!-- Backup automático -->
+                <LinearLayout
+                    android:id="@+id/row_backup"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:orientation="horizontal"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:gravity="center_vertical"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <FrameLayout android:layout_width="40dp" android:layout_height="40dp"
+                        android:background="@drawable/bg_icon_container">
+                        <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_cloud_modern"
+                            android:tint="@color/secondary" />
+                    </FrameLayout>
+
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical"
+                        android:layout_marginStart="12dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Backup automático" android:textSize="15sp" android:textStyle="bold"
+                            android:textColor="@color/text_primary" />
+                        <TextView
+                            android:id="@+id/tv_backup_status"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Nunca realizado" android:textSize="12sp"
+                            android:textColor="@color/text_secondary" android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switch_backup"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:focusable="false" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                    android:layout_marginStart="68dp" android:background="@color/divider_strong" />
+
+                <!-- Tema -->
+                <LinearLayout
+                    android:id="@+id/row_tema"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:orientation="horizontal"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:gravity="center_vertical"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <FrameLayout android:layout_width="40dp" android:layout_height="40dp"
+                        android:background="@drawable/bg_icon_container">
+                        <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_moon_modern"
+                            android:tint="@color/secondary" />
+                    </FrameLayout>
+
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical"
+                        android:layout_marginStart="12dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Tema" android:textSize="15sp" android:textStyle="bold"
+                            android:textColor="@color/text_primary" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Painel TFT escuro" android:textSize="12sp"
+                            android:textColor="@color/text_secondary" android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_tema_valor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dark"
+                        android:textSize="13sp"
+                        android:textColor="@color/secondary"
+                        android:layout_marginEnd="6dp" />
+
+                    <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                        android:src="@drawable/ic_chevron_right" android:tint="@color/text_tertiary" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- SEÇÃO CONTA                            -->
+        <!-- ══════════════════════════════════════ -->
         <TextView
+            style="@style/TextAppearance.MotoReviso.SectionHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="CONTA"
+            android:layout_marginBottom="8dp" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            app:cardBackgroundColor="@color/surface"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/divider_strong"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Editar perfil -->
+                <LinearLayout
+                    android:id="@+id/row_editar_perfil"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:orientation="horizontal"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:gravity="center_vertical"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <FrameLayout android:layout_width="40dp" android:layout_height="40dp"
+                        android:background="@drawable/bg_icon_container">
+                        <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_person_modern"
+                            android:tint="@color/secondary" />
+                    </FrameLayout>
+
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical"
+                        android:layout_marginStart="12dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Editar perfil" android:textSize="15sp" android:textStyle="bold"
+                            android:textColor="@color/text_primary" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Nome e informações da conta" android:textSize="12sp"
+                            android:textColor="@color/text_secondary" android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                        android:src="@drawable/ic_chevron_right" android:tint="@color/text_tertiary" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                    android:layout_marginStart="68dp" android:background="@color/divider_strong" />
+
+                <!-- Minhas motos -->
+                <LinearLayout
+                    android:id="@+id/row_minhas_motos"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:orientation="horizontal"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:gravity="center_vertical"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <FrameLayout android:layout_width="40dp" android:layout_height="40dp"
+                        android:background="@drawable/bg_icon_container">
+                        <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_car_modern"
+                            android:tint="@color/secondary" />
+                    </FrameLayout>
+
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical"
+                        android:layout_marginStart="12dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Meus veículos" android:textSize="15sp" android:textStyle="bold"
+                            android:textColor="@color/text_primary" />
+                        <TextView
+                            android:id="@+id/tv_qtd_veiculos"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Carregando..." android:textSize="12sp"
+                            android:textColor="@color/text_secondary" android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                        android:src="@drawable/ic_chevron_right" android:tint="@color/text_tertiary" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                    android:layout_marginStart="68dp" android:background="@color/divider_strong" />
+
+                <!-- Sair da conta -->
+                <LinearLayout
+                    android:id="@+id/row_sair"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:orientation="horizontal"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:gravity="center_vertical"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <FrameLayout android:layout_width="40dp" android:layout_height="40dp"
+                        android:background="@drawable/bg_icon_container">
+                        <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_power_modern"
+                            android:tint="@color/error" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Sair da conta"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/error"
+                        android:layout_marginStart="12dp" />
+
+                    <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                        android:src="@drawable/ic_chevron_right" android:tint="@color/error" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ── Rodapé ── -->
+        <TextView
+            android:id="@+id/tv_versao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="MotoReviso · v3.0.0 · build 2026.05"
             android:textSize="11sp"
-            android:textColor="@color/text_secondary"
-            android:letterSpacing="0.08"
-            android:textAllCaps="true"
-            android:layout_marginBottom="8dp"
+            android:textColor="@color/text_tertiary"
+            android:gravity="center"
             android:layout_marginTop="4dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_sair"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="Sair da conta"
-            app:backgroundTint="@color/error_dim"
-            android:textColor="@color/error"
-            app:strokeColor="#33FF4D4D"
-            app:strokeWidth="1dp"
-            app:cornerRadius="14dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
     </LinearLayout>
-
 </ScrollView>

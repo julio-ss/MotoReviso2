@@ -14,46 +14,109 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="12dp"
-            android:gravity="center_vertical">
+            android:paddingTop="20dp">
 
+            <!-- Título e Subtítulo -->
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingBottom="12dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Garagem"
-                    android:textSize="26sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary" />
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/text_subtitulo_veiculos"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Garagem"
+                        android:textSize="26sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                    <TextView
+                        android:id="@+id/text_subtitulo_veiculos"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginTop="2dp" />
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btn_adicionar_veiculo"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="+ Novo veículo"
                     android:textSize="12sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginTop="2dp" />
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:backgroundTint="@color/secondary"
+                    android:textColor="@android:color/white" />
 
             </LinearLayout>
 
-            <Button
-                android:id="@+id/btn_adicionar_veiculo"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="Nova moto"
-                android:textSize="13sp"
-                android:paddingLeft="14dp"
-                android:paddingRight="14dp"
-                android:backgroundTint="@color/secondary" />
+            <!-- Abas de Filtro -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/layout_filtros"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingBottom="12dp">
+
+                    <Button
+                        android:id="@+id/btn_filtro_todas"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Todas"
+                        android:textSize="12sp"
+                        android:paddingHorizontal="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:backgroundTint="@color/secondary"
+                        android:textColor="@android:color/white" />
+
+                    <Button
+                        android:id="@+id/btn_filtro_atencao"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Requer atenção"
+                        android:textSize="12sp"
+                        android:paddingHorizontal="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:backgroundTint="@color/surface"
+                        android:textColor="@color/text_secondary"
+                        android:strokeColor="@color/text_tertiary"
+                        android:strokeWidth="1" />
+
+                    <Button
+                        android:id="@+id/btn_filtro_filtrar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Filtrar"
+                        android:textSize="12sp"
+                        android:paddingHorizontal="16dp"
+                        android:backgroundTint="@color/surface"
+                        android:textColor="@color/text_secondary"
+                        android:strokeColor="@color/text_tertiary"
+                        android:strokeWidth="1" />
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
 
         </LinearLayout>
 
