@@ -17,6 +17,14 @@
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
 
+    <!-- Central Bluetooth (celular ⇄ painel do guidão) -->
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -154,6 +162,55 @@
         <receiver
             android:name=".receivers.RastreamentoReceiver"
             android:exported="false" />
+
+        <!-- ── Central Bluetooth ── -->
+        <activity
+            android:name=".activities.CentralBluetoothActivity"
+            android:exported="false"
+            android:label="Central Bluetooth" />
+
+        <activity
+            android:name=".activities.PainelActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|uiMode"
+            android:label="Painel Moto"
+            android:launchMode="singleTask" />
+
+        <!-- Atalho na tela inicial do painel: abre direto, sem login -->
+        <activity-alias
+            android:name=".PainelLauncher"
+            android:exported="true"
+            android:icon="@drawable/icon"
+            android:label="Painel Moto"
+            android:targetActivity=".activities.PainelActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <service
+            android:name=".central.PhoneLinkService"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice" />
+
+        <service
+            android:name=".central.PhoneNotificationListener"
+            android:exported="true"
+            android:label="Moto Reviso · Painel do guidão"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name=".central.CentralBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
         <!-- Google Maps API Key -->
         <meta-data

@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Painel do guidão (tela quadrada ~480x480). Alvos de toque grandes, alto contraste. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/painel_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:keepScreenOn="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="@dimen/painel_pad">
+
+        <!-- ── Barra superior ── -->
+        <LinearLayout
+            android:id="@+id/painel_topbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/painel_topbar_h"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/iv_bt"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_painel_bluetooth"
+                app:tint="@color/secondary"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/tv_phone_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/painel_small"
+                tools:text="Galaxy S24" />
+
+            <TextView
+                android:id="@+id/tv_clock_small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/painel_sub"
+                tools:text="14:32" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end|center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_phone_battery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/painel_small"
+                    tools:text="82%" />
+
+                <ImageView
+                    android:id="@+id/iv_battery"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="2dp"
+                    android:src="@drawable/ic_painel_battery"
+                    app:tint="@color/text_secondary"
+                    tools:ignore="ContentDescription" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ── Área principal ── -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <!-- Ocioso: relógio grande -->
+            <LinearLayout
+                android:id="@+id/group_idle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_clock_big"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-light"
+                    android:includeFontPadding="false"
+                    android:textColor="@color/text_primary"
+                    android:textSize="@dimen/painel_clock_big"
+                    tools:text="14:32" />
+
+                <TextView
+                    android:id="@+id/tv_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.08"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/painel_sub"
+                    tools:text="Terça, 10 de novembro" />
+            </LinearLayout>
+
+            <!-- Player de música -->
+            <LinearLayout
+                android:id="@+id/group_media"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="@dimen/painel_art"
+                        android:layout_height="@dimen/painel_art"
+                        app:cardBackgroundColor="@color/surface3"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="0dp">
+
+                        <ImageView
+                            android:id="@+id/iv_art"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            tools:ignore="ContentDescription" />
+
+                        <ImageView
+                            android:id="@+id/iv_art_placeholder"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_painel_music"
+                            app:tint="@color/text_tertiary"
+                            tools:ignore="ContentDescription" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tv_media_app"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:maxLines="1"
+                            android:textAllCaps="true"
+                            android:letterSpacing="0.08"
+                            android:textColor="@color/secondary"
+                            android:textSize="@dimen/painel_small"
+                            tools:text="Spotify" />
+
+                        <TextView
+                            android:id="@+id/tv_media_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:ellipsize="marquee"
+                            android:marqueeRepeatLimit="marquee_forever"
+                            android:singleLine="true"
+                            android:fontFamily="sans-serif-medium"
+                            android:textColor="@color/text_primary"
+                            android:textSize="@dimen/painel_title"
+                            tools:text="Nome da música bem comprido" />
+
+                        <TextView
+                            android:id="@+id/tv_media_artist"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="@dimen/painel_sub"
+                            tools:text="Artista" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/pb_media"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="6dp"
+                    android:layout_marginTop="10dp"
+                    android:max="1000"
+                    android:progressDrawable="@drawable/bg_painel_progress"
+                    tools:progress="400" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_media_pos"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/text_tertiary"
+                        android:textSize="@dimen/painel_small"
+                        tools:text="1:24" />
+
+                    <TextView
+                        android:id="@+id/tv_media_dur"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_tertiary"
+                        android:textSize="@dimen/painel_small"
+                        tools:text="3:51" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/btn_prev"
+                        android:layout_width="@dimen/painel_btn"
+                        android:layout_height="@dimen/painel_btn"
+                        android:background="@drawable/bg_painel_round_btn"
+                        android:contentDescription="Faixa anterior"
+                        android:scaleType="centerInside"
+                        android:padding="14dp"
+                        android:src="@drawable/ic_painel_prev" />
+
+                    <ImageButton
+                        android:id="@+id/btn_play"
+                        android:layout_width="@dimen/painel_btn_play"
+                        android:layout_height="@dimen/painel_btn_play"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:background="@drawable/bg_painel_play"
+                        android:contentDescription="Tocar ou pausar"
+                        android:scaleType="centerInside"
+                        android:padding="18dp"
+                        android:src="@drawable/ic_painel_pause" />
+
+                    <ImageButton
+                        android:id="@+id/btn_next"
+                        android:layout_width="@dimen/painel_btn"
+                        android:layout_height="@dimen/painel_btn"
+                        android:background="@drawable/bg_painel_round_btn"
+                        android:contentDescription="Próxima faixa"
+                        android:scaleType="centerInside"
+                        android:padding="14dp"
+                        android:src="@drawable/ic_painel_next" />
+                </LinearLayout>
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- ── Faixa de notificações ── -->
+        <LinearLayout
+            android:id="@+id/strip_notif"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/painel_strip_h"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_painel_card"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <ImageView
+                android:id="@+id/iv_strip_icon"
+                android:layout_width="@dimen/painel_notif_icon"
+                android:layout_height="@dimen/painel_notif_icon"
+                android:src="@drawable/ic_painel_bell"
+                app:tint="@color/text_tertiary"
+                tools:ignore="ContentDescription" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_strip_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif-medium"
+                    android:maxLines="1"
+                    android:textColor="@color/text_primary"
+                    android:textSize="@dimen/painel_sub"
+                    tools:text="Maria · WhatsApp" />
+
+                <TextView
+                    android:id="@+id/tv_strip_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/painel_small"
+                    tools:text="Chego em 10 minutos" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_strip_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_painel_badge"
+                android:gravity="center"
+                android:minWidth="24dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:textColor="#000000"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:text="3"
+                tools:visibility="visible" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- ── Heads-up (notificação chegando) ── -->
+    <LinearLayout
+        android:id="@+id/headsup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/painel_pad"
+        android:background="@drawable/bg_painel_headsup"
+        android:elevation="12dp"
+        android:orientation="vertical"
+        android:padding="14dp"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/iv_hu_icon"
+                android:layout_width="@dimen/painel_notif_icon"
+                android:layout_height="@dimen/painel_notif_icon"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/tv_hu_app"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:textAllCaps="true"
+                android:letterSpacing="0.08"
+                android:textColor="@color/secondary"
+                android:textSize="@dimen/painel_small"
+                tools:text="WhatsApp" />
+
+            <ImageButton
+                android:id="@+id/btn_hu_close"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_painel_round_btn"
+                android:contentDescription="Fechar"
+                android:padding="12dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_painel_close" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_hu_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="2"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/painel_title"
+            tools:text="Maria" />
+
+        <TextView
+            android:id="@+id/tv_hu_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/painel_sub"
+            tools:text="Chego em 10 minutos, me espera na portaria" />
+
+        <LinearLayout
+            android:id="@+id/hu_actions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal" />
+    </LinearLayout>
+
+    <!-- ── Lista de notificações ── -->
+    <LinearLayout
+        android:id="@+id/overlay_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F2000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:padding="@dimen/painel_pad"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_list_header"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-medium"
+                android:text="Notificações"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/painel_title" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_list_clear"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="Limpar"
+                android:textColor="@color/secondary" />
+
+            <ImageButton
+                android:id="@+id/btn_list_close"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/bg_painel_round_btn"
+                android:contentDescription="Fechar"
+                android:padding="13dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_painel_close" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_notifs"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="6dp"
+            android:layout_weight="1"
+            android:clipToPadding="false" />
+
+        <TextView
+            android:id="@+id/tv_list_empty"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Nenhuma notificação"
+            android:textColor="@color/text_tertiary"
+            android:textSize="@dimen/painel_sub"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- ── Desconectado ── -->
+    <LinearLayout
+        android:id="@+id/overlay_disconnected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#E6000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/pb_connecting"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:indeterminateTint="@color/secondary" />
+
+        <TextView
+            android:id="@+id/tv_disc_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:text="Procurando o celular…"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/painel_title" />
+
+        <TextView
+            android:id="@+id/tv_disc_sub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/painel_sub"
+            tools:text="Abra o Moto Reviso no celular e ative Compartilhar com o painel" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_change_device"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/painel_action_h"
+            android:layout_marginTop="20dp"
+            android:text="Trocar celular"
+            android:textColor="@color/secondary"
+            app:strokeColor="@color/secondary" />
+    </LinearLayout>
+
+</FrameLayout>

@@ -27,6 +27,7 @@ import java.util.Locale;
 
 import br.jss.motoreviso.R;
 import br.jss.motoreviso.fragments.VeiculosFragment;
+import br.jss.motoreviso.activities.CentralBluetoothActivity;
 import br.jss.motoreviso.activities.LoginActivity;
 import br.jss.motoreviso.activities.MainActivity;
 import br.jss.motoreviso.activities.SetupPinActivity;
@@ -231,6 +232,10 @@ public class ConfiguracoesFragment extends Fragment {
 
         // Editar perfil
         view.findViewById(R.id.row_editar_perfil).setOnClickListener(v -> mostrarDialogEditarPerfil());
+
+        // Central Bluetooth (painel do guidão)
+        view.findViewById(R.id.row_central_bt).setOnClickListener(v ->
+                startActivity(new Intent(getActivity(), CentralBluetoothActivity.class)));
 
         // Meus veículos
         view.findViewById(R.id.row_minhas_motos).setOnClickListener(v -> {

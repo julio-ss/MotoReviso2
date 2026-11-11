@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Painel do guidão: valores base pensados para ~320dp (480px @ hdpi). -->
+<resources>
+    <dimen name="painel_pad">10dp</dimen>
+    <dimen name="painel_topbar_h">26dp</dimen>
+    <dimen name="painel_clock_big">64sp</dimen>
+    <dimen name="painel_art">84dp</dimen>
+    <dimen name="painel_title">17sp</dimen>
+    <dimen name="painel_sub">13sp</dimen>
+    <dimen name="painel_small">11sp</dimen>
+    <dimen name="painel_btn">56dp</dimen>
+    <dimen name="painel_btn_play">72dp</dimen>
+    <dimen name="painel_strip_h">64dp</dimen>
+    <dimen name="painel_notif_icon">32dp</dimen>
+    <dimen name="painel_action_h">52dp</dimen>
+</resources>

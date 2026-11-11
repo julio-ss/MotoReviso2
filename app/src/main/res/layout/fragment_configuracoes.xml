@@ -476,6 +476,43 @@
                 <View android:layout_width="match_parent" android:layout_height="1dp"
                     android:layout_marginStart="68dp" android:background="@color/divider_strong" />
 
+                <!-- Central Bluetooth -->
+                <LinearLayout
+                    android:id="@+id/row_central_bt"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:orientation="horizontal"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:gravity="center_vertical"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <FrameLayout android:layout_width="40dp" android:layout_height="40dp"
+                        android:background="@drawable/bg_icon_container">
+                        <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_painel_bluetooth"
+                            android:tint="@color/secondary" />
+                    </FrameLayout>
+
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical"
+                        android:layout_marginStart="12dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Central Bluetooth" android:textSize="15sp" android:textStyle="bold"
+                            android:textColor="@color/text_primary" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Painel no guidão: música e notificações" android:textSize="12sp"
+                            android:textColor="@color/text_secondary" android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                        android:src="@drawable/ic_chevron_right" android:tint="@color/text_tertiary" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                    android:layout_marginStart="68dp" android:background="@color/divider_strong" />
+
                 <!-- Minhas motos -->
                 <LinearLayout
                     android:id="@+id/row_minhas_motos"
